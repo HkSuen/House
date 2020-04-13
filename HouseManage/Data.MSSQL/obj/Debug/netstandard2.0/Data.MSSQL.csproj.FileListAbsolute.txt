@@ -1,8 +1,0 @@
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\bin\Debug\netstandard2.0\Data.MSSQL.deps.json
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\bin\Debug\netstandard2.0\Data.MSSQL.dll
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\obj\Debug\netstandard2.0\Data.MSSQL.AssemblyInfoInputs.cache
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\obj\Debug\netstandard2.0\Data.MSSQL.AssemblyInfo.cs
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\bin\Debug\netstandard2.0\Data.MSSQL.pdb
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\obj\Debug\netstandard2.0\Data.MSSQL.csproj.CoreCompileInputs.cache
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\obj\Debug\netstandard2.0\Data.MSSQL.dll
-D:\SUENWORK\HouseManage\HouseManage\HouseManage\Data.MSSQL\obj\Debug\netstandard2.0\Data.MSSQL.pdb
