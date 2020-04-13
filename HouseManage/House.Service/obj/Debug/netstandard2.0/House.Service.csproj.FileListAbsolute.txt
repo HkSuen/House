@@ -1,0 +1,14 @@
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\bin\Debug\netstandard2.0\House.Service.deps.json
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\bin\Debug\netstandard2.0\House.Service.dll
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\bin\Debug\netstandard2.0\House.Service.pdb
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\bin\Debug\netstandard2.0\House.IService.dll
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\bin\Debug\netstandard2.0\House.IService.pdb
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\obj\Debug\netstandard2.0\House.Service.csprojAssemblyReference.cache
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\obj\Debug\netstandard2.0\House.Service.AssemblyInfoInputs.cache
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\obj\Debug\netstandard2.0\House.Service.AssemblyInfo.cs
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\obj\Debug\netstandard2.0\House.Service.csproj.CopyComplete
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\obj\Debug\netstandard2.0\House.Service.dll
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\obj\Debug\netstandard2.0\House.Service.pdb
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\obj\Debug\netstandard2.0\House.Service.csproj.CoreCompileInputs.cache
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\bin\Debug\netstandard2.0\Data.MSSQL.dll
+D:\SUENWORK\HouseManage\HouseManage\HouseManage\House.Service\bin\Debug\netstandard2.0\Data.MSSQL.pdb
