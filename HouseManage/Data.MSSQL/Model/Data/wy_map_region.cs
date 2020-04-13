@@ -7,32 +7,25 @@ namespace Data.MSSQL.Model.Data
     ///<summary>
     ///
     ///</summary>
-    public partial class people1
+    public partial class wy_map_region
     {
-           public people1(){
+           public wy_map_region(){
 
 
            }
            /// <summary>
            /// Desc:
            /// Default:
-           /// Nullable:False
+           /// Nullable:True
            /// </summary>           
-           public string id {get;set;}
+           public string PLAN_DETAIL_ID {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string name {get;set;}
-
-           /// <summary>
-           /// Desc:
-           /// Default:0
-           /// Nullable:True
-           /// </summary>           
-           public int? sex {get;set;}
+           public string REGION_CODE {get;set;}
 
     }
 }
