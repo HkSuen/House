@@ -1,0 +1,3 @@
+{
+  "ConnectionString": "server=114.115.142.34;user id=root;pwd=123456;database=pfhouse;SslMode = none;Charset=utf8"
+}

@@ -11,6 +11,7 @@
 <#@ import namespace="Newtonsoft.Json" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Web" #>
+<#@ assembly name="$(projectDir)Lib\MySql.Data.dll" #>
 <#@ assembly name="$(projectDir)Lib\SqlSugar.dll" #> 
 <#@ assembly name="$(projectDir)Lib\Newtonsoft.Json.dll" #>  
 <# 
@@ -25,7 +26,7 @@
 
     //项目名称
     string projectName = Host.ResolveAssemblyReference("$(ProjectName)");
-    var db = new SqlSugarClient(new ConnectionConfig() { ConnectionString =  "server=.;uid=sa;pwd=123456a?;database=Test", DbType = DbType.SqlServer, IsAutoCloseConnection = true });
+    var db = new SqlSugarClient(new ConnectionConfig() { ConnectionString =  "server=114.115.142.34;uid=root;pwd=123456;database=pfhouse", DbType = DbType.MySql, IsAutoCloseConnection = true });
     
     db.DbFirst.CreateClassFile(projectDir + "Model\\Data\\","Data.MSSQL.Model.Data");
     
