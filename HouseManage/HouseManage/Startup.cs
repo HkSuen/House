@@ -41,7 +41,10 @@ namespace HouseManage
             services.AddMvc(config=> 
             {  // register authorizefilter .
                 config.Filters.Add(typeof(CustomAuthorizeAttribute));
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(opt =>
+                    {
+                        opt.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();//json字符串大小写原样输出
+                    }); ;
             return AutofacConfig.Register(services);
         }
 
