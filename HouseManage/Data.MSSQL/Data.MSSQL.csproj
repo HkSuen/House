@@ -10,6 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="App.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Model\DataBase.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DataBase.cs</LastGenOutput>

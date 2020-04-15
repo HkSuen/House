@@ -2,35 +2,174 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @model List<Data.MSSQL.Model.Data.wy_check_task>;
 }
-    <div>
-        <a href="#popover" id="openPopover" class="mui-btn mui-btn-primary mui-btn-block" style="float:left;width:33%">打开弹出菜单</a>
-        <div id="popover" class="mui-popover">
-            <ul class="mui-table-view">
-                <li class="mui-table-view-cell"><a href="#">111</a></li>
-                <li class="mui-table-view-cell"><a href="#">Item2</a></li>
-                <li class="mui-table-view-cell"><a href="#">Item3</a></li>
-                <li class="mui-table-view-cell"><a href="#">Item4</a></li>
-                <li class="mui-table-view-cell"><a href="#">Item5</a></li>
-            </ul>
+    <ul class="mui-table-view">
+        <li class="mui-table-view-cell mui-collapse">
+            <a class="mui-navigate-right" href="#">查询条件</a>
+            <div class="mui-collapse-content" style="text-align:center">
+                <div class="mui-row">
+                    <div class="mui-col-sm-2 mui-col-xs-2">
+                        <label style="font-size:13px;">商户状态:</label>
+                    </div>
+                    <div class="mui-col-sm-5 mui-col-xs-5">
+                        <label>出租</label>
+                        <input name="radio1" id="radio1" value="1" type="radio">
+                    </div>
+                    <div class="mui-col-sm-5 mui-col-xs-5">
+                        <label>出售</label>
+                        <input name="radio1" id="radio1" value="2" type="radio">
+                    </div>
+                </div>
+                <div class="mui-row">
+                    <div class="mui-col-sm-2 mui-col-xs-2">
+                    </div>
+                    <div class="mui-col-sm-5 mui-col-xs-5" style="padding-right: 20px;">
+                        <input type="text" value="" class="mui-input-clear" placeholder="开始时间" id="startTime" onclick="SetStartTime()">
+                    </div>
+                    <div class="mui-col-sm-5 mui-col-xs-5">
+                        <input type="text" value="" class="mui-input-clear" placeholder="结束时间" id="endTime" onclick="SetEndTime()">
+                    </div>
+                </div>
+                <div class="mui-row">
+                    <button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search" onclick="getList()">查询</button>
+                </div>
+            </div>
+        </li>
+    </ul>
+@foreach (var item in Model)
+{
+    
+    <div class="mui-row" style="margin-top:10px;margin-left:10px;margin-right:10px;padding-bottom:10px; border-radius:5px;background-color:paleturquoise" onclick="GetTaskDetail(@item.RWBH)">
+        <div class="mui-col-sm-12 mui-col-xs-12">
+            <div class="mui-row" style="background-color:paleturquoise; border-radius:5px 5px 0 0">
+                <div class="mui-col-sm-6 mui-col-xs-6">
+                    <span>任务编号:@item.RWBH</span>
+                </div>
+                <div class="mui-col-sm-6 mui-col-xs-6">
+                    <div class="mui-icon mui-icon-forward" style="float:right"></div>
+                </div>
+            </div>
         </div>
-        <div id="startTime" style="float:right;width:33%" class="mui-picker"></div>
-        <div id="endTime" style="float:right;width:33%"></div>
+        <div class="mui-row">
+            <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white">
+                <div class="mui-row">
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <span>任务名称</span>
+                    </div>
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <span>开始时间</span>
+                    </div>
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <span>结束时间</span>
+                    </div>
+                    @*<div class="mui-col-sm-3 mui-col-xs-3" style="background-color:white;font-size:15px;">
+                        <span>任务状态</span>
+                    </div>*@
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mui-row" style="border:1px;">
+            <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white;font-size:15px;">
+                <div class="mui-row">
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <span>@item.RWMC</span>
+                    </div>
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <span>@item.RWKSSJ</span>
+                    </div>
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <span>@item.RWJSSJ</span>
+                    </div>
+                    @*<div class="mui-col-sm-3 mui-col-xs-3" style="background-color:white;font-size:15px;">
+                        <span>@item.RWBH</span>
+                    </div>*@
+                </div>
+            </div>
+        </div>
     </div>
+}
+
+
+
+
+@*<div class="mui-row">
+        <div class="mui-col-sm-6 mui-col-xs-4">
+            <input type="text" value="" class="mui-input-clear" placeholder="商户状态" id="shopstatus" onclick="ChangeStaus()">
+            <a href="#popover" id="openPopover" class="mui-btn-block"></a>
+            <div id="popover" class="mui-popover">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" onclick="">出租</li>
+                    <li class="mui-table-view-cell" onclick="">出售</li>
+                </ul>
+            </div>
+        </div>
+        <div class="mui-col-sm-6 mui-col-xs-4">
+            <input type="text" value="" class="mui-input-clear" placeholder="开始时间" id="startTime" onclick="SetStartTime()">
+        </div>
+        <div class="mui-col-sm-6 mui-col-xs-4">
+            <input type="text" value="" class="mui-input-clear" placeholder="结束时间" id="endTime" onclick="SetEndTime()">
+        </div>
+    </div>*@
 
 
 <script type="text/javascript">
-    //document.getElementById("openPopover").addEventListener("pop")
     var picker = new mui.PopPicker();
-    //picker.setData([{ value: 'zz', text: '智子' }]);
-    //picker.show(function (selectItems) {
-    //    console.log(selectItems[0].text);//智子
-    //    console.log(selectItems[0].value);//zz
-    //})
-    var dtPicker = new mui.DtPicker(); 
-    dtPicker.show(function (selectItems) { 
-        console.log(selectItems.y);//{text: "2016",value: 2016} 
-        console.log(selectItems.m);//{text: "05",value: "05"} 
-    })
+    function ChangeStaus() {
+        console.log(1);
+        var picker = new mui.PopPicker();
+        //picker.setData([{ value: 'zz', text: '智子' }]);
+        //picker.show(function (selectItems) {
+        //    console.log(selectItems[0].text);//智子
+        //    console.log(selectItems[0].value);//zz
+        //})
+    };
+    function SetStartTime() {
+        var dtPicker = new mui.DtPicker();
+        dtPicker.show(function (selectItems) {
+            document.getElementById("startTime").value = selectItems.y.text + "/" + selectItems.m.text + "/" + selectItems.d.text;
+        });
+    };
+    function SetEndTime() {
+        var dtPicker = new mui.DtPicker();
+        dtPicker.show(function (selectItems) {
+            document.getElementById("endTime").value = selectItems.y.text + "/" + selectItems.m.text + "/" + selectItems.d.text;
+        });
+    };
+    function getList() {
+        var ele = document.getElementsByName("radio1");
+        let radiovalue = "";
+        for (var i = 0; i < ele.length; i++) {
+            if (ele[i].checked) {
+                radiovalue = ele[i].value;
+            };
+        };
+        let temp = {
+            status: radiovalue,
+            starttime: document.getElementById("startTime").value,
+            endtime: document.getElementById("endTime").value,
+        };
+        mui.ajax('/DailyCheck/GetTaskInfo', {
+            data: temp,
+            type: 'get',
+            //timeout: 50000,
+            //headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (xhr, type, errorThrown) {
+                console.log(type);
+            }
+        })
+    };
+    function GetTaskDetail(RWBH) {
+        console.log(RWBH);
+        window.location.href = '../../DailyCheck/CheckDetail?RWBH='+RWBH+"'";
+    };
+
+
+
 </script>
 
