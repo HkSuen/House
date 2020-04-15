@@ -45,9 +45,9 @@ namespace HouseManage.Common.Filter
                     if (!string.IsNullOrEmpty(openId)) //opneId参数为空，
                     {
                         //3.检查openid是否被注册过，如果没有被注册过跳转Register注册界面。
-                        if (openId == "123123") //未注册
+                        if (openId != "123123") //未注册
                         {
-                            context.HttpContext.Response.Redirect("/Home/Register?registerUrl=" + path); //增加回调地址
+                            context.HttpContext.Response.Redirect("/Home/Register?uid="+openId+"&redirect=" + path); //增加回调地址
                             return;
                         }
                         //4.openid 注册过以后，增加登录授权。并增加确认对应的身份条件，并重新重定向到请求地址

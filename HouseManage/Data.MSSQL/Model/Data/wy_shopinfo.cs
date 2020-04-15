@@ -223,5 +223,12 @@ namespace Data.MSSQL.Model.Data
            /// </summary>           
            public DateTime? XFBZJTFSJ {get;set;}
 
+           /// <summary>
+           /// Desc:微信用户标识
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string WX_OPEN_ID {get;set;}
+
     }
 }
