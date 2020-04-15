@@ -49,20 +49,20 @@ namespace HouseManage.Models.Enum
         DATA_ALREADY_EXISTED = 50003,// 数据已存在
 
         // 接口错误
-        [Description("参数为空")]
+        [Description("系统内部接口调用异常")]
         INTERFACE_INNER_INVOKE_ERROR = 60001, // 系统内部接口调用异常
-        [Description("参数为空")]
+        [Description("系统外部接口调用异常")]
         INTERFACE_OUTER_INVOKE_ERROR = 60002,// 系统外部接口调用异常
-        [Description("参数为空")]
+        [Description("接口禁止访问")]
         INTERFACE_FORBIDDEN = 60003,// 接口禁止访问
-        [Description("参数为空")]
+        [Description("接口地址无效")]
         INTERFACE_ADDRESS_INVALID = 60004,// 接口地址无效
-        [Description("参数为空")]
+        [Description("接口请求超时")]
         INTERFACE_REQUEST_TIMEOUT = 60005,// 接口请求超时
-        [Description("参数为空")]
+        [Description("接口负载过高")]
         INTERFACE_EXCEED_LOAD = 60006,// 接口负载过高
         // 权限错误
-        [Description("参数为空")]
+        [Description("没有访问权限")]
         PERMISSION_NO_ACCESS = 70001,// 没有访问权限
     }
 }

@@ -38,7 +38,7 @@ namespace HouseManage.Controllers
         }
 
         [HttpPost]
-        public JsonResult WXRegister(string phone, string type, string uid, string url)
+        public JsonResult WXRegister(string phone, string type, string uid)
         {
             int State = this._user.WXRegister(phone, type, uid);
             ResultCode Code = State == 1 ? ResultCode.SCCUESS : (State == 2 ? ResultCode.DATA_IS_WRONG : (State == 3 ? ResultCode.DATA_NOT_FOUND : ResultCode.PARAMS_TYPE_ERROR));

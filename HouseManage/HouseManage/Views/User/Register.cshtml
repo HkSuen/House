@@ -21,7 +21,7 @@
             <div class="mui-input-row">
                 <label>用户类型</label>
                 <input type="text" class="mui-input-clear" placeholder="请选择用户类型" id="userType">
-                <input type="text" class="mui-input-clear" placeholder="请选择用户类型" id="userTypeVal" hidden ="hidden">
+                <input type="text" class="mui-input-clear" placeholder="请选择用户类型" id="userTypeVal" hidden="hidden">
             </div>
         </form>
     </div>
@@ -53,7 +53,7 @@
             picker.setData(list);
         });
         jq("#submit").on("tap", function () {
-            var data = { phone: jq("#userPhone").val(), type: jq("#userTypeVal").val(), uid: jq("#uid").val(), url: jq("#url").val()};
+            var data = { phone: jq("#userPhone").val(), type: jq("#userTypeVal").val(), uid: jq("#uid").val() };
             if (data.phone == "" || data.phone == undefined || data.phone == null || data.phone.length != 11) {
                 mui.toast('请输入正确手机号!');
                 return;
@@ -62,8 +62,21 @@
                 mui.toast('请选择用户类型!');
                 return;
             }
+            mui.showLoading("请稍后...", "div"); //加载文字和类型，plus环境中类型为div时强制以div方式显示
             $.post("WXRegister", data, function (result) {
-
+                mui.hideLoading();//隐藏后的回调函数
+                if (result.code == 1000) {
+                    //redirect
+                    mui.toast('绑定成功！');
+                    window.location.href = jq("#url").val();
+                    return;
+                }
+                if (result.code == 50001) {
+                    mui.alert('您当前的手机号未绑定任何用户，请联系管理员。', '提示', function () {
+                    });
+                } else {
+                    mui.toast(result.msg);
+                }
             });
         });
     })(mui);
