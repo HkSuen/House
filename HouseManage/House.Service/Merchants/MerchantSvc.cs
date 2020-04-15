@@ -2,6 +2,7 @@
 using Data.MSSQL.Model.Data;
 using House.IService.Merchants;
 using House.IService.Model;
+using House.Service.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -28,26 +29,68 @@ namespace House.Service.Merchants
         public Dictionary<string, object> GetMerchantList(wy_houseinfo model)
         {
             Dictionary<string, object> dic = new Dictionary<string, object>();
-            Expression<Func<wy_houseinfo, bool>> expression = p => true;
-            if (!string.IsNullOrWhiteSpace(model.FWBH))
+            try
             {
-                expression = p=> expression.Compile()(p)&&p.FWBH.Contains(model.FWBH);
+                var list = _Db.Db().Queryable<wy_houseinfo>();
+                if (!string.IsNullOrWhiteSpace(model.FWBH))
+                {
+                    list = list.Where(e => e.FWBH.Contains(model.FWBH));
+                }
+                if (model.FWSX != null&& model.FWSX!=-1)
+                {
+                    list = list.Where(e => e.FWSX == model.FWSX);
+                }
+                if (!string.IsNullOrWhiteSpace(model.SSQY))
+                {
+                    list = list.Where(e => e.SSQY == model.SSQY);
+                }
+                if (!string.IsNullOrWhiteSpace(model.LSFGS))
+                {
+                    list = list.Where(e => e.LSFGS == model.LSFGS);
+                }
+                var listNnew = list.Select(m => new { m.FWBH, m.FWMC, m.FWID }).OrderBy(m => m.FWBH).Take(5).ToList();
+
+                dic.Add("list", listNnew);
+                dic.Add("count", listNnew.Count);
             }
-            if (model.FWSX!=null) {
-                expression = p => expression.Compile()(p) && p.FWSX==model.FWSX; 
-            }
-            if (!string.IsNullOrWhiteSpace(model.SSQY))
+            catch (Exception ex)
             {
-                expression = p => expression.Compile()(p) && p.SSQY==model.SSQY;
+                dic.Add("list", null);
+                dic.Add("count", 0);
             }
-            if (!string.IsNullOrWhiteSpace(model.LSFGS))
+            return dic;
+        }
+        public Dictionary<string, object> GetMerchantListByPage(string FWBH, int FWSX, string SSQY, string LSFGS, int page, int size) {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            try
             {
-                expression = p => expression.Compile()(p) && p.LSFGS==model.LSFGS;
+                var list = _Db.Db().Queryable<wy_houseinfo>();
+                if (!string.IsNullOrWhiteSpace(FWBH))
+                {
+                    list = list.Where(e => e.FWBH.Contains(FWBH));
+                }
+                if (FWSX!=-1)
+                {
+                    list = list.Where(e => e.FWSX == FWSX);
+                }
+                if (!string.IsNullOrWhiteSpace(SSQY))
+                {
+                    list = list.Where(e => e.SSQY == SSQY);
+                }
+                if (!string.IsNullOrWhiteSpace(LSFGS))
+                {
+                    list = list.Where(e => e.LSFGS == LSFGS);
+                }
+                var listNnew = list.Select(m => new { m.FWBH, m.FWMC, m.FWID }).OrderBy(m => m.FWBH).Skip((page - 1) * size).Take(size).ToList();
+
+                dic.Add("list", listNnew);
+                dic.Add("count", listNnew.Count);
             }
-            var list = _Db.Db().Queryable<wy_houseinfo>().Where(expression).Select(m => new {  m.FWBH,m.FWMC, m.FWID }).OrderBy(m=>m.FWBH).Take(1).ToList();
-           
-            dic.Add("list", list);
-            dic.Add("count", list.Count);
+            catch (Exception ex)
+            {
+                dic.Add("list", null);
+                dic.Add("count", 0);
+            }
             return dic;
         }
     }

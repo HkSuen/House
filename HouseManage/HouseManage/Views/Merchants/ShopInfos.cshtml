@@ -21,7 +21,7 @@
                     <div class="mui-input-row">
                         <label>房屋属性</label>
                         <input id="txt_housesx" type="text" class="mui-input-clear" placeholder="请选择房屋属性">
-                        <input id="txt_housesxcode" style="display:none" type="text" />
+                        <input id="txt_housesxcode" style="display:none"  type="text" />
                     </div>
                     <div class="mui-input-row">
                         <label>区域</label>
@@ -88,7 +88,7 @@
     })(mui);
 
     function getData() {
-
+        $("#txt_housesxcode").val(-1);
         $.get('/Merchants/GetBaseData', { areaCode: 'SSQY', companyCode: 'LSFGS' }, function (data) {
             if (data) {
                 dataArea = data.areaList;
@@ -104,7 +104,7 @@
     }
     function textClear() {
         jq("#txt_housesx").val('');
-        jq("#txt_housesxcode").val('');
+        jq("#txt_housesxcode").val(-1);
         jq("#txt_housearea").val('');
         jq("#txt_houseareacode").val('');
         jq("#txt_housecompany").val('');
@@ -158,69 +158,73 @@
              * 下拉刷新具体业务实现
              */
     function pulldownRefresh() {
+       
         setTimeout(function () {
             addData();
             mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
-            // mui.toast("为你推荐了5篇文章");
+            mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+            //mui('#pullrefresh').pullRefresh().refresh(true);
+            //mui('#pullrefresh').pullRefresh().enablePullupToRefresh();
         }, 1500);
     }
     function addData() {
+        Page = 2;
+        count = 2;
         var txtFWBH = $("#txt_housecode").val();
         var txtFWSX = $("#txt_housesxcode").val();
         var txtSSQY = $("#txt_houseareacode").val();
         var txtLSFGS = $("#txt_housecompanycode").val();
         $.get('/Merchants/GetMerchantList', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS}, function (data) {
             if (data) {
+                
                 var table = document.body.querySelector('#list_ul');
                 var cells = document.body.querySelectorAll('.mui-table-view-cell');
-                table.remove();
+
+                var childs = table.childNodes;
+                for (var i = childs.length - 1; i >= 0; i--) {
+                    table.removeChild(childs[i]);
+                }
                 for (var i = 0; i < data.list.length; i++) {
                     var li = document.createElement('li');
                     li.className = 'mui-table-view-cell';
-                    li.innerHTML = '<a class="mui-navigate-right"><img style="width:15px;height:10px;" src="/img/gray.jpg"/>&nbsp;' + data.list[i].FWMC + '</a>';
+                    //li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
+                    li.innerHTML = '<a class="mui-navigate-right"><img style="width:15px;height:10px;" src="/img/gray.jpg" />&nbsp;' + data.list[i].FWMC + '</a>';
                     //下拉刷新，新纪录插到最前面；
-                    table.insertBefore(li, table.firstChild);
+                    table.appendChild(li);
                 }
-            }
+           }
         }, 'json');
         
     }
-    var count = 0;
+    var count = 2;
+    var Page = 1, Size = 5;
     function pullupRefresh() {
         setTimeout(function () {
-            mui('#pullrefresh').pullRefresh().endPullupToRefresh((++count > 2)); //参数为true代表没有更多数据了。
-            var table = document.body.querySelector('#list_ul');
-            var cells = document.body.querySelectorAll('.mui-table-view-cell');
+            mui('#pullrefresh').pullRefresh().endPullupToRefresh((count < 2)); //参数为true代表没有更多数据了。
+            var txtFWBH = $("#txt_housecode").val();
+            var txtFWSX = $("#txt_housesxcode").val();
+            var txtSSQY = $("#txt_houseareacode").val();
+            var txtLSFGS = $("#txt_housecompanycode").val();
 
+            $.get('/Merchants/GetMerchantListByPage', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS,page:Page,size:Size }, function (data) {
+                if (data) {
+                    if (!data.list.length||data.list.length<count) {
+                        count = 1;
+                    }
+                    Page++;
+                    var table = document.body.querySelector('#list_ul');
+                    
+                    for (var i = 0; i < data.list.length; i++) {
+                        var li = document.createElement('li');
+                        li.className = 'mui-table-view-cell';
+                        //li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
+                        li.innerHTML = '<a class="mui-navigate-right"><img style="width:15px;height:10px;" src="/img/gray.jpg" />&nbsp;' + data.list[i].FWMC + '</a>';
+                        //下拉刷新，新纪录插到最前面；
+                        table.appendChild(li);
+                    }
+                }
+            }, 'json');
 
-            var newCount = cells.length > 0 ? 5 : 20;//首次加载20条，满屏
-
-
-            //var txtFWBH = $("#txt_housecode").val();
-            //var txtFWSX = $("#txt_housesxcode").val();
-            //var txtSSQY = $("#txt_houseareacode").val();
-            //var txtLSFGS = $("#txt_housecompanycode").val();
-            //$.get('/Merchants/GetMerchantList', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS }, function (data) {
-            //    if (data) {
-            //        var table = document.body.querySelector('#list_ul');
-            //        var cells = document.body.querySelectorAll('.mui-table-view-cell');
-            //        for (var i = 0; i < data.list.length; i++) {
-            //            var li = document.createElement('li');
-            //            li.className = 'mui-table-view-cell';
-            //            li.innerHTML = '<a class="mui-navigate-right"><img style="width:15px;height:10px;" src="/img/gray.jpg"/>&nbsp;' + data.list[i].FWMC + '</a>';
-            //            //下拉刷新，新纪录插到最前面；
-            //            table.remove();
-            //            table.appendChild(li);
-            //        }
-            //    }
-            //}, 'json');
-
-            for (var i = cells.length, len = i + newCount; i < len; i++) {
-                var li = document.createElement('li');
-                li.className = 'mui-table-view-cell';
-                li.innerHTML = '<a class="mui-navigate-right"><img style="width:15px;height:10px;" src="/img/gray.jpg"/>&nbsp;Item ' + (i + 1) + '</a>';
-                table.appendChild(li);
-            }
         }, 1500);
     }
 </script>

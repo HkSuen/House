@@ -36,5 +36,13 @@ namespace HouseManage.Controllers.Merchants
             Dictionary<string, object> dic = _machantSvc.GetMerchantList(model);
             return Json(dic);
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult GetMerchantListByPage(string FWBH,int FWSX,string SSQY,string LSFGS,int page,int size )
+        {
+
+            Dictionary<string, object> dic = _machantSvc.GetMerchantListByPage( FWBH,  FWSX,  SSQY,  LSFGS,  page,  size);
+            return Json(dic);
+        }
     }
 }
