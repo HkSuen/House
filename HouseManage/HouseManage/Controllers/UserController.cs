@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using House.IService.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace HouseManage.Controllers
 {
@@ -17,17 +18,18 @@ namespace HouseManage.Controllers
     public class UserController : Controller
     {
         private IUsersSvc _user = null;
+        private readonly UserManager<IdentityUser> _userManager;
+
         public UserController(IUsersSvc users)
         {
             this._user = users;
         }
 
+
         public ActionResult Register(string uid, string redirect)
         {
-            //ViewBag.UID = Request.Query["uid"].FirstOrDefault();
-            //ViewBag.REDIRECT = Request.Query["redirect"].FirstOrDefault();
-            ViewBag.UID = "ocRWVwrIhqMHJhnkT1otzdy6DgPc";
-            ViewBag.REDIRECT = "https://localhost:5001/MyShop/Payment";
+            ViewBag.UID = Request.Query["uid"].FirstOrDefault();
+            ViewBag.REDIRECT = Request.Query["redirect"].FirstOrDefault();
             return View();
         }
 

@@ -62,12 +62,13 @@
                 mui.toast('请选择用户类型!');
                 return;
             }
-            mui.showLoading("请稍后...", "div"); //加载文字和类型，plus环境中类型为div时强制以div方式显示
-            $.post("WXRegister", data, function (result) {
+            mui.showLoading("授权中...", "div"); //加载文字和类型，plus环境中类型为div时强制以div方式显示
+            $.post("WXRegister", data,function (result) {
                 mui.hideLoading();//隐藏后的回调函数
                 if (result.code == 1000) {
                     //redirect
                     mui.toast('绑定成功！');
+                    mui.showLoading("准备跳转...", "div"); 
                     window.location.href = jq("#url").val();
                     return;
                 }

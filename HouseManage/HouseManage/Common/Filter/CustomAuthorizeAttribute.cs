@@ -1,4 +1,7 @@
 ﻿using House.IService.Common;
+using House.IService.Model.Dto;
+using House.IService.Users;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,14 +20,16 @@ namespace HouseManage.Common.Filter
     public class CustomAuthorizeAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
         private readonly IWeiXinSingle _wx;
+        private readonly IUsersSvc _users;
         //private readonly IUser
 
-        public CustomAuthorizeAttribute(IWeiXinSingle wx)
+        public CustomAuthorizeAttribute(IWeiXinSingle wx,IUsersSvc users)
         {
             this._wx = wx;
+            this._users = users;
         }
 
-        public void OnAuthorization(AuthorizationFilterContext context)
+        public async void OnAuthorization(AuthorizationFilterContext context)
         {
             if (HasAllowAnonymous(context))
             {
@@ -32,11 +37,10 @@ namespace HouseManage.Common.Filter
             }
             else
             {
+                var openid = context.HttpContext.User.Identity.Name;
                 //1.访问界面的时候，校验是否登录过，这里后续补充Cookie验证或者其他验证。
                 //授权验证
-                var sessionState = this._wx.GetSession("OpenId");
-                var Authorized = !string.IsNullOrEmpty(sessionState);
-                if (!Authorized) //未授权
+                if (!context.HttpContext.User.Identity.IsAuthenticated) //未授权
                 {
                     var path = context.HttpContext.Request.Path;
                     var querString = context.HttpContext.Request.QueryString;
@@ -45,32 +49,34 @@ namespace HouseManage.Common.Filter
                     if (!string.IsNullOrEmpty(openId)) //opneId参数为空，
                     {
                         //3.检查openid是否被注册过，如果没有被注册过跳转Register注册界面。
-                        if (openId != "123123") //未注册
+                        UserDto userDto = this._users.FindUserByOpenId(openId);
+                        if (userDto == null || string.IsNullOrEmpty(userDto.PHONE)) //未注册
                         {
-                            context.HttpContext.Response.Redirect("/Home/Register?uid="+openId+"&redirect=" + path); //增加回调地址
+                            context.HttpContext.Response.Redirect("/User/Register?uid="+openId+"&redirect=" + path); //增加回调地址
                             return;
                         }
-                        //4.openid 注册过以后，增加登录授权。并增加确认对应的身份条件，并重新重定向到请求地址
+                        //4.openid 注册过以后，增加登录授权。
                         var ClaimsUser = new ClaimsPrincipal(new ClaimsIdentity(new[] 
                         { 
                             new Claim(ClaimTypes.Name, openId),
-                            new Claim(ClaimTypes.Role,"Admin")
+                            new Claim(ClaimTypes.Role,userDto.AUTHORITY)
                         },CookieAuthenticationDefaults.AuthenticationScheme));
-                        context.HttpContext.Authentication.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, ClaimsUser);
+                        await context.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, ClaimsUser);
                         context.HttpContext.User = ClaimsUser;
                     }
                     else
                     {
+                        //context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Forbidden); //OPENID为空直接拒绝访问
                         return;
                     }
                 }
-                var user = context.HttpContext.User;
-                var isAuthorized = user.Identity.IsAuthenticated;
-                if (!isAuthorized)
-                {
-                    context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Forbidden);
-                    return;
-                }
+                //var user = context.HttpContext.User;
+                //var isAuthorized = user.Identity.IsAuthenticated;
+                //if (!isAuthorized)
+                //{
+                //    context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Forbidden);
+                //    return;
+                //}
             }
         }
 

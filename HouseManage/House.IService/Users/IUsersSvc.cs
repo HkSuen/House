@@ -1,4 +1,5 @@
 ﻿using Data.MSSQL.Model.Data;
+using House.IService.Model.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -57,5 +58,12 @@ namespace House.IService.Users
         /// <param name="userinfo"></param>
         /// <returns></returns>
         bool UpdateUserInfo(ts_uidp_userinfo userinfo);
+
+        /// <summary>
+        /// 根据OPENID查询当期用户
+        /// </summary>
+        /// <param name="OpenId"></param>
+        /// <returns></returns>
+        UserDto FindUserByOpenId(string OpenId);
     }
 }

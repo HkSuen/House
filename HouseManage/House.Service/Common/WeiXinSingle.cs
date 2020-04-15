@@ -55,6 +55,12 @@ namespace House.Service.Common
             return null;
         }
 
+        /// <summary>
+        /// 已经修改其他的授权方式，Session已经不需要了。暂时弃用
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="val"></param>
+        [Obsolete]
         public void SetSession(string key,string val)
         {
             byte[] value = System.Text.Encoding.Default.GetBytes(val);
@@ -119,12 +125,12 @@ namespace House.Service.Common
         {
             string openid = "";
             var host1 = _httpContext.HttpContext.Request.Host.Value;
-            var host = "http://1608a827.ngrok.io"; //测试先写死
+            var host = "http://1402b84a.ngrok.io"; //测试先写死
             string url = host + _httpContext.HttpContext.Request.Path.Value;
             //string url = System.Web.HttpContext.Current.Request.Url.AbsoluteUri;//获取当前url
-            openid = GetSession("OpenId");
-            if (string.IsNullOrEmpty(openid))
-            {
+            //openid = GetSession("OpenId");
+            //if (string.IsNullOrEmpty(openid))
+            //{
                 //先要判断是否是获取code后跳转过来的
                 string code = ParamsQuery("code");
                 if (string.IsNullOrEmpty(code))
@@ -137,9 +143,9 @@ namespace House.Service.Common
                 {
                     string Code = ParamsQuery("code");
                     openid = GetOauthAccessOpenId(Code)?.openid;//重新取得用户的openid
-                    SetSession("OpenId", Code);
+                    //SetSession("OpenId", Code);
                 }
-            }
+            //}
             return openid;
         }
 

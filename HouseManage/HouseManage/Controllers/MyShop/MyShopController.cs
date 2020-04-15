@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.MyShop
 {
+    //[AllowAnonymous]
     public class MyShopController : Controller
     {
-        [AllowAnonymous]
         // GET: MyShop
         public ActionResult Payment()
         {
@@ -18,7 +18,6 @@ namespace HouseManage.Controllers.MyShop
         }
 
 
-        [AllowAnonymous]
         public ActionResult ShopDetail()
         {
             return View();
