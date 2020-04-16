@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.Merchants
 {
+    [AllowAnonymous]
     public class MerchantsController : Controller
     {
         private IMerchantSvc _machantSvc = null;
@@ -17,7 +18,7 @@ namespace HouseManage.Controllers.Merchants
         {
             this._machantSvc = machantSvc;
         }
-        [AllowAnonymous]
+        
         public IActionResult ShopInfos()
         {
             return View();
@@ -29,19 +30,37 @@ namespace HouseManage.Controllers.Merchants
             Dictionary<string, object> dic = _machantSvc.GetBaseData(model);
             return Json(dic);
         }
-        [AllowAnonymous]
+        
         [HttpGet]
         public IActionResult GetMerchantList(wy_houseinfo model)
         {
             Dictionary<string, object> dic = _machantSvc.GetMerchantList(model);
             return Json(dic);
         }
-        [AllowAnonymous]
+        
         [HttpGet]
         public IActionResult GetMerchantListByPage(string FWBH,int FWSX,string SSQY,string LSFGS,int page,int size )
         {
 
             Dictionary<string, object> dic = _machantSvc.GetMerchantListByPage( FWBH,  FWSX,  SSQY,  LSFGS,  page,  size);
+            return Json(dic);
+        }
+        [HttpGet]
+        public IActionResult GetMerchantListDetail(string FWID)
+        {
+            ViewBag.FWID = FWID;
+            return View();
+        }
+        [HttpGet]
+        public IActionResult GetMerchantListHouseDetail(string FWID)
+        {
+            Dictionary<string, object> dic = _machantSvc.GetMerchantListHouseDetail(FWID);
+            return  Json(dic);
+        }
+        [HttpGet]
+        public IActionResult GetMerchantListShopDetail(string FWID)
+        {
+            Dictionary<string, object> dic = _machantSvc.GetMerchantListShopDetail(FWID);
             return Json(dic);
         }
     }
