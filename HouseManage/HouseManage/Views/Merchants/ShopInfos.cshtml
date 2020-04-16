@@ -34,16 +34,16 @@
                         <input id="txt_housecompanycode" style="display:none" type="text" />
                     </div>
                     <div style="text-align:center">
-                        <button type="button" id="btn_query" class="mui-btn mui-btn-success" onclick="close();">查询</button>
+                        <button type="button" id="btn_query" class="mui-btn mui-btn-success" >查询</button>
                         <button type="button" id="btn_clear" class="mui-btn mui-btn-success" onclick="textClear();">重置</button>
                     </div>
                 </div>
             </li>
         </ul>
         <div style="text-align:center;font-size:13px">
-            <a herf="#" id="a_green"><img src="/img/green.jpg" class="img_color" />&nbsp;已出售(0)</a>&nbsp;&nbsp;&nbsp;
-            <a herf="#" id="a_gray"><img src="/img/gray.jpg" class="img_color" />&nbsp;未使用(0)</a>&nbsp;&nbsp;&nbsp;
-            <a herf="#" id="a_yellow"><img src="/img/yellow.jpg" class="img_color" />&nbsp;已出租(0)</a>
+            <a herf="#" id="a_green"><img src="/img/green.jpg" class="img_color" />&nbsp;已出售(<span id="s_green">0</span>)</a>&nbsp;&nbsp;&nbsp;
+            <a herf="#" id="a_gray"><img src="/img/gray.jpg" class="img_color" />&nbsp;未使用(<span id="s_gray">0</span>)</a>&nbsp;&nbsp;&nbsp;
+            <a herf="#" id="a_yellow"><img src="/img/yellow.jpg" class="img_color" />&nbsp;已出租(<span id="s_yellow">0</span>)</a>
         </div>
         <!--数据列表-->
         <ul id="list_ul" class="mui-table-view mui-table-view-chevron"></ul>
@@ -79,14 +79,24 @@
             CompanyClick();//点击响应逻辑
         });
         jq("#btn_query").on("tap", function () {
-            //getData()
+            pulldownRefresh();
 
         });
         jq("#btn_clear").on("tap", function () {
             textClear();
         });
+        mui("#list_ul").on('tap', 'li', function (event) {
+            var fwid = this.firstChild.getAttribute("fwid")
+            window.location.href = "/Merchants/GetMerchantListDetail?FWID=" + fwid;
+        });
     })(mui);
 
+    function setSpan(gray, green, yellow) {
+
+        $("#s_green").text(green);
+        $("#s_gray").text(gray);
+        $("#s_yellow").text(yellow);
+    }
     function getData() {
         $("#txt_housesxcode").val(-1);
         $.get('/Merchants/GetBaseData', { areaCode: 'SSQY', companyCode: 'LSFGS' }, function (data) {
@@ -100,7 +110,7 @@
 
     }
     function Query() {
-
+        pulldownRefresh();
     }
     function textClear() {
         jq("#txt_housesx").val('');
@@ -150,15 +160,11 @@
             //return false;
         });
     }
-    function getList() {
-
-    }
-
     /**
              * 下拉刷新具体业务实现
              */
     function pulldownRefresh() {
-       
+        mui.showLoading("请稍后。。。","div");
         setTimeout(function () {
             addData();
             mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
@@ -174,9 +180,10 @@
         var txtFWSX = $("#txt_housesxcode").val();
         var txtSSQY = $("#txt_houseareacode").val();
         var txtLSFGS = $("#txt_housecompanycode").val();
-        $.get('/Merchants/GetMerchantList', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS}, function (data) {
+        $.get('/Merchants/GetMerchantList', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS }, function (data) {
+            mui.hideLoading();
             if (data) {
-                
+                setSpan(data.grayCount, data.greenCount, data.yellowCount);
                 var table = document.body.querySelector('#list_ul');
                 var cells = document.body.querySelectorAll('.mui-table-view-cell');
 
@@ -188,17 +195,34 @@
                     var li = document.createElement('li');
                     li.className = 'mui-table-view-cell';
                     //li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
-                    li.innerHTML = '<a class="mui-navigate-right"><img style="width:15px;height:10px;" src="/img/gray.jpg" />&nbsp;' + data.list[i].FWMC + '</a>';
+                    if (data.list[i].FWSX == 0) {
+                        li.innerHTML = '<div class="mui-navigate-right" fwid="' + data.list[i].FWID + '"><img style="width:15px;height:10px;" src="/img/gray.jpg" />&nbsp;' + data.list[i].FWMC + '</div>';
+                    }
+                    else if (data.list[i].FWSX == 1) {
+                        li.innerHTML = '<div class="mui-navigate-right" fwid="' + data.list[i].FWID + '"><img style="width:15px;height:10px;" src="/img/yellow.jpg" />&nbsp;' + data.list[i].FWMC + '</div>';
+                    }
+                    else if (data.list[i].FWSX == 2) {
+                        li.innerHTML = '<div class="mui-navigate-right" fwid="' + data.list[i].FWID + '"><img style="width:15px;height:10px;" src="/img/green.jpg" />&nbsp;' + data.list[i].FWMC + '</div>';
+                    }
+                    else {
+                        li.innerHTML = '<div class="mui-navigate-right" fwid="' + data.list[i].FWID + '">&nbsp;&nbsp;&nbsp;' + data.list[i].FWMC + '</div>';
+                    }
                     //下拉刷新，新纪录插到最前面；
                     table.appendChild(li);
                 }
-           }
+            }
+            mui('#pullrefresh').pullRefresh().disablePullupToRefresh(); // 关闭显示更多的提示
+            setTimeout(function () {
+                mui('#pullrefresh').pullRefresh().enablePullupToRefresh();
+                mui('#pullrefresh').pullRefresh().endPullupToRefresh();
+            }, 1000)       //设置1s后执行(需要大于1s)不然就会自动执行一次加载.
         }, 'json');
         
     }
     var count = 2;
-    var Page = 1, Size = 5;
+    var Page = 1, Size = 20;
     function pullupRefresh() {
+        mui.showLoading("请稍后。。。", "div");
         setTimeout(function () {
             mui('#pullrefresh').pullRefresh().endPullupToRefresh((count < 2)); //参数为true代表没有更多数据了。
             var txtFWBH = $("#txt_housecode").val();
@@ -206,8 +230,10 @@
             var txtSSQY = $("#txt_houseareacode").val();
             var txtLSFGS = $("#txt_housecompanycode").val();
 
-            $.get('/Merchants/GetMerchantListByPage', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS,page:Page,size:Size }, function (data) {
+            $.get('/Merchants/GetMerchantListByPage', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS, page: Page, size: Size }, function (data) {
+                mui.hideLoading();
                 if (data) {
+                    setSpan(data.grayCount, data.greenCount, data.yellowCount);
                     if (!data.list.length||data.list.length<count) {
                         count = 1;
                     }
@@ -217,8 +243,19 @@
                     for (var i = 0; i < data.list.length; i++) {
                         var li = document.createElement('li');
                         li.className = 'mui-table-view-cell';
-                        //li.innerHTML = '<a class="mui-navigate-right">Item ' + (i + 1) + '</a>';
-                        li.innerHTML = '<a class="mui-navigate-right"><img style="width:15px;height:10px;" src="/img/gray.jpg" />&nbsp;' + data.list[i].FWMC + '</a>';
+
+                        if (data.list[i].FWSX == 0) {
+                            li.innerHTML = '<div class="mui-navigate-right" fwid="'+ data.list[i].FWID +'"><img style="width:15px;height:10px;" src="/img/gray.jpg" >&nbsp;' + data.list[i].FWMC + '</div>';
+                        }
+                        else if (data.list[i].FWSX == 1) {
+                            li.innerHTML = '<div class="mui-navigate-right" fwid="' + data.list[i].FWID + '"><img style="width:15px;height:10px;" src="/img/yellow.jpg" >&nbsp;' + data.list[i].FWMC + '</div>';
+                        }
+                        else if (data.list[i].FWSX == 2) {
+                            li.innerHTML = '<div class="mui-navigate-right" fwid="' + data.list[i].FWID + '"><img style="width:15px;height:10px;" src="/img/green.jpg" >&nbsp;' + data.list[i].FWMC + '</div>';
+                        }
+                        else {
+                            li.innerHTML = '<div class="mui-navigate-right">&nbsp;&nbsp;&nbsp;' + data.list[i].FWMC + '</div>';
+                        }
                         //下拉刷新，新纪录插到最前面；
                         table.appendChild(li);
                     }
@@ -232,5 +269,9 @@
     .img_color {
       width:17px;
       height:13px;
+    }
+    /*隐藏google touch事件错误*/
+    * {
+        touch-action: none;
     }
 </style>
