@@ -1,15 +1,286 @@
-﻿@{
-    ViewData["Title"] = "商户";
+﻿
+@{
+    ViewData["Title"] = "商户信息主页";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
+@*<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">商户信息</h1>
+</header>*@
+<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+    <div class="mui-scroll">
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell mui-collapse">
+                <a class="mui-navigate-right" href="#">筛选条件</a>
+                <div class="mui-collapse-content">
+                    <div class="mui-input-row">
+                        <label>商户姓名</label>
+                        <input id="txt_shopinfo" type="text" class="mui-input-clear" placeholder="请输入商户姓名">
+                    </div>
+                    <div class="mui-input-row">
+                        <label>房屋属性</label>
+                        <input id="txt_housesx" type="text" class="mui-input-clear" placeholder="请选择房屋属性">
+                        <input id="txt_housesxcode" style="display:none" type="text" />
+                    </div>
+                    <div class="mui-input-row">
+                        <label>区域</label>
+                        <input id="txt_housearea" type="text" class="mui-input-clear" placeholder="请选择区域">
+                        <input id="txt_houseareacode" style="display:none" type="text" />
+                    </div>
+                    <div class="mui-input-row">
+                        <label>隶属公司</label>
+                        <input id="txt_housecompany" type="text" class="mui-input-clear" placeholder="请选择隶属分公司">
+                        <input id="txt_housecompanycode" style="display:none" type="text" />
+                    </div>
+                    <div style="text-align:center">
+                        <button type="button" id="btn_query" class="mui-btn mui-btn-success">查询</button>
+                        <button type="button" id="btn_clear" class="mui-btn mui-btn-success" onclick="textClear();">重置</button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        
+        <!--数据列表-->
+        <ul id="list_ul" class="mui-table-view">
+            @*<li class="mui-table-view-cell">
+                <div class="mui-row">
+                    <div class="mui-col-sm-8 mui-col-xs-8">
+                        空港商
+                    </div>
+                    <div class="mui-col-sm-4 mui-col-xs-4 fwsx">
+                        <div>出租</div>
+                    </div>
+                </div>
+                <div class="mui-row">
+                    <div class="mui-col-sm-5 mui-col-xs-5" >
+                       <p class="oFlow"> 空港商务园8-102</p>
+                    </div>
+                    <div class="mui-col-sm-7 mui-col-xs-7 fwsx oFlow">
+                        <p style="font-size:8px">2020-02-02~2020-05-06</p>
+                    </div>
+                </div>
+            </li>*@
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    jq = $;
+    var dataArea = [], dataCompany = [];
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>MerchantInfo</title>
-</head>
-<body>
-</body>
-</html>
+    (function ($) {
+        $.init({
+            pullRefresh: {
+                container: '#pullrefresh',
+                down: {
+                    style: 'circle',
+                    callback: pulldownRefresh
+                },
+                up: {
+                    auto: true,
+                    contentrefresh: '正在加载...',
+                    callback: pullupRefresh
+                }
+            }
+        });
+        getData();
+        jq("#txt_housesx").on("tap", function () {
+            HouseSxClick();//点击响应逻辑
+        });
+        jq("#txt_housearea").on("tap", function () {
+            AreaClick();//点击响应逻辑
+        });
+        jq("#txt_housecompany").on("tap", function () {
+            CompanyClick();//点击响应逻辑
+        });
+        jq("#btn_query").on("tap", function () {
+            pulldownRefresh();
+
+        });
+        jq("#btn_clear").on("tap", function () {
+            textClear();
+        });
+        mui("#list_ul").on('tap', 'li', function (event) {
+            var fwid = this.firstChild.getAttribute("fwid");
+            var shopid = this.firstChild.getAttribute("shopid");
+            window.location.href = "/Merchants/MerchantShopInfoListDetail?FWID=" + fwid + '&CZ_SHID=' + shopid;
+        });
+    })(mui);
+    
+    function getData() {
+        $("#txt_housesxcode").val(-1);
+        $.get('/Merchants/GetBaseData', { areaCode: 'SSQY', companyCode: 'LSFGS' }, function (data) {
+            if (data) {
+                dataArea = data.areaList;
+                dataCompany = data.companyList;
+            }
+        }, 'json');
+    }
+    function close() {
+
+    }
+    function Query() {
+        pulldownRefresh();
+    }
+    function textClear() {
+        jq("#txt_housesx").val('');
+        jq("#txt_housesxcode").val(-1);
+        jq("#txt_housearea").val('');
+        jq("#txt_houseareacode").val('');
+        jq("#txt_housecompany").val('');
+        jq("#txt_housecompanycode").val('');
+        jq("#txt_shopinfo").val('');
+    }
+    function HouseSxClick() {
+        var userPickerSX = new mui.PopPicker();
+        userPickerSX.setData([ {
+            value: 1,
+            text: '出租'
+        }, {
+            value: 2,
+            text: '出售'
+        },]);
+        userPickerSX.show(function (items) {
+            $('#txt_housesx').val(items[0].text);
+            $('#txt_housesxcode').val(items[0].value);
+            //返回 false 可以阻止选择框的关闭
+            //return false;
+        });
+    }
+    function AreaClick() {
+        var userPickerArea = new mui.PopPicker();
+        userPickerArea.setData(dataArea);
+        userPickerArea.show(function (items) {
+            $('#txt_housearea').val(items[0].text);
+            $('#txt_houseareacode').val(items[0].value);
+            //返回 false 可以阻止选择框的关闭
+            //return false;
+        });
+    }
+    function CompanyClick() {
+        var userPickerCompany = new mui.PopPicker();
+        userPickerCompany.setData(dataCompany);
+        userPickerCompany.show(function (items) {
+            $('#txt_housecompany').val(items[0].text);
+            $('#txt_housecompanycode').val(items[0].value);
+            //返回 false 可以阻止选择框的关闭
+            //return false;
+        });
+    }
+    /**
+             * 下拉刷新具体业务实现
+             */
+    function pulldownRefresh() {
+        mui.showLoading("请稍后。。。","div");
+        setTimeout(function () {
+            addData();
+            mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+            mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+            //mui('#pullrefresh').pullRefresh().refresh(true);
+            //mui('#pullrefresh').pullRefresh().enablePullupToRefresh();
+        }, 1500);
+    }
+    function addData() {
+        Page = 2;
+        count = 2;
+        var txtShopName = $("#txt_shopinfo").val();
+        var txtFWSX = $("#txt_housesxcode").val();
+        var txtSSQY = $("#txt_houseareacode").val();
+        var txtLSFGS = $("#txt_housecompanycode").val();
+        $.get('/Merchants/GetShopInfoList', { ShopName: txtShopName, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS }, function (data) {
+            mui.hideLoading();
+            if (data) {
+                var table = document.body.querySelector('#list_ul');
+                var cells = document.body.querySelectorAll('.mui-table-view-cell');
+
+                var childs = table.childNodes;
+                for (var i = childs.length - 1; i >= 0; i--) {
+                    table.removeChild(childs[i]);
+                }
+                for (var i = 0; i < data.list.length; i++) {
+                    var li = document.createElement('li');
+                    li.className = 'mui-table-view-cell';
+                   
+                    var li_html = '<div class="mui-row" fwid="' + data.list[i].FWID + '" shopid="' + data.list[i].CZ_SHID +'"><div class="mui-col-sm-8 mui-col-xs-8">' + data.list[i].ZHXM + ' </div> <div class="mui-col-sm-4 mui-col-xs-4 fwsx"><div>'
+                        + data.list[i].FWSX + '</div></div></div> <div class="mui-row"> <div class="mui-row"><div class="mui-col-sm-5 mui-col-xs-5" > <p class="oFlow"> '
+                        + data.list[i].FWMC + '</p></div><div class="mui-col-sm-7 mui-col-xs-7 fwsx oFlow"> <p style="font-size:8px">';
+                    var li_html2 = '';
+                    if (data.list[i].ZLKSSJ != null) {
+                        li_html2 = data.list[i].ZLKSSJ.substring(0, 10) + '~' + data.list[i].ZLZZSJ.substring(0, 10);
+                    }
+                    var li_html3 = '</p></div></div>';
+
+                    li.innerHTML = li_html + li_html2 + li_html3;
+                    //下拉刷新，新纪录插到最前面；
+                    table.appendChild(li);
+                }
+            }
+            mui('#pullrefresh').pullRefresh().disablePullupToRefresh(); // 关闭显示更多的提示
+            setTimeout(function () {
+                mui('#pullrefresh').pullRefresh().enablePullupToRefresh();
+                mui('#pullrefresh').pullRefresh().endPullupToRefresh();
+            }, 1000)       //设置1s后执行(需要大于1s)不然就会自动执行一次加载.
+        }, 'json');
+
+    }
+    var count = 2;
+    var Page = 1, Size = 20;
+    function pullupRefresh() {
+        mui.showLoading("请稍后。。。", "div");
+        setTimeout(function () {
+            mui('#pullrefresh').pullRefresh().endPullupToRefresh((count < 2)); //参数为true代表没有更多数据了。
+            var txtShopName = $("#txt_shopinfo").val();
+            var txtFWSX = $("#txt_housesxcode").val();
+            var txtSSQY = $("#txt_houseareacode").val();
+            var txtLSFGS = $("#txt_housecompanycode").val();
+
+            $.get('/Merchants/GetShopInfoListByPage', { ShopName: txtShopName, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS, page: Page, size: Size }, function (data) {
+                mui.hideLoading();
+                if (data) {
+                    if (!data.list.length||data.list.length<count) {
+                        count = 1;
+                    }
+                    Page++;
+                    var table = document.body.querySelector('#list_ul');
+
+                    for (var i = 0; i < data.list.length; i++) {
+                        var li = document.createElement('li');
+                        li.className = 'mui-table-view-cell';
+                        var li_html = '<div class="mui-row" fwid="' + data.list[i].FWID + '" shopid="' + data.list[i].CZ_SHID +'"><div class="mui-col-sm-8 mui-col-xs-8">' + data.list[i].ZHXM + ' </div> <div class="mui-col-sm-4 mui-col-xs-4 fwsx"><div>'
+                            + data.list[i].FWSX + '</div></div></div> <div class="mui-row"> <div class="mui-row"><div class="mui-col-sm-5 mui-col-xs-5" > <p class="oFlow"> '
+                            + data.list[i].FWMC + '</p></div><div class="mui-col-sm-7 mui-col-xs-7 fwsx oFlow"> <p style="font-size:8px">';
+                        var li_html2 = '';
+                        if (data.list[i].ZLKSSJ != null) {
+                            li_html2 = data.list[i].ZLKSSJ.substring(0, 10) + '~' + data.list[i].ZLZZSJ.substring(0, 10);
+                        }
+                        var li_html3 = '</p></div></div>';
+
+                        li.innerHTML = li_html+li_html2+li_html3;
+                        //下拉刷新，新纪录插到最前面；
+                        table.appendChild(li);
+                    }
+                }
+            }, 'json');
+
+        }, 1500);
+    }
+</script>
+<style type="text/css">
+    .img_color {
+        width: 17px;
+        height: 13px;
+    }
+    /*隐藏google touch事件错误*/
+    * {
+        touch-action: none;
+    }
+    .oFlow {
+       
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .fwsx {
+        text-align:right;
+    }
+</style>

@@ -18,7 +18,13 @@ namespace HouseManage.Controllers.Merchants
         {
             this._machantSvc = machantSvc;
         }
-        
+        #region 商铺信息
+
+      
+        /// <summary>
+        /// 商铺信息主页
+        /// </summary>
+        /// <returns></returns>
         public IActionResult ShopInfos()
         {
             return View();
@@ -63,5 +69,50 @@ namespace HouseManage.Controllers.Merchants
             Dictionary<string, object> dic = _machantSvc.GetMerchantListShopDetail(FWID);
             return Json(dic);
         }
+        #endregion
+        #region 商户信息
+
+        
+        /// <summary>
+        /// 商户信息主页
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult MerchantInfo() {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult GetShopInfoListByPage(string ShopName, int FWSX, string SSQY, string LSFGS, int page, int size)
+        {
+
+            Dictionary<string, object> dic = _machantSvc.GetShopInfoListByPage(ShopName, FWSX, SSQY, LSFGS, page, size);
+            return Json(dic);
+        }
+        [HttpGet]
+        public IActionResult GetShopInfoList(string ShopName, int FWSX, string SSQY, string LSFGS)
+        {
+
+            Dictionary<string, object> dic = _machantSvc.GetShopInfoList(ShopName, FWSX, SSQY, LSFGS);
+            return Json(dic);
+        }
+        [HttpGet]
+        public IActionResult GetMerchantShopInfoListDetail(string FWID, string CZ_SHID)
+        {
+            Dictionary<string, object> dic = _machantSvc.GetMerchantShopInfoListDetail(FWID,CZ_SHID);
+            return Json(dic);
+        }
+        [HttpGet]
+        public IActionResult MerchantShopInfoListDetail(string FWID, string CZ_SHID) {
+            ViewBag.FWID = FWID;
+            ViewBag.CZ_SHID = CZ_SHID;
+            return View();
+        }
+        [HttpGet]
+        public IActionResult GetMerchantShopJiaoFeiList(string FWID, string CZ_SHID)
+        {
+            Dictionary<string, object> dic = _machantSvc.GetMerchantShopJiaoFeiList(FWID, CZ_SHID);
+            return Json(dic);
+        }
+        
+        #endregion
     }
 }

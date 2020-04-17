@@ -200,5 +200,135 @@ namespace House.Service.Merchants
             }
             return dic;
         }
+        #region 商户查询
+
+       
+        public Dictionary<string, object> GetShopInfoListByPage(string ShopName, int FWSX, string SSQY, string LSFGS, int page, int size)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            try
+            {
+                var obj = _Db.Db().Queryable<wy_houseinfo, wy_shopinfo,wy_leasinginfo>((a, b,c) => new object[]{
+                     JoinType.Inner,a.CZ_SHID==b.CZ_SHID,
+                     JoinType.Left,b.LEASE_ID==c.LEASE_ID
+                }).WhereIF(!string.IsNullOrWhiteSpace(ShopName),(a,b)=>b.ZHXM.Contains(ShopName))
+                .WhereIF(FWSX>0, (a, b) => a.FWSX==FWSX)
+                .WhereIF(!string.IsNullOrWhiteSpace(SSQY), (a, b) => a.SSQY==SSQY)
+                .WhereIF(!string.IsNullOrWhiteSpace(LSFGS), (a, b) => a.LSFGS==LSFGS)
+                .Select((a, b,c) => new {
+                   a.FWMC,a.ZLWZ,b.CZ_SHID,b.ZHXM,a.FWID,
+                   FWSX=a.FWSX==1?"出租":"出售",
+                    ZLKSSJ=c.ZLKSSJ,
+                    ZLZZSJ= c.ZLZZSJ
+                }).OrderBy(a=>a.FWMC).Skip((page - 1) * size).Take(size).ToList();
+                dic.Add("list", obj);
+            }
+            catch (Exception ex)
+            {
+                dic.Add("list", null);
+            }
+            return dic;
+        }
+        public Dictionary<string, object> GetShopInfoList(string ShopName, int FWSX, string SSQY, string LSFGS)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            try
+            {
+                var obj = _Db.Db().Queryable<wy_houseinfo, wy_shopinfo,wy_leasinginfo>((a, b,c) => new object[]{
+                     JoinType.Inner,a.CZ_SHID==b.CZ_SHID,
+                      JoinType.Left,b.LEASE_ID==c.LEASE_ID
+                }).WhereIF(!string.IsNullOrWhiteSpace(ShopName), (a, b) => b.ZHXM.Contains(ShopName))
+                .WhereIF(FWSX > 0, (a, b) => a.FWSX == FWSX)
+                .WhereIF(!string.IsNullOrWhiteSpace(SSQY), (a, b) => a.SSQY == SSQY)
+                .WhereIF(!string.IsNullOrWhiteSpace(LSFGS), (a, b) => a.LSFGS == LSFGS)
+                .Select((a, b,c) => new {
+                    a.FWMC,
+                    a.ZLWZ,
+                    b.CZ_SHID,
+                    b.ZHXM,
+                    a.FWID,
+                    FWSX = a.FWSX == 1 ? "出租" : "出售",
+                    c.ZLKSSJ,
+                    c.ZLZZSJ
+                }).OrderBy(a => a.FWMC).ToList();
+                dic.Add("list", obj);
+            }
+            catch (Exception ex)
+            {
+                dic.Add("list", null);
+            }
+            return dic;
+        }
+        /// <summary>
+        /// 商户详情页
+        /// </summary>
+        /// <param name="FWID"></param>
+        /// <param name="CZ_SHID"></param>
+        /// <returns></returns>
+        public Dictionary<string, object> GetMerchantShopInfoListDetail(string FWID,string CZ_SHID)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            try
+            {
+                var obj = _Db.Db().Queryable<wy_houseinfo, wy_shopinfo, wy_shopinfo>((a, b, c) => new object[]{
+                     JoinType.Inner,a.CZ_SHID==b.CZ_SHID,
+                     JoinType.Left,b.SUBLET_ID==c.CZ_SHID
+
+                }).Where(a => a.FWID == FWID).Select((a, b, c) => new {
+                    a.FWMC,
+                    a.ZLWZ,
+                    FWSX = a.FWSX == 1 ? "出租" : "出售",
+                    b.JYNR,
+                    YZ_ZHXM = b.ZHXM,
+                    YZ_ZHXB = b.ZHXB,
+                    YZ_TELL = b.MOBILE_PHONE,
+                    YZ_ISSBLET = b.IS_SUBLET,
+                    YZ_MOBILE = b.TELEPHONE,
+                    YZ_EMAIL = b.E_MAIL,
+                    YZ_JYNR = b.JYNR
+                    ,
+                    Z_ZHXM = b.IS_SUBLET == 1 ? c.ZHXM : c.ZHXM,
+                    Z_ZHXB = b.IS_SUBLET == 1 ? c.ZHXB : c.ZHXB,
+                    Z_YZ_TELL = b.IS_SUBLET == 1 ? c.MOBILE_PHONE : c.MOBILE_PHONE,
+                    Z_ISSBLET = b.IS_SUBLET == 1 ? c.IS_SUBLET : c.IS_SUBLET,
+                    Z_MOBILE = b.IS_SUBLET == 1 ? c.TELEPHONE : c.TELEPHONE,
+                    Z_ZEMAIL = b.IS_SUBLET == 1 ? c.E_MAIL : c.E_MAIL,
+                    Z_JYNR = b.IS_SUBLET == 1 ? c.JYNR : c.JYNR
+                }).First();
+                dic.Add("list", obj);
+            }
+            catch (Exception ex)
+            {
+                dic.Add("list", null);
+                return dic;
+            }
+            return dic;
+        }
+        
+        public Dictionary<string, object> GetMerchantShopJiaoFeiList(string FWID, string CZ_SHID)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            try
+            {
+                var obj = _Db.Db().Queryable<wy_houseinfo, wy_shopinfo, wy_shopinfo>((a, b, c) => new object[]{
+                     JoinType.Inner,a.CZ_SHID==b.CZ_SHID,
+                     JoinType.Left,b.SUBLET_ID==c.CZ_SHID
+
+                }).Where(a => a.FWID == FWID).Select((a, b, c) => new {
+                    a.FWMC,
+                    a.ZLWZ,
+                    FWSX = a.FWSX == 1 ? "出租" : "出售",
+                    b.JYNR,
+                }).First();
+                dic.Add("list", obj);
+            }
+            catch (Exception ex)
+            {
+                dic.Add("list", null);
+                return dic;
+            }
+            return dic;
+        }
+        #endregion
     }
 }

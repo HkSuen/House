@@ -15,5 +15,9 @@ namespace House.IService.Merchants
         Dictionary<string, object> GetMerchantListHouseDetail(string FWID);
 
         Dictionary<string, object> GetMerchantListShopDetail(string FWID);
+        Dictionary<string, object> GetShopInfoListByPage(string ShopName, int FWSX, string SSQY, string LSFGS, int page, int size);
+        Dictionary<string, object> GetShopInfoList(string ShopName, int FWSX, string SSQY, string LSFGS);
+        Dictionary<string, object> GetMerchantShopInfoListDetail(string FWID, string CZ_SHID); 
+        Dictionary<string, object> GetMerchantShopJiaoFeiList(string FWID, string CZ_SHID); 
     }
 }
