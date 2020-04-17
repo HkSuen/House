@@ -93,7 +93,7 @@ namespace House.Service.Users
         public bool UpdateShopInfo(wy_shopinfo shopinfo)
         {
             return UpdateInfo<wy_shopinfo>(shopinfo,
-                c => new { c.WX_OPEN_ID, c.MOBILE_PHONE },
+                c => new { c.OPEN_ID, c.MOBILE_PHONE },
                 c => new { c.MOBILE_PHONE }) > 0;
         }
 
@@ -124,7 +124,7 @@ namespace House.Service.Users
         {
             string Sql = @"SELECT *  FROM (SELECT PHONE_MOBILE AS PHONE,WX_OPEN_ID AS OPENID, 'Admin' AS 'AUTHORITY' FROM ts_uidp_userinfo
                             UNION
-                            SELECT MOBILE_PHONE AS PHONE,WX_OPEN_ID AS OPENID,'Merchant' AS 'AUTHORITY' FROM wy_shopinfo
+                            SELECT MOBILE_PHONE AS PHONE,OPEN_ID AS OPENID,'Merchant' AS 'AUTHORITY' FROM wy_shopinfo
                             UNION
                             SELECT MOBILE AS PHONE,WX_OPEN_ID AS OPENID,'Inspector' AS 'AUTHORITY' FROM wy_region_director) AS uModel
                             WHERE OPENID =  @OpenId";

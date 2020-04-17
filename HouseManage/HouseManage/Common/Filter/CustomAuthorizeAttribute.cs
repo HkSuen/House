@@ -37,7 +37,6 @@ namespace HouseManage.Common.Filter
             }
             else
             {
-                var openid = context.HttpContext.User.Identity.Name;
                 //1.访问界面的时候，校验是否登录过，这里后续补充Cookie验证或者其他验证。
                 //授权验证
                 if (!context.HttpContext.User.Identity.IsAuthenticated) //未授权
@@ -52,7 +51,7 @@ namespace HouseManage.Common.Filter
                         UserDto userDto = this._users.FindUserByOpenId(openId);
                         if (userDto == null || string.IsNullOrEmpty(userDto.PHONE)) //未注册
                         {
-                            context.HttpContext.Response.Redirect("/User/Register?uid="+openId+"&redirect=" + path); //增加回调地址
+                            context.HttpContext.Response.Redirect("/User/Register?uid="+openId+"&redirect=" + path + querString); //增加回调地址
                             return;
                         }
                         //4.openid 注册过以后，增加登录授权。

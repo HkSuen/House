@@ -18,7 +18,6 @@ namespace HouseManage.Controllers
     public class UserController : Controller
     {
         private IUsersSvc _user = null;
-        private readonly UserManager<IdentityUser> _userManager;
 
         public UserController(IUsersSvc users)
         {

@@ -7,13 +7,14 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Hello MUI</title>
+    <title>缴费管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="stylesheet" href="~/css/mui.min.css">
     <link rel="stylesheet" href="~/css/mui.picker.css">
     <link rel="stylesheet" href="~/css/mui.poppicker.css">
+    <link href="~/css/mui.loading.css" rel="stylesheet" />
     <script src="~/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <style type="text/css">
         /*隐藏google touch事件错误*/
@@ -62,8 +63,8 @@
         }
 
         #scroll2 .flleft > div:last-child {
-            padding-top:5px;
-            color:darkgray;
+            padding-top: 5px;
+            color: darkgray;
         }
 
         .font12 {
@@ -178,14 +179,14 @@
         <div class="mui-card">
             <div style="padding: 10px 10px;">
                 <div id="segmentedControl" class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-primary">
-                    <a class="mui-control-item mui-active" href="#item1">缴费提醒</a>
-                    <a class="mui-control-item" href="#item3">缴费记录</a>
+                    <a class="mui-control-item mui-active" href="#item1" url="PayReminder">缴费提醒</a>
+                    <a class="mui-control-item" href="#item3" url="PayOrders">缴费记录</a>
                 </div>
             </div>
             <div class="mui-slider-group">
                 <div id="item1" class="mui-control-content mui-active">
                     <div id="scroll1" class="mui-scroll-wrapper">
-                        <div class="mui-scroll">
+                        <div class="mui-scroll" id="scroll_1">
                             <ul class="mui-table-view">
                                 <li class="mui-table-view-cell flleft">
                                     <div class="mui-col-sm-6 mui-col-xs-6">
@@ -193,28 +194,6 @@
                                             9月21日应缴（元）
                                         </div>
                                         <div class="mui-col-sm-12 mui-col-xs-12">
-                                            7859.00
-                                        </div>
-                                    </div>
-                                    <div class="mui-col-sm-2 mui-col-xs-2 font12">
-                                        物业费
-                                    </div>
-                                    <div class="mui-col-sm-4 mui-col-xs-4">
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            还剩21天缴费
-                                        </div>
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            <button type="button" class="mui-btn mui-btn-primary">去支付</button>
-                                            @*<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined">详情</button>*@
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="mui-table-view-cell flleft">
-                                    <div class="mui-col-sm-6 mui-col-xs-6">
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            9月21日应缴（元）
-                                        </div>
-                                        <div class="mui-col-sm-12 mui-col-xs-12 ">
                                             7859.00
                                         </div>
                                     </div>
@@ -236,8 +215,8 @@
                     </div>
                 </div>
                 <div id="item3" class="mui-control-content">
-                    <div id="scroll2" class="mui-scroll-wrapper " >
-                        <div class="mui-scroll">
+                    <div id="scroll2" class="mui-scroll-wrapper ">
+                        <div class="mui-scroll" id="scroll2_1">
                             <ul class="mui-table-view">
                                 <li class="mui-table-view-cell flleft">
                                     <div class="mui-col-sm-9 mui-col-xs-9">
@@ -259,11 +238,13 @@
             </div>
         </div>
     </div>
-    <script src="../js/mui.min.js"></script>
-    <script src="../js/mui.picker.js"></script>
-    <script src="../js/mui.poppicker.js"></script>
-    <script src="../js/mui.pullToRefresh.js"></script>
-    <script src="../js/mui.pullToRefresh.material.js"></script>
+    <script src="~/js/stringFormat.js"></script>
+    <script src="~/js/mui.min.js"></script>
+    <script src="~/js/mui.picker.js"></script>
+    <script src="~/js/mui.poppicker.js"></script>
+    <script src="~/js/mui.pullToRefresh.js"></script>
+    <script src="~/js/mui.pullToRefresh.material.js"></script>
+    <script src="~/js/mui.loading.js"></script>
     <script>
         jq = $;
         var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
@@ -290,55 +271,206 @@
                 picker.show(function (selectItems) {
                     //赋值筛选条件
                     jq(this).val(selectItems[0].text);
+                    conditions.Conditions.feeType = selectItems[0].value;
+                    downLoad();
                 }.bind(this))
             })
             //加载picker数据
-            $.post("demo_ajax_gethint.html", { suggest: null }, function (result) {
-                var list = null;
-                picker.setData(list);
+            var infos = [];
+            $.post("TypesFee", { suggest: null }, function (result) {
+                infos = [{ text: "全部", value: "-1" }];
+                jq.each(result, function (idx, val) {
+                    infos.push({ text: idx, value: val });
+                });
+                picker.setData(infos);
+                jq("#inputNum").val(infos[0].text);
+                conditions.Conditions.feeType = infos[0].value;
             });
+            var getType = function (value) {
+                var data = infos.filter(function (val) { return val.value == value });
+                if (data.length > 0) {
+                    return data[0].text;
+                }
+                return "不明类型";
+            }
+            var dayOffset = function datedifference(sDate1, sDate2) {
+                    var dateSpan,
+                        tempDate,
+                        iDays;
+                    sDate1 = Date.parse(sDate1);
+                    sDate2 = Date.parse(sDate2);
+                    dateSpan = sDate2 - sDate1;
+                    dateSpan = Math.abs(dateSpan);
+                    iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+                    return iDays
+                };
+            var getDate = function (time) {
+                var time = new Date(time);
+                return (time.getMonth() + 1).toString() + "月" + time.getDate().toString() + "日";
+            }
+            var getDay = function (time) { // 相差天数
+                var time = new Date(time);
+                var now = new Date();
+                if (time > now) {
+                    return dayOffset(time, now);
+                    return (Math.abs(time - now) / (1000 * 60 * 60 * 24));
+                }
+                return 0;
+            }
+            var getHtml = function (data) {
+                var Html = `<li class="mui-table-view-cell flleft">
+                                                    <div class="mui-col-sm-6 mui-col-xs-6">
+                                                        <div class="mui-col-sm-12 mui-col-xs-12">
+                                                            {DATE}应缴（元）
+                                                        </div>
+                                                        <div class="mui-col-sm-12 mui-col-xs-12">
+                                                            {JFJE}
+                                                        </div>
+                                                    </div>
+                                                    <div class="mui-col-sm-2 mui-col-xs-2 font12">
+                                                        {JFLX}
+                                                    </div>
+                                                    <div class="mui-col-sm-4 mui-col-xs-4">
+                                                        <div class="mui-col-sm-12 mui-col-xs-12">
+                                                            还剩{YXQS}天缴费
+                                                        </div>
+                                                        <div class="mui-col-sm-12 mui-col-xs-12">`;
+                if (data.JFZT == 0) {
+                    Html += '<button type="button" class="mui-btn mui-btn-primary">去支付</button>';
+                } else {
+                    Html += '<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined">详 情</button>'
+                }
+                Html += `                </div>
+                                                    </div>
+                                        </li>`;
+                Html = Html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: getDate(data.YXQS) });
+                return Html;
+            }
+            var getHtmlOrder = function (data) {
+                var html = `<li class="mui-table-view-cell flleft">
+                                                    <div class="mui-col-sm-9 mui-col-xs-9">
+                                                        <div class="mui-col-sm-12 mui-col-xs-12">
+                                                            {物业费}{545.00}元
+                                                        </div>
+                                                        <div class="mui-col-sm-12 mui-col-xs-12 font12">
+                                                            {2020-4-14 14:08:54}
+                                                        </div>
+                                                    </div>
+                                                    <div class="mui-col-sm-3 mui-col-xs-3">
+                                                        {缴费成功}
+                                                    </div>
+                                                </li>`;
+                html = html.format({});
+                return html;
+            }
+            var getPayReminder = function (setVal, callback) {
+                console.log(conditions);
+                $.post(conditions.Url, conditions, function (res) {
+                    if (res.code == 1000) {
+                        page = res.data.Page || null;
+                        data = res.data.Data || null;
+                        var html = "";
+                        jq.each(data, function (idx, val) {
+                            html += setVal(val);
+                        })
+                        callback(html, page);
+                    }
+                });
+            }
+            var SetHtml = function (setcallback) {
+                var setMethod = getHtmlOrder;
+                urlChange(function () {
+                    setMethod = getHtml;
+                })
+                getPayReminder(setMethod, function (html, page) {
+                    setcallback(html, page)
+                    urlChange(function () {
+                        reminderPage = page;
+                        conditions.Page = reminderPage;
+                    }, function () {
+                            orderPage = page;
+                            conditions.Page = orderPage;
+                    })
+                });
+            }
+            var downLoad = function () {
+                mui.showLoading();
+                var self= this;
+                conditions.Page.PageIndex = 1;
+                setTimeout(function () {
+                    SetHtml(function (html) {
+                        if (self.element == undefined) { //JS触发
+                            var idInfo = jq("#segmentedControl .mui-active")[0].getAttribute("href");
+                            var ul = document.querySelector(idInfo+' .mui-table-view');
+                            ul.innerHTML = html;
+                        } else {
+                            var ul = self.element.querySelector('.mui-table-view');
+                            ul.innerHTML = html;
+                            self.endPullDownToRefresh();
+                            self.refresh(true);
+                        }
+                        mui.hideLoading();//隐藏后的回调函数
+                    })
+                }, 1000);
+            }
+            var upLoad = function () {
+                mui.showLoading();
+                var self = this;
+                conditions.Page.PageIndex += 1;
+                setTimeout(function () {
+                    SetHtml(function (html, page) {
+                        var ul = self.element.querySelector('.mui-table-view');
+                        ul.innerHTML += html;
+                        if (page.PageIndex < page.PageCount) { //最后一页
+                            self.endPullUpToRefresh();
+                        } else {
+                            self.endPullUpToRefresh(true);
+                        }
+                        mui.hideLoading();//隐藏后的回调函数
+                    })
+                }, 1000);
+            }
             $.ready(function () {
                 //循环初始化所有下拉刷新，上拉加载。
                 $.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function (index, pullRefreshEl) {
                     $(pullRefreshEl).pullToRefresh({
                         down: {
-                            callback: function () {
-                                var self = this;
-                                setTimeout(function () {
-                                    var ul = self.element.querySelector('.mui-table-view');
-                                    ul.insertBefore(createFragment(ul, index, 1, true), ul.firstChild);
-                                    self.endPullDownToRefresh();
-                                }, 1000);
-                            }
+                            callback: downLoad
                         },
                         up: {
-                            callback: function () {
-                                var self = this;
-                                setTimeout(function () {
-                                    var ul = self.element.querySelector('.mui-table-view');
-                                    ul.appendChild(createFragment(ul, index, 1));
-                                    self.endPullUpToRefresh();
-                                }, 1000);
-                            }
+                            height:'50px',
+                            callback: upLoad
                         }
                     });
                 });
-                var createFragment = function (ul, index, count, reverse) {
-                    var length = ul.querySelectorAll('li').length;
-                    var fragment = document.createDocumentFragment();
-                    var li;
-                    for (var i = 0; i < count; i++) {
-                        li = document.createElement('li');
-                        li.className = 'mui-table-view-cell';
-                        li.innerHTML = '第' + (index + 1) + '个选项卡子项-' + (length + (reverse ? (count - i) : (i + 1)));
-                        fragment.appendChild(li);
-                    }
-                    return fragment;
-                };
+                ///
+                downLoad();
             });
+            var reminderPage = { PageIndex: 0, PageSize: 1, PageCount: 2 };
+            var orderPage = JSON.parse(JSON.stringify(reminderPage));
+            var conditions = { Page: reminderPage, Conditions: { feeType: -1 }, Url: "PayReminder" };
+            var urlChange = function (yes, no) {
+                if (conditions.Url == "PayReminder" && typeof (yes) == "function") {
+                    yes();
+                } else if (typeof (no) == "function") {
+                    no();
+                }
+            }
+            var isFirst = true
+            jq("#segmentedControl > a").on("tap", function () {
+                conditions.Url = this.getAttribute("url");
+                urlChange(function () {
+                    conditions.Page = reminderPage;
+                }, function () {
+                        conditions.Page = orderPage;
+                        if (isFirst) { // 首次加载需要执行Ixia
+                            isFirst = false;
+                            downLoad();
+                        }
+                })
+            })
         })(mui);
     </script>
 
 </body>
-
 </html>
