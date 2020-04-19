@@ -1,16 +1,18 @@
 ﻿using Data.MSSQL;
 using Data.MSSQL.Model.Data;
 using House.IService.Common;
+using House.IService.Model.Dto;
 using House.IService.Model.Enum;
 using House.IService.Users;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
 namespace House.Service.Users
 {
-    public class UsersSvc :IUsersSvc
+    public class UsersSvc : IUsersSvc
     {
         private IDataConfig _db;
         public UsersSvc(IDataConfig config)
@@ -21,26 +23,26 @@ namespace House.Service.Users
         public int WXRegister(string phone, string type, string openId)
         {
             int state = -1;
-            if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(phone) ||string.IsNullOrEmpty(openId))
+            if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(openId))
             {
                 return state; //参数不正确
             }
-            if(type == URole.Admin.GetEnumDescription()) // admin 
+            if (type == URole.Admin.GetEnumDescription()) // admin 
             {
                 UpdateOpenId<ts_uidp_userinfo>(phone, openId, GetUserSingleByPhone, UpdateUserInfo, out state);
             }
             if (type == URole.Inspector.GetEnumDescription()) // inspector 
             {
-                UpdateOpenId<wy_region_director>(phone, openId, GetDirSingleByPhone, UpdateRegionDirector,out state);
+                UpdateOpenId<wy_region_director>(phone, openId, GetDirSingleByPhone, UpdateRegionDirector, out state);
             }
             if (type == URole.Merchant.GetEnumDescription()) // merchant 
             {
-                UpdateOpenId<wy_shopinfo>(phone, openId, GetShopSingleByPhone, UpdateShopInfo,out state);
+                UpdateOpenId<wy_shopinfo>(phone, openId, GetShopSingleByPhone, UpdateShopInfo, out state);
             }
             return state;
         }
 
-        private bool UpdateOpenId<T>(string phone,string openId,Func<string,T> Get,Func<T,bool> Update,out int state)
+        private bool UpdateOpenId<T>(string phone, string openId, Func<string, T> Get, Func<T, bool> Update, out int state)
         {
             dynamic UserInfo = Get(phone);
             if (null != UserInfo)
@@ -64,7 +66,8 @@ namespace House.Service.Users
             {
                 return null;
             }
-            return this._db.CurrentDb<wy_shopinfo>().GetSingle(c => c.MOBILE_PHONE.Equals(phone));
+            return this._db.CurrentDb<wy_shopinfo>()
+                .GetSingle(c => c.MOBILE_PHONE.Equals(phone));
         }
 
         public wy_region_director GetDirSingleByPhone(string phone)
@@ -73,7 +76,8 @@ namespace House.Service.Users
             {
                 return null;
             }
-            return this._db.CurrentDb<wy_region_director>().GetSingle(c => c.MOBILE.Equals(phone));
+            return this._db.CurrentDb<wy_region_director>()
+                .GetSingle(c => c.MOBILE.Equals(phone));
         }
 
         public ts_uidp_userinfo GetUserSingleByPhone(string phone)
@@ -82,22 +86,49 @@ namespace House.Service.Users
             {
                 return null;
             }
-            return this._db.CurrentDb<ts_uidp_userinfo>().GetSingle(c => c.PHONE_MOBILE.Equals(phone));
+            return this._db.CurrentDb<ts_uidp_userinfo>()
+                .GetSingle(c => c.PHONE_MOBILE.Equals(phone));
         }
 
         public bool UpdateShopInfo(wy_shopinfo shopinfo)
         {
-            return this._db.CurrentDb<wy_shopinfo>().Update(shopinfo);
+            return UpdateInfo<wy_shopinfo>(shopinfo,
+                c => new { c.OPEN_ID, c.MOBILE_PHONE },
+                c => new { c.MOBILE_PHONE }) > 0;
         }
 
         public bool UpdateRegionDirector(wy_region_director director)
         {
-            return this._db.CurrentDb<wy_region_director>().Update(director);
+            return UpdateInfo<wy_region_director>(director,
+                c => new { c.WX_OPEN_ID, c.MOBILE },
+                c => new { c.MOBILE }) > 0;
         }
 
         public bool UpdateUserInfo(ts_uidp_userinfo userinfo)
         {
-            return this._db.CurrentDb<ts_uidp_userinfo>().Update(userinfo);
+            return UpdateInfo<ts_uidp_userinfo>(userinfo,
+                c => new { c.WX_OPEN_ID, c.PHONE_MOBILE },
+                c => new { c.PHONE_MOBILE }) > 0;
+        }
+
+        private int UpdateInfo<T>(T shopinfo, Expression<Func<T, object>> updateCols, Expression<Func<T, object>> whereCols)
+            where T : class, new()
+        {
+            return this._db.Db().Updateable<T>(shopinfo)
+                .UpdateColumns(updateCols)
+                .WhereColumns(whereCols)
+                .ExecuteCommand();
+        }
+
+        public UserDto FindUserByOpenId(string OpenId)
+        {
+            string Sql = @"SELECT *  FROM (SELECT PHONE_MOBILE AS PHONE,WX_OPEN_ID AS OPENID, 'Admin' AS 'AUTHORITY' FROM ts_uidp_userinfo
+                            UNION
+                            SELECT MOBILE_PHONE AS PHONE,OPEN_ID AS OPENID,'Merchant' AS 'AUTHORITY' FROM wy_shopinfo
+                            UNION
+                            SELECT MOBILE AS PHONE,WX_OPEN_ID AS OPENID,'Inspector' AS 'AUTHORITY' FROM wy_region_director) AS uModel
+                            WHERE OPENID =  @OpenId";
+            return this._db.Sql().SqlQuery<UserDto>(Sql,new { OpenId }).FirstOrDefault();
         }
 
     }

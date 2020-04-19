@@ -6,9 +6,7 @@ namespace HouseManage.Models.Request
 {
     public class Request
     {
-        public int? pageIndex { get; set; }
-        public int? pageCount { get; set; }
-        public int? pageLimit { get; set; }
-        public Dictionary<string,string> conditions { get; set; }
+        public SqlSugar.PageModel Page { get; set; }
+        public Dictionary<string,string> Conditions { get; set; }
     }
 }

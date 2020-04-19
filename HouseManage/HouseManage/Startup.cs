@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HouseManage.Common;
 using HouseManage.Common.Filter;
 using HouseManage.Common.Middleware;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,13 @@ namespace HouseManage
                     {
                         opt.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();//json字符串大小写原样输出
                     }); ;
+            //添加认证Cookie信息
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+             .AddCookie(options =>
+             {
+                 options.LoginPath = new PathString("/user/register");
+                 //options.AccessDeniedPath = new PathString("/denied");
+             });
             return AutofacConfig.Register(services);
         }
 
@@ -64,7 +72,7 @@ namespace HouseManage
             // 添加全局异常捕获，方便记录日志
             app.UseMiddleware<ExceptionMiddleware>();
 
-            //app.UseAuthentication();
+            app.UseAuthentication();
             //app.UseHttpsRedirection();
             app.UseSession();
             app.UseStaticFiles();

@@ -21,7 +21,7 @@ namespace Data.MSSQL.Model.Data
            public string CZ_SHID {get;set;}
 
            /// <summary>
-           /// Desc:
+           /// Desc:微信用户标识
            /// Default:
            /// Nullable:True
            /// </summary>           
@@ -222,13 +222,6 @@ namespace Data.MSSQL.Model.Data
            /// Nullable:True
            /// </summary>           
            public DateTime? XFBZJTFSJ {get;set;}
-
-           /// <summary>
-           /// Desc:微信用户标识
-           /// Default:
-           /// Nullable:True
-           /// </summary>           
-           public string WX_OPEN_ID {get;set;}
 
     }
 }

@@ -1,0 +1,244 @@
+﻿
+@{
+    ViewData["Title"] = "商铺信息详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">商铺信息详情</h1>
+</header>
+<div class="mui-content">
+    <div style="padding: 10px 10px;">
+        <div id="segmentedControl" class="mui-segmented-control">
+            <a class="mui-control-item mui-active" href="#item1">商铺信息</a>
+            <a class="mui-control-item" href="#item2">商户信息</a>
+        </div>
+    </div>
+    <div>
+        <div id="item1" class="mui-control-content mui-active">
+            <div id="fwid" style="display:none">@ViewBag.FWID</div>
+            <div id="scroll" class="mui-scroll-wrapper">
+                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>房屋编号</p>
+                        <div id="d_FWBH" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>房屋属性</p>
+                        <div id="d_FWSX" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>所属区域</p>
+                        <div id="d_SSQY" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>建筑面积</p>
+                        <div id="d_JZMJ" class="div_text"> </div>
+
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>坐落位置</p>
+                        <div id="d_ZLWZ" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>隶属分公司</p>
+                        <div id="d_LSFGS" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>资产产值</p>
+                        <div id="d_ZCCZ" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>结构类型</p>
+                        <div id="d_JGLX" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>水表号</p>
+                        <div id="d_SHUI" class="div_text"></div>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <p class='mui-ellipsis'>电表号</p>
+                        <div id="d_DIAN" class="div_text"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="item2" class="mui-control-content">
+            <div id="scroll" class="mui-scroll-wrapper">
+                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+                    <li class="mui-table-view-cell">
+                        <div>业主信息</div>
+                        <p class='mui-ellipsis'>姓名</p>
+                        <div id="YZ_ZHXM" class="div_text"></div>
+                        <p class='mui-ellipsis'>性别</p>
+                        <div id="YZ_ZHXB" class="div_text"></div>
+                        <p class='mui-ellipsis'>手机号</p>
+                        <div id="YZ_TELL" class="div_text"></div>
+                        <p class='mui-ellipsis'>固定电话</p>
+                        <div id="YZ_MOBILE" class="div_text"></div>
+                        <p class='mui-ellipsis'>电子邮箱</p>
+                        <div id="YZ_EMAIL" class="div_text"></div>
+                        <p class='mui-ellipsis'>是否转租</p>
+                        <div id="YZ_ISSBLET" class="div_text"></div>
+                        <p class='mui-ellipsis'>经营内容</p>
+                        <div id="YZ_JYNR" class="div_text"></div>
+                    </li>
+                    <li id="zz_div" style="display:none" class="mui-table-view-cell">
+                        <div>转租商户信息</div>
+                        <p class='mui-ellipsis'>姓名</p>
+                        <div id="Z_ZHXM" class="div_text"></div>
+                        <p class='mui-ellipsis'>性别</p>
+                        <div id="Z_ZHXB" class="div_text"></div>
+                        <p class='mui-ellipsis'>手机号</p>
+                        <div id="Z_TELL" class="div_text"></div>
+                        <p class='mui-ellipsis'>固定电话</p>
+                        <div id="Z_MOBILE" class="div_text"></div>
+                        <p class='mui-ellipsis'>电子邮箱</p>
+                        <div id="Z_EMAIL" class="div_text"></div>
+                        <p class='mui-ellipsis'>经营内容</p>
+                        <div id="Z_JYNR" class="div_text"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+<script type="text/javascript">
+        mui.init({ swipeBack: false });
+        jq = $;
+        var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
+        jq(".mui-control-content").height(height - jq(".mui-control-content").offset().top - 8); //浏览器高度减sroll距离头部的高度
+    var dataArea = [], dataCompany = [];
+
+    (function ($) {
+        $('#scroll').scroll({
+            indicators: true //是否显示滚动条
+        });
+        getHouseInfo();//获取房屋信息
+        getShopInfo();//获取商户信息
+        //jq("#txt_housesx").on("tap", function () {
+        //    HouseSxClick();//点击响应逻辑
+        //});
+
+    })(mui);
+    function getHouseInfo() {
+        var fwid = $("#fwid").text();
+        $.get('/Merchants/GetMerchantListHouseDetail', { FWID: fwid }, function (data) {
+            if (data) {
+                if (data.list) {
+                    setHouseInfo(data.list);
+                }
+            }
+        });
+    }
+    function setHouseInfo(data) {
+        $("#d_FWBH").text(data.FWBH);
+        if (data.FWSX == 0) {
+            $("#d_FWSX").text("空闲");
+        }
+        else if (data.FWSX == 1) {
+            $("#d_FWSX").text("已出租");
+        }
+        else if (data.FWSX == 2){
+            $("#d_FWSX").text("已出售");
+        }
+        $("#d_SSQY").text(data.SSQY);
+        $("#d_JZMJ").text(data.JZMJ);
+        $("#d_ZLWZ").text(data.ZLWZ);
+        $("#d_LSFGS").text(data.LSFGS);
+        $("#d_JGLX").text(data.JGLX);
+        $("#d_ZCCZ").text(data.ZCYZ);
+        $("#d_SHUI").text(data.WATER_NUMBER);
+        $("#d_DIAN").text(data.ELE_NUMBER);
+    }
+    function getShopInfo() {
+        var fwid = $("#fwid").text();
+        $.get('/Merchants/GetMerchantListShopDetail', { FWID: fwid }, function (data) {
+            if (data) {
+                if (data.list) {
+                    setShopInfo(data.list);
+                }
+            }
+        });
+    }
+    function setShopInfo(data) {
+        $("#YZ_ZHXM").text(data.YZ_ZHXM);
+        if (data.YZ_ZHXB == 0) {
+            $("#YZ_ZHXB").text("女");
+        }
+        else {
+            $("#YZ_ZHXB").text("男");
+        }
+        $("#YZ_TELL").text(data.YZ_TELL);
+        $("#YZ_MOBILE").text(data.YZ_MOBILE);
+        $("#YZ_EMAIL").text(data.YZ_EMAIL);
+        if (data.YZ_ISSBLET == 1) {
+            $("#YZ_ISSBLET").text("是");
+            setIsShowZ(data);
+           
+        }
+        else {
+            $("#YZ_ISSBLET").text("否");
+        }
+        $("#YZ_JYNR").text(data.YZ_JYNR);
+
+
+    }
+    //当是转租的时候显示
+    function setIsShowZ(data) {
+        $("#Z_ZHXM").text(data.Z_ZHXM);
+        if (data.YZ_ZHXB == 0) {
+            $("#Z_ZHXB").text("女");
+        }
+        else {
+            $("#Z_ZHXB").text("男");
+        }
+        $("#Z_TELL").text(data.Z_TELL);
+        $("#Z_MOBILE").text(data.Z_MOBILE);
+        $("#Z_EMAIL").text(data.Z_EMAIL);
+        $("#Z_JYNR").text(data.Z_JYNR);
+        $("#zz_div").css("display", "block");
+    }
+</script>
+<style>
+
+    .mui-card .mui-control-content {
+        padding: 10px;
+    }
+
+    .mui-control-content {
+        height: 15px;
+    }
+
+    .mui-table h4, .mui-table h5, .mui-table .mui-h5, .mui-table .mui-h6, .mui-table p {
+        margin-top: 0;
+    }
+
+    .mui-table h4 {
+        line-height: 21px;
+        font-weight: 500;
+    }
+
+    .mui-table .oa-icon {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+    }
+
+    .mui-table .oa-icon-star-filled {
+        color: #f14e41;
+    }
+    /*隐藏google touch事件错误*/
+    * {
+        touch-action: none;
+    }
+    .div_text {
+        word-wrap: break-word
+    }
+</style>
+

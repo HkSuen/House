@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using House.IService.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace HouseManage.Controllers
 {
@@ -17,17 +18,17 @@ namespace HouseManage.Controllers
     public class UserController : Controller
     {
         private IUsersSvc _user = null;
+
         public UserController(IUsersSvc users)
         {
             this._user = users;
         }
 
+
         public ActionResult Register(string uid, string redirect)
         {
-            //ViewBag.UID = Request.Query["uid"].FirstOrDefault();
-            //ViewBag.REDIRECT = Request.Query["redirect"].FirstOrDefault();
-            ViewBag.UID = "ocRWVwrIhqMHJhnkT1otzdy6DgPc";
-            ViewBag.REDIRECT = "https://localhost:5001/MyShop/Payment";
+            ViewBag.UID = Request.Query["uid"].FirstOrDefault();
+            ViewBag.REDIRECT = Request.Query["redirect"].FirstOrDefault();
             return View();
         }
 
@@ -38,7 +39,7 @@ namespace HouseManage.Controllers
         }
 
         [HttpPost]
-        public JsonResult WXRegister(string phone, string type, string uid, string url)
+        public JsonResult WXRegister(string phone, string type, string uid)
         {
             int State = this._user.WXRegister(phone, type, uid);
             ResultCode Code = State == 1 ? ResultCode.SCCUESS : (State == 2 ? ResultCode.DATA_IS_WRONG : (State == 3 ? ResultCode.DATA_NOT_FOUND : ResultCode.PARAMS_TYPE_ERROR));

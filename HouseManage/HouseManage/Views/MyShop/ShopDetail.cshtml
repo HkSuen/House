@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Hello MUI</title>
+    <title>商铺信息</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -39,7 +39,7 @@
                     <div class="mui-collapse-content">
                         <form class="mui-input-group">
                             <div class="mui-input-row">
-                                <label>缴费类型:</label>
+                                <label> 商 铺 :</label>
                                 <input type="text" placeholder="请选择" id="inputType">
                             </div>
                         </form>
@@ -58,57 +58,57 @@
                 <div id="item1" class="mui-control-content mui-active">
                     <div class="mui-input-row">
                         <label>房屋属性</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="FWSX">
                     </div>
                     <div class="mui-input-row">
                         <label>商铺名称</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="FWMC">
                     </div>
                     <div class="mui-input-row">
                         <label>商铺编号</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="FWBH">
                     </div>
                     <div class="mui-input-row">
-                        <label> 区 域 </label>
-                        <input type="text" class="mui-input-clear">
+                        <label>所属区域</label>
+                        <input type="text" class="mui-input-clear" tid="SSQY">
                     </div>
                     <div class="mui-input-row">
                         <label>建筑面积</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="JZMJ">
                     </div>
                     <div class="mui-input-row">
                         <label>隶属公司</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="LSFGS">
                     </div>
                     <div class="mui-input-row">
                         <label>坐落位置</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="ZLWZ">
                     </div>
                     <div class="mui-input-row">
                         <label>结构类型</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="JGLX">
                     </div>
                     <div class="mui-input-row">
                         <label>资产值</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="ZCYZ">
                     </div>
                 </div>
                 <div id="item3" class="mui-control-content">
                     <div class="mui-input-row">
                         <label>商户名称</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="SHOP_NAME">
                     </div>
                     <div class="mui-input-row">
                         <label>店铺位置</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="ZLWZ">
                     </div>
                     <div class="mui-input-row">
                         <label>房屋类型</label>
-                        <input type="text" class="mui-input-clear">
+                        <input type="text" class="mui-input-clear" tid="FWSX">
                     </div>
                     <div class="mui-input-row">
                         <label>经营内容</label>
-                        <textarea id="textarea" rows="6"></textarea>
+                        <textarea tid="JYNR" rows="6"></textarea>
                     </div>
                 </div>
             </div>
@@ -134,11 +134,46 @@
                 picker.show(function (selectItems) {
                     //赋值筛选条件
                     jq(this).val(selectItems[0].text);
+                    setShowData(selectItems[0].value);
                 }.bind(this))
             })
-            $.post("demo_ajax_gethint.html", { suggest: null }, function (result) {
-                var list = null;
-                picker.setData(list);
+            var List;
+            var setData = function (list) {
+                var info = [];
+                jq.each(list, function (idx, val) {
+                    info.push({ text: val["FWMC"], value: val["FWID"]});
+                });
+                picker.setData(info);
+                if (list.length > 0) {
+                    jq("#inputType").val(list[0]["FWMC"]);
+                    setShowData(list[0]["FWID"]);
+                }
+            }
+            var setShowData = function (fwId) {
+                var showData = List.filter(function (data) {
+                    return data["FWID"] == fwId
+                });
+                if (showData.length > 0) {
+                    jq.each(jq(".mui-card .mui-control-content input"), function (idx, val) {
+                        setValue(showData[0], val.getAttribute("tid"));
+                    })
+                    var fwsx = showData[0]["FWSX"];
+                    var shopStatus = showData[0]["SHOP_STATUS"];
+                    var shopStatu = shopStatus == 0 ? '空闲' : (shopStatus == 1 ? '出租' : (shopStatus == 2 ? '出售' : (shopStatus == 3 ? '转售' : '终止物业关系')))
+                    jq("[tid='FWSX']").val(fwsx == 0 ? '空闲' : (fwsx == 1 ? '出租' : '出售'));
+                    jq("[tid='JYNR']").text(showData[0]['JYNR']);
+                    //jq("[tid='SHOP_STATUS']").text(shopStatu);
+                }
+            }
+            var setValue = function (data, title) {
+                var Title = data[title];
+                if (Title != null && Title != "" && Title != undefined) {
+                    jq("[tid='" + title + "']").val(Title);
+                }
+            }
+            $.post("GetShopDetails", function (result) {
+                List = result;
+                setData(result);
             });
         })(mui);
     </script>

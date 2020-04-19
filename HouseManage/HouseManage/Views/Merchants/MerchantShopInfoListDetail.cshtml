@@ -1,0 +1,238 @@
+﻿
+@{
+    ViewData["Title"] = "商户详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">商户信息详情</h1>
+</header>
+<div class="mui-content">
+    <div id="fwid" style="display:none">@ViewBag.FWID</div>
+    <div id="CZ_SHID" style="display:none">@ViewBag.CZ_SHID</div>
+    <div id="scroll" class="mui-scroll-wrapper" style="padding-top:50px;">
+        <ul class="mui-table-view">
+
+            <li class="mui-table-view-cell mui-media">
+                <img class="mui-pull-left" style="width:120px;height:105px;" src="/img/dishang.jpg">
+                <div class="mui-media-body" style="padding-left:8px;padding-top:15px;">
+                    <div id="d_fwmc" class="oFlow"></div>
+                    <p id="d_zlwz" class='mui-ellipsis'></p>
+                    <p id="d_fwsx" class='mui-ellipsis'></p>
+                </div>
+            </li>
+
+            <li class="mui-table-view-cell">
+                <div><img src="/img/book.png" style="width:24px;height:20px;vertical-align:text-bottom" />经营内容</div>
+                <div class="div_text"><p id="d_jynr"></p></div>
+
+            </li>
+            <li class="mui-table-view-cell">
+                <div><img src="~/img/house1.png" style="width:24px;height:20px;vertical-align:text-bottom" />商户详情</div>
+
+                <p class='mui-ellipsis'>姓名</p>
+                <div id="YZ_ZHXM" class="div_text"></div>
+                <p class='mui-ellipsis'>性别</p>
+                <div id="YZ_ZHXB" class="div_text"></div>
+                <p class='mui-ellipsis'>手机号</p>
+                <div id="YZ_TELL" class="div_text"></div>
+                <p class='mui-ellipsis'>固定电话</p>
+                <div id="YZ_MOBILE" class="div_text"></div>
+                <p class='mui-ellipsis'>电子邮箱</p>
+                <div id="YZ_EMAIL" class="div_text"></div>
+                <p class='mui-ellipsis'>是否转租</p>
+                <div id="YZ_ISSBLET" class="div_text"></div>
+                <hr />
+                <div id="zz_div" style="display:none">
+                    <div><img src="~/img/house2.png" style="width:24px;height:20px;vertical-align:text-bottom" />转租商户信息</div>
+                    <p class='mui-ellipsis'>姓名</p>
+                    <div id="Z_ZHXM" class="div_text"></div>
+                    <p class='mui-ellipsis'>性别</p>
+                    <div id="Z_ZHXB" class="div_text"></div>
+                    <p class='mui-ellipsis'>手机号</p>
+                    <div id="Z_TELL" class="div_text"></div>
+                    <p class='mui-ellipsis'>固定电话</p>
+                    <div id="Z_MOBILE" class="div_text"></div>
+                    <p class='mui-ellipsis'>电子邮箱</p>
+                    <div id="Z_EMAIL" class="div_text"></div>
+                    <p class='mui-ellipsis'>经营内容</p>
+                    <div id="Z_JYNR" class="div_text"></div>
+                </div>
+
+            </li>
+            <li class="mui-table-view-cell">
+                <div><img src="~/img/money.png" style="width:24px;height:20px;vertical-align:text-bottom" />缴费记录</div>
+                <div style="height:5px;"></div>
+                <div id="div_parent">
+                    <div class="mui-card padd_div">
+                        <p class='mui-ellipsis'>缴费类型</p>
+                        <div id="YZ_ZHXM" class="div_text">物业费</div>
+                        <p class='mui-ellipsis'>起始时间</p>
+                        <div id="YZ_ZHXB" class="div_text">2054-0650</div>
+                        <p class='mui-ellipsis'>缴费金额</p>
+                        <div id="YZ_TELL" class="div_text">20</div>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+        mui.init({ swipeBack: false });
+        jq = $;
+        var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
+    jq(".mui-content").height(height - jq(".mui-content").offset().top - 8); //浏览器高度减sroll距离头部的高度
+    var dataArea = [], dataCompany = [];
+
+    (function ($) {
+        $('#scroll').scroll({
+            indicators: true //是否显示滚动条
+        });
+        getHouseInfo();
+
+    })(mui);
+    function getHouseInfo() {
+        var fwid = $("#fwid").text();
+        var CZ_SHID = $("#CZ_SHID").text();
+        $.get('/Merchants/GetMerchantShopInfoListDetail', { FWID: fwid, CZ_SHID: CZ_SHID}, function (data) {
+            if (data) {
+                if (data.list) {
+                    setHouseInfo(data.list);
+                    setShopInfo(data.list);
+                }
+            }
+        });
+    }
+    function setHouseInfo(data) {
+        $("#d_zlwz").text(data.ZLWZ);
+        $("#d_fwsx").text(data.FWSX);
+        $("#d_fwmc").text(data.FWMC);
+        $("#d_jynr").text(data.JYNR);
+    }
+    function setShopInfo(data) {
+        $("#YZ_ZHXM").text(data.YZ_ZHXM);
+        if (data.YZ_ZHXB == 0) {
+            $("#YZ_ZHXB").text("女");
+        }
+        else {
+            $("#YZ_ZHXB").text("男");
+        }
+        $("#YZ_TELL").text(data.YZ_TELL);
+        $("#YZ_MOBILE").text(data.YZ_MOBILE);
+        $("#YZ_EMAIL").text(data.YZ_EMAIL);
+        if (data.YZ_ISSBLET == 1) {
+            $("#YZ_ISSBLET").text("是");
+            setIsShowZ(data);
+
+        }
+        else {
+            $("#YZ_ISSBLET").text("否");
+        }
+
+
+    }
+    //当是转租的时候显示
+    function setIsShowZ(data) {
+        $("#Z_ZHXM").text(data.Z_ZHXM);
+        if (data.YZ_ZHXB == 0) {
+            $("#Z_ZHXB").text("女");
+        }
+        else {
+            $("#Z_ZHXB").text("男");
+        }
+        $("#Z_TELL").text(data.Z_TELL);
+        $("#Z_MOBILE").text(data.Z_MOBILE);
+        $("#Z_EMAIL").text(data.Z_EMAIL);
+        $("#Z_JYNR").text(data.Z_JYNR);
+        $("#zz_div").css("display", "block");
+    }
+    //function getShopJiaoFei() {
+    //    var fwid = $("#fwid").text();
+    //    var CZ_SHID = $("#CZ_SHID").text();
+    //    $.get('/Merchants/GetMerchantShopJiaoFeiList', { FWID: fwid, CZ_SHID: CZ_SHID }, function (data) {
+    //        if (data) {
+    //            if (data.list) {
+    //                var div = document.body.querySelector('#div_parent');
+    //                var childs = table.childNodes;
+    //                for (var i = childs.length - 1; i >= 0; i--) {
+    //                    table.removeChild(childs[i]);
+    //                }
+    //                for (var i = 0; i < data.list.length; i++) {
+    //                    var div_card = document.createElement('div');
+    //                    div_card.className = 'mui-card padd_div';
+    //                    var _dhtml = '<p class="mui - ellipsis">缴费类型</p><div class="div_text">' + wuyefei;
+    //                      //判断只有物业费有起始时间
+    //                    if (data.list[i].JFLX == "物业费") {
+    //                        _dhtml = _dhtml + '</div><p class="mui - ellipsis">起始时间</p><div  class="div_text">';
+    //                    }
+    //                    else {
+    //                        _dhtml = _dhtml + '</div><p class="mui - ellipsis">缴费时间</p><div  class="div_text">';
+    //                    }
+    //                        _dhtml = _dhtml + 123 + '</div> <p class="mui - ellipsis">缴费金额</p> <div id="YZ_TELL" class="div_text">'+jine+'</div>';
+                     
+    //                    div_card.innerHTML = _dhtml；
+    //                    //下拉刷新，新纪录插到最前面
+    //                    table.appendChild(div_card);
+    //                }
+    //            }
+    //        }
+    //    });
+    //}
+</script>
+<style>
+
+    .mui-card .mui-control-content {
+        padding: 10px;
+    }
+
+    .mui-control-content {
+        height: 15px;
+    }
+
+    .mui-table h4, .mui-table h5, .mui-table .mui-h5, .mui-table .mui-h6, .mui-table p {
+        margin-top: 0;
+    }
+
+    .mui-table h4 {
+        line-height: 21px;
+        font-weight: 500;
+    }
+
+    .mui-table .oa-icon {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+    }
+
+    .mui-table .oa-icon-star-filled {
+        color: #f14e41;
+    }
+    /*隐藏google touch事件错误*/
+    * {
+        touch-action: none;
+    }
+
+    .div_text {
+        margin-top:5px;
+        word-wrap: break-word;
+    }
+    .first {
+        list-style: none;
+        background: url("/img/house1.png");
+        padding-left: 20px;
+    }
+    .oFlow {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .padd_div {
+        padding-top: 5px;
+        padding-left: 5px;
+    }
+</style>
+
+
+
