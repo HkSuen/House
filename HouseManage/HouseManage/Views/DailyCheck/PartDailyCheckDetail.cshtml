@@ -1,0 +1,64 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<Data.MSSQL.Model.BusinessModel.TaskListModel>;
+@foreach (var item in Model)
+{
+    <div class="mui-card" id=@item.RESULT_ID>
+        <!--内容区-->
+        <div class="mui-card-content" style="padding-left:5px;">
+            <div class="mui-row">
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="padding-top: 10px">商铺编号</label>
+                </div>
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="padding-top:10px">@item.SHOPBH</label>
+                </div>
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="        padding-top: 10px">业主姓名</label>
+                </div>
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="padding-top:10px">@item.ZHXM</label>
+                </div>
+            </div>
+            <div class="mui-row">
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="padding-top:10px">商铺名称</label>
+                </div>
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="padding-top:10px">@item.SHOP_NAME</label>
+                </div>
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="padding-top:10px">检查状态</label>
+                </div>
+                @{
+                    var status = "";
+                    if (item.JCJG == 0)
+                    {
+                        status = "未完成";
+                    }
+                    else
+                    {
+                        status = "已完成";
+                    }
+                }
+                <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
+                    <label style="padding-top:10px">
+                        @status
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+        <!--页脚，放置补充信息或支持的操作-->
+        <div class="mui-card-footer" style="text-align:center;">
+            <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;" onclick="GetCheckResultDetail(@item.RESULT_ID)">修改</button>
+            <div class="mui-row">
+                <div class="mui-col-sm-4 mui-col-xs-4"></div>
+                <div class="mui-col-sm-4 mui-col-xs-4">
+                </div>
+            </div>
+        </div>
+    </div>
+}

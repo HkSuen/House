@@ -4,93 +4,92 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     @model List<Data.MSSQL.Model.Data.wy_check_task>;
 }
-    <ul class="mui-table-view">
-        <li class="mui-table-view-cell mui-collapse">
-            <a class="mui-navigate-right" href="#">查询条件</a>
-            <div class="mui-collapse-content" style="text-align:center">
-                <div class="mui-row">
-                    <div class="mui-col-sm-2 mui-col-xs-2">
-                        <label style="font-size:13px;">商户状态:</label>
+    <div id="main-container" class="mui-content mui-scroll-wrapper ">
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell mui-collapse">
+                <a class="mui-navigate-right" href="#">查询条件</a>
+                <div class="mui-collapse-content" style="text-align:center">
+                    <div class="mui-row">
+                        <div class="mui-col-sm-2 mui-col-xs-2">
+                            <label style="font-size:13px;">商户状态:</label>
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5">
+                            <label>出租</label>
+                            <input name="radio1" id="radio1" value="1" type="radio">
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5">
+                            <label>出售</label>
+                            <input name="radio1" id="radio1" value="2" type="radio">
+                        </div>
                     </div>
-                    <div class="mui-col-sm-5 mui-col-xs-5">
-                        <label>出租</label>
-                        <input name="radio1" id="radio1" value="1" type="radio">
+                    <div class="mui-row">
+                        <div class="mui-col-sm-2 mui-col-xs-2">
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5" style="padding-right: 20px;">
+                            <input type="text" value="" class="mui-input-clear" placeholder="开始时间" id="startTime" onclick="SetStartTime()">
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5">
+                            <input type="text" value="" class="mui-input-clear" placeholder="结束时间" id="endTime" onclick="SetEndTime()">
+                        </div>
                     </div>
-                    <div class="mui-col-sm-5 mui-col-xs-5">
-                        <label>出售</label>
-                        <input name="radio1" id="radio1" value="2" type="radio">
+                    <div class="mui-row">
+                        <button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search" onclick="getList()">查询</button>
                     </div>
                 </div>
-                <div class="mui-row">
-                    <div class="mui-col-sm-2 mui-col-xs-2">
+            </li>
+        </ul>
+        <div id="content">
+            @Html.Partial("PartDailyCheckList", Model)
+            @*@foreach (var item in Model)
+            {
+                <div class="mui-row" style="margin-top:10px;margin-left:10px;margin-right:10px;padding-bottom:10px; border-radius:5px;background-color:paleturquoise" onclick="GetTaskDetail(@item.RWBH)">
+                    <div class="mui-col-sm-12 mui-col-xs-12">
+                        <div class="mui-row" style="background-color:paleturquoise; border-radius:5px 5px 0 0">
+                            <div class="mui-col-sm-6 mui-col-xs-6">
+                                <span>任务编号:@item.RWBH</span>
+                            </div>
+                            <div class="mui-col-sm-6 mui-col-xs-6">
+                                <div class="mui-icon mui-icon-forward" style="float:right"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mui-col-sm-5 mui-col-xs-5" style="padding-right: 20px;">
-                        <input type="text" value="" class="mui-input-clear" placeholder="开始时间" id="startTime" onclick="SetStartTime()">
+                    <div class="mui-row">
+                        <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white">
+                            <div class="mui-row">
+                                <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                                    <span>任务名称</span>
+                                </div>
+                                <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                                    <span>开始时间</span>
+                                </div>
+                                <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                                    <span>结束时间</span>
+                                </div>
+                                
+                            </div>
+                        </div>
                     </div>
-                    <div class="mui-col-sm-5 mui-col-xs-5">
-                        <input type="text" value="" class="mui-input-clear" placeholder="结束时间" id="endTime" onclick="SetEndTime()">
+                    <div class="mui-row" style="border:1px;">
+                        <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white;font-size:15px;">
+                            <div class="mui-row">
+                                <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                                    <span>@item.RWMC</span>
+                                </div>
+                                <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                                    <span>@item.RWKSSJ</span>
+                                </div>
+                                <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                                    <span>@item.RWJSSJ</span>
+                                </div>
+                                
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="mui-row">
-                    <button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search" onclick="getList()">查询</button>
-                </div>
-            </div>
-        </li>
-    </ul>
-@foreach (var item in Model)
-{
-    
-    <div class="mui-row" style="margin-top:10px;margin-left:10px;margin-right:10px;padding-bottom:10px; border-radius:5px;background-color:paleturquoise" onclick="GetTaskDetail(@item.RWBH)">
-        <div class="mui-col-sm-12 mui-col-xs-12">
-            <div class="mui-row" style="background-color:paleturquoise; border-radius:5px 5px 0 0">
-                <div class="mui-col-sm-6 mui-col-xs-6">
-                    <span>任务编号:@item.RWBH</span>
-                </div>
-                <div class="mui-col-sm-6 mui-col-xs-6">
-                    <div class="mui-icon mui-icon-forward" style="float:right"></div>
-                </div>
-            </div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white">
-                <div class="mui-row">
-                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
-                        <span>任务名称</span>
-                    </div>
-                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
-                        <span>开始时间</span>
-                    </div>
-                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
-                        <span>结束时间</span>
-                    </div>
-                    @*<div class="mui-col-sm-3 mui-col-xs-3" style="background-color:white;font-size:15px;">
-                        <span>任务状态</span>
-                    </div>*@
-                </div>
-            </div>
-
-        </div>
-
-        <div class="mui-row" style="border:1px;">
-            <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white;font-size:15px;">
-                <div class="mui-row">
-                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
-                        <span>@item.RWMC</span>
-                    </div>
-                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
-                        <span>@item.RWKSSJ</span>
-                    </div>
-                    <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
-                        <span>@item.RWJSSJ</span>
-                    </div>
-                    @*<div class="mui-col-sm-3 mui-col-xs-3" style="background-color:white;font-size:15px;">
-                        <span>@item.RWBH</span>
-                    </div>*@
-                </div>
-            </div>
+            }*@
         </div>
     </div>
-}
+
 
 
 
@@ -116,7 +115,58 @@
 
 
 <script type="text/javascript">
-    var picker = new mui.PopPicker();
+    var temp = {
+        status: "",
+        starttime: "",
+        endtime: "",
+        limit: 10,
+        page: 1
+    }
+    var hasMore = true;
+    mui('.mui-content').scroll({
+        scrollY: true, //是否竖向滚动
+        scrollX: false, //是否横向滚动
+        startX: 0, //初始化时滚动至x
+        startY: 0, //初始化时滚动至y
+        indicators: true, //是否显示滚动条
+        deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+        bounce: true //是否启用回弹
+    });
+    window.onload = function () {
+        mui.init({
+            pullRefresh: {
+                container: ".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+                up: {
+                    style: 'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                    color: '#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+                    height: '50px',//可选,默认50px.下拉刷新控件的高度,
+                    range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+                    offset: '0px', //可选 默认0px,下拉刷新控件的起始位置
+                    auto: false,//可选,默认false.首次加载自动上拉刷新一次
+                    contentrefresh: "正在加载...",
+                    contentnomore: '没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+                    callback: function () {
+                        this.temp.page++;
+                        getList();
+                        this.endPullupToRefresh(!hasMore);
+                    }
+                },
+                down: {
+                    style: 'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                    color: '#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+                    height: '50px',//可选,默认50px.下拉刷新控件的高度,
+                    range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+                    offset: '0px', //可选 默认0px,下拉刷新控件的起始位置
+                    auto: false,//可选,默认false.首次加载自动上拉刷新一次
+                    contentrefresh: "正在加载...",
+                    contentnomore: '没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+                    callback: function () {
+                        GetIndex();
+                    }
+                }
+            }
+        });
+    }
     function ChangeStaus() {
         console.log(1);
         var picker = new mui.PopPicker();
@@ -146,18 +196,29 @@
                 radiovalue = ele[i].value;
             };
         };
-        let temp = {
-            status: radiovalue,
-            starttime: document.getElementById("startTime").value,
-            endtime: document.getElementById("endTime").value,
-        };
-        mui.ajax('/DailyCheck/GetTaskInfo', {
-            data: temp,
+        temp.status = radiovalue;
+        temp.starttime = document.getElementById("startTime").value;
+        temp.endtime = document.getElementById("endTime").value;
+        //temp = {
+        //    status: radiovalue,
+        //    starttime: document.getElementById("startTime").value,
+        //    endtime: document.getElementById("endTime").value,
+        //    limit: 10,
+        //    page: 1
+        //};
+        mui.ajax('/DailyCheck/PartDailyCheckList', {
+            data: this.temp,
             type: 'get',
             //timeout: 50000,
             //headers: { 'Content-Type': 'application/json' },
             success: function (data) {
-                console.log(data);
+                var ele = document.getElementById("content").innerHTML;
+                if (data.trim()!="") {
+                    document.getElementById("content").innerHTML = ele + data;
+                }
+                else {
+                    hasMore = false;
+                }
             },
             error: function (xhr, type, errorThrown) {
                 console.log(type);
@@ -166,8 +227,24 @@
     };
     function GetTaskDetail(RWBH) {
         console.log(RWBH);
-        window.location.href = '../../DailyCheck/CheckDetail?RWBH='+RWBH+"'";
+        window.location.href = "../../DailyCheck/DailyCheckDetail?RWBH=" + RWBH;
     };
+    function GetIndex() {
+        this.temp.page = 1;
+        mui.ajax('/DailyCheck/Index', {
+            data: temp,
+            type: 'get',
+            //timeout: 50000,
+            //headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                var ele = document.getElementById("content").innerHTML;
+                document.getElementById("content").innerHTML = data;
+            },
+            error: function (xhr, type, errorThrown) {
+                console.log(type);
+            }
+        })
+    }
 
 
 

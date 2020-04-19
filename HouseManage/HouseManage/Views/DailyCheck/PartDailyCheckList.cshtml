@@ -1,0 +1,63 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<Data.MSSQL.Model.Data.wy_check_task>;
+@foreach (var item in Model)
+{
+    <div class="mui-card" >
+        <!--页眉，放置标题-->
+        <div class="mui-card-header" onclick="GetTaskDetail(@item.RWBH)">
+            <div class="mui-col-sm-12 mui-col-xs-12">
+                <div class="mui-row" >
+                    <div class="mui-col-sm-8 mui-col-xs-8">
+                        <span>任务编号:@item.RWBH</span>
+                    </div>
+                    <div class="mui-col-sm-4 mui-col-xs-4">
+                        <div class="mui-icon mui-icon-forward" style="float:right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--内容区-->
+        <div class="mui-card-content">
+            <div class="mui-row">
+                <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white">
+                    <div class="mui-row" style="padding-left:15px;">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                            <span>任务名称</span>
+                        </div>
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                            <span>开始时间</span>
+                        </div>
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                            <span>结束时间</span>
+                        </div>
+                        @*<div class="mui-col-sm-3 mui-col-xs-3" style="background-color:white;font-size:15px;">
+                        <span>任务状态</span>
+                    </div>*@
+                    </div>
+                </div>
+            </div>
+            <div class="mui-row" style="padding-left:15px;">
+                <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white;font-size:15px;">
+                    <div class="mui-row">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                            <span>@item.RWMC</span>
+                        </div>
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                            <span>
+                            @item.RWKSSJ.Value.ToString("yyyy/MM/dd")
+                            </span>
+                        </div>
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                            <span>@item.RWJSSJ.Value.ToString("yyyy/MM/dd")</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--页脚，放置补充信息或支持的操作-->
+        <div class="mui-card-footer"></div>
+    </div>
+}
