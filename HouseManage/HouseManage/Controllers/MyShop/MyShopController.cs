@@ -44,7 +44,8 @@ namespace HouseManage.Controllers.MyShop
         public JsonResult PayOrders(Paramter.Request request)
         {
             var feeType = request.Conditions["feeType"];
-            var Data = _shop.GetPayReminder(OpenID, feeType, request.Page);
+            //获取已支付的订单
+            var Data = _shop.GetPayRecord(OpenID, feeType,1, request.Page); 
             return Json(new Paramter.Response()
             {
                 code = ResultCode.SCCUESS,

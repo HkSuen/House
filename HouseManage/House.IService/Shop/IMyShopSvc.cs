@@ -23,5 +23,16 @@ namespace House.IService.Shop
         /// <param name="page"></param>
         /// <returns></returns>
         List<v_pay_record> GetPayReminder(string OpenId, string Type, PageModel page);
+
+        /// <summary>
+        /// 获取缴费通知单
+        /// </summary>
+        /// <param name="OpenId"></param>
+        /// <param name="Type"></param>
+        /// <param name="payState"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+
+        List<wy_pay_record> GetPayRecord(string OpenId, string Type, int? payState,PageModel page);
     }
 }

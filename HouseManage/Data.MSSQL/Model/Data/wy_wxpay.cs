@@ -14,11 +14,18 @@ namespace Data.MSSQL.Model.Data
 
            }
            /// <summary>
-           /// Desc:订单主键
+           /// Desc:
            /// Default:
            /// Nullable:False
            /// </summary>           
            public string ID {get;set;}
+
+           /// <summary>
+           /// Desc:订单ID
+           /// Default:
+           /// Nullable:False
+           /// </summary>           
+           public string ORDER_ID {get;set;}
 
            /// <summary>
            /// Desc:缴费记录的主键
@@ -63,11 +70,11 @@ namespace Data.MSSQL.Model.Data
            public int FEE_TYPES {get;set;}
 
            /// <summary>
-           /// Desc:总金额
+           /// Desc:总金额(单位分)
            /// Default:
            /// Nullable:False
            /// </summary>           
-           public string TOTAL_FEE {get;set;}
+           public int TOTAL_FEE {get;set;}
 
            /// <summary>
            /// Desc:订单状态：0订单生成，1订单超时，2支付成功，3支付失败
@@ -96,13 +103,6 @@ namespace Data.MSSQL.Model.Data
            /// Nullable:False
            /// </summary>           
            public DateTime PAY_TIME {get;set;}
-
-           /// <summary>
-           /// Desc:订单ID
-           /// Default:
-           /// Nullable:False
-           /// </summary>           
-           public string ORDER_ID {get;set;}
 
            /// <summary>
            /// Desc:程序栈ID：公众号appid
@@ -145,6 +145,20 @@ namespace Data.MSSQL.Model.Data
            /// Nullable:False
            /// </summary>           
            public DateTime PREPAY_ENDTIME {get;set;}
+
+           /// <summary>
+           /// Desc:订单说明
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string REMARK {get;set;}
+
+           /// <summary>
+           /// Desc:随机字符串
+           /// Default:
+           /// Nullable:False
+           /// </summary>           
+           public string NONCE_STR {get;set;}
 
     }
 }

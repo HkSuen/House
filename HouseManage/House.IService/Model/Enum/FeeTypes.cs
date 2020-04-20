@@ -1,6 +1,7 @@
 ﻿using House.IService.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace House.IService.Model.Enum
@@ -25,6 +26,11 @@ namespace House.IService.Model.Enum
                 return userRole;
             }
         } 
+
+        public static string GetKey(int Value)
+        {
+            return Types.Where(c=>c.Value == Value).Select(c => c.Key).FirstOrDefault();
+        }
     }
 
 }

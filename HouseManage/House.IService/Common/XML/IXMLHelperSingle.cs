@@ -8,5 +8,8 @@ namespace House.IService.Common.XML
     {
         T DESerializer<T>(string strXML) where T : class;
         string XmlSerialize<T>(T obj);
+
+        string DicToXmlStr(Dictionary<string, object> obj);
+        Dictionary<string, object> XmlStrToDic(string xml);
     }
 }

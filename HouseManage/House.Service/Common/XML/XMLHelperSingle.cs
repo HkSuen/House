@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace House.Service.Common.XML
@@ -37,6 +39,22 @@ namespace House.Service.Common.XML
             {
                 return null;
             }
+        }
+
+        public string DicToXmlStr(Dictionary<string, object> obj)
+        {
+            XElement el = new XElement("xml",obj.Select(kv => new XElement(kv.Key, kv.Value)));
+            return el.ToString();
+        }
+
+        public Dictionary<string, object> XmlStrToDic(string xml) {
+            XElement rootElement = XElement.Parse(xml);
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            foreach (var el in rootElement.Elements())
+            {
+                dict.Add(el.Name.LocalName, el.Value);
+            }
+            return dict;
         }
     }
 }

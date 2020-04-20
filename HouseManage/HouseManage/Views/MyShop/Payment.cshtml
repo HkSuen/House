@@ -188,28 +188,7 @@
                     <div id="scroll1" class="mui-scroll-wrapper">
                         <div class="mui-scroll" id="scroll_1">
                             <ul class="mui-table-view">
-                                <li class="mui-table-view-cell flleft">
-                                    <div class="mui-col-sm-6 mui-col-xs-6">
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            9月21日应缴（元）
-                                        </div>
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            7859.00
-                                        </div>
-                                    </div>
-                                    <div class="mui-col-sm-2 mui-col-xs-2 font12">
-                                        物业费
-                                    </div>
-                                    <div class="mui-col-sm-4 mui-col-xs-4">
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            还剩21天缴费
-                                        </div>
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            <button type="button" class="mui-btn mui-btn-primary">去支付</button>
-                                            @*<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined">详情</button>*@
-                                        </div>
-                                    </div>
-                                </li>
+                                
                             </ul>
                         </div>
                     </div>
@@ -218,19 +197,6 @@
                     <div id="scroll2" class="mui-scroll-wrapper ">
                         <div class="mui-scroll" id="scroll2_1">
                             <ul class="mui-table-view">
-                                <li class="mui-table-view-cell flleft">
-                                    <div class="mui-col-sm-9 mui-col-xs-9">
-                                        <div class="mui-col-sm-12 mui-col-xs-12">
-                                            物业费545.00元
-                                        </div>
-                                        <div class="mui-col-sm-12 mui-col-xs-12 font12">
-                                            2020-4-14 14:08:54
-                                        </div>
-                                    </div>
-                                    <div class="mui-col-sm-3 mui-col-xs-3">
-                                        缴费成功
-                                    </div>
-                                </li>
                             </ul>
                         </div>
                     </div>
@@ -336,31 +302,31 @@
                                                         </div>
                                                         <div class="mui-col-sm-12 mui-col-xs-12">`;
                 if (data.JFZT == 0) {
-                    Html += '<button type="button" class="mui-btn mui-btn-primary">去支付</button>';
+                    Html += '<button type="button" class="mui-btn mui-btn-primary gopay" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">去支付</button>';
                 } else {
                     Html += '<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined">详 情</button>'
                 }
                 Html += `                </div>
                                                     </div>
                                         </li>`;
-                Html = Html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: getDate(data.YXQS) });
+                Html = Html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: getDate(data.YXQS), RECORD_ID: data.RECORD_ID, CZ_SHID: data.CZ_SHID, FWID: data.FWID});
                 return Html;
             }
             var getHtmlOrder = function (data) {
                 var html = `<li class="mui-table-view-cell flleft">
                                                     <div class="mui-col-sm-9 mui-col-xs-9">
                                                         <div class="mui-col-sm-12 mui-col-xs-12">
-                                                            {物业费}{545.00}元
+                                                            {JFLX}{JFJE}元
                                                         </div>
                                                         <div class="mui-col-sm-12 mui-col-xs-12 font12">
-                                                            {2020-4-14 14:08:54}
+                                                            {CREATE_TIME}
                                                         </div>
                                                     </div>
                                                     <div class="mui-col-sm-3 mui-col-xs-3">
-                                                        {缴费成功}
+                                                        {STATE}
                                                     </div>
                                                 </li>`;
-                html = html.format({});
+                html = html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), CREATE_TIME: new Date(data.CREATE_TIME).formatDate("yyyy-MM-dd hh:mm:ss"), STATE:"缴费成功"});
                 return html;
             }
             var getPayReminder = function (setVal, callback) {
@@ -410,6 +376,7 @@
                             self.refresh(true);
                         }
                         mui.hideLoading();//隐藏后的回调函数
+                        tapInit();
                     })
                 }, 1000);
             }
@@ -427,6 +394,7 @@
                             self.endPullUpToRefresh(true);
                         }
                         mui.hideLoading();//隐藏后的回调函数
+                        tapInit();
                     })
                 }, 1000);
             }
@@ -469,6 +437,12 @@
                         }
                 })
             })
+            var tapInit = function () {
+                jq("button.gopay").on("click", function () {
+                    var urlParam = this.getAttribute("url");
+                    window.location.href = "/Orders/Order?" + urlParam;
+                })
+            }
         })(mui);
     </script>
 

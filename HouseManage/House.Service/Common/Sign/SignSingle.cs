@@ -9,14 +9,14 @@ namespace House.Service.Common.Sign
 {
     public class SignSingle : ISignSingle
     {
-        public string WePaySign(IDictionary<string, string> InDict, string TenPayV3_Key)
+        public string WePaySign(IDictionary<string, object> InDict, string TenPayV3_Key)
         {
             string[] arrKeys = InDict.Keys.ToArray();
             Array.Sort(arrKeys, string.CompareOrdinal);  //参数名ASCII码从小到大排序；0,A,B,a,b;
             var StrA = new StringBuilder();
             foreach (var key in arrKeys)
             {
-                string value = InDict[key];
+                string value = InDict[key]?.ToString();
                 if (!String.IsNullOrEmpty(value)) //空值不参与签名
                 {
                     StrA.Append(key + "=")

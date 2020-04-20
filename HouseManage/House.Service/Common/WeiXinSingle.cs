@@ -12,6 +12,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Config = Data.MSSQL.Common;
 
 namespace House.Service.Common
 {
@@ -22,10 +23,10 @@ namespace House.Service.Common
     {
         private IHttpContextAccessor _httpContext = null;
         private ISignSingle _sign = null;
-        private string AppId => "wx3731307d4a3b4ac9";
-        private string AppSecret => "ac058e53102afe48a60760f2c8f1ccba";
+        private string AppId => Config.JsonReader.Get("WxInfo:AppId");
+        private string AppSecret => Config.JsonReader.Get("WxInfo:AppSecret");
 
-        public WinXinSingle(IHttpContextAccessor http,ISignSingle sign)
+        public WinXinSingle(IHttpContextAccessor http, ISignSingle sign)
         {
             this._httpContext = http;
             this._sign = sign;
@@ -49,7 +50,8 @@ namespace House.Service.Common
         public string GetSession(string key)
         {
             byte[] value = null;
-            if(this._httpContext.HttpContext.Session.TryGetValue(key,out value)){
+            if (this._httpContext.HttpContext.Session.TryGetValue(key, out value))
+            {
                 return System.Text.Encoding.Default.GetString(value);
             }
             return null;
@@ -61,7 +63,7 @@ namespace House.Service.Common
         /// <param name="key"></param>
         /// <param name="val"></param>
         [Obsolete]
-        public void SetSession(string key,string val)
+        public void SetSession(string key, string val)
         {
             byte[] value = System.Text.Encoding.Default.GetBytes(val);
             this._httpContext.HttpContext.Session.Set(key, value);
@@ -74,7 +76,7 @@ namespace House.Service.Common
         public async Task<string> CheckServer()
         {
             //1 自己的服务器代码接受微信提交过来的4个参数
-            string token = "wxjhkj";
+            string token = Config.JsonReader.Get("WxInfo:Token");
             string signature = ParamsQuery("signature");
             string timestamp = ParamsQuery("timestamp");
             string nonce = ParamsQuery("nonce");
@@ -127,25 +129,20 @@ namespace House.Service.Common
             var host1 = _httpContext.HttpContext.Request.Host.Value;
             var host = "http://1402b84a.ngrok.io"; //测试先写死
             string url = host + _httpContext.HttpContext.Request.Path.Value;
-            //string url = System.Web.HttpContext.Current.Request.Url.AbsoluteUri;//获取当前url
-            //openid = GetSession("OpenId");
-            //if (string.IsNullOrEmpty(openid))
-            //{
-                //先要判断是否是获取code后跳转过来的
-                string code = ParamsQuery("code");
-                if (string.IsNullOrEmpty(code))
-                {
-                    //Code为空时，先获取Code
-                    string GetCodeUrls = GetCodeUrl(url);
-                    _httpContext.HttpContext.Response.Redirect(GetCodeUrls);//先跳转到微信的服务器，取得code后会跳回来这页面的
-                }
-                else
-                {
-                    string Code = ParamsQuery("code");
-                    openid = GetOauthAccessOpenId(Code)?.openid;//重新取得用户的openid
-                    //SetSession("OpenId", Code);
-                }
-            //}
+            //先要判断是否是获取code后跳转过来的
+            string code = ParamsQuery("code");
+            if (string.IsNullOrEmpty(code))
+            {
+                //Code为空时，先获取Code
+                string GetCodeUrls = GetCodeUrl(url);
+                _httpContext.HttpContext.Response.Redirect(GetCodeUrls);//先跳转到微信的服务器，取得code后会跳回来这页面的
+            }
+            else
+            {
+                string Code = ParamsQuery("code");
+                openid = GetOauthAccessOpenId(Code)?.openid;//重新取得用户的openid
+                                                            //SetSession("OpenId", Code);
+            }
             return openid;
         }
 

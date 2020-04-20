@@ -1,3 +1,15 @@
 {
-  "ConnectionString": "server=114.115.142.34;user id=root;pwd=123456;database=pfhouse;SslMode = none;Charset=utf8"
+  "ConnectionString": "server=114.115.142.34;user id=root;pwd=123456;database=pfhouse;SslMode = none;Charset=utf8",
+  "WxInfo": {
+    "AppId": "wx3731307d4a3b4ac9",
+    "AppSecret": "ac058e53102afe48a60760f2c8f1ccba",
+    "Token": "",
+    "Pay": {
+      "MchName": "{'sec':'123123123123123',}", //{"商户ID":"商户名称"}
+      "Secret": "{'sec':'123123123123123',}", //{"商户ID":"商户Secret"}
+      "MchID": "{'0':'sec','1':'sec','2':'sec'}", //{"缴费类型":"商户ID"}
+      "Pay_url": "https://api.mch.weixin.qq.com/pay/unifiedorder",
+      "CallBackUrl": "https://api.mch.weixin.qq.com"
+    }
+  }
 }

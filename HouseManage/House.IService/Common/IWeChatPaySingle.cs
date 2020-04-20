@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Data.MSSQL.Model.Data;
+using House.IService.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,10 +10,17 @@ namespace House.IService.Common
     {
         /// <summary>
         /// 生成统一下单支付接口
-        /// 接口返回预付订单Id：preorder_id
+        /// 接口返回预付订单签名对象
         /// </summary>
         /// <returns></returns>
-        string CreateOrder();
+        Dictionary<string, object> GetPrepaySign(wy_wxpay payModel);
+
+        /// <summary>
+        ///根据参数生成预付订单签名对象
+        /// </summary>
+        /// <param name="prePayId"></param>
+        /// <returns></returns>
+        Dictionary<string, object> GetParamStrByPrePayId(string appId, string prePayId, string MchSecret);
 
     }
 }

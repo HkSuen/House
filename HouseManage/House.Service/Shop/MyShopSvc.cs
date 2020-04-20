@@ -42,13 +42,31 @@ namespace House.Service.Shop
             {
                 conditions = conditions.And(c => c.OPEN_ID == OpenId);
             }
-            if (string.IsNullOrEmpty(Type))
+            if (!string.IsNullOrEmpty(Type) && Type != "-1")
             {
-                conditions = conditions.And(c => c.JFLX == Type);
+                conditions = conditions.And(c => c.JFLX == Type.Trim());
             }
             var list = _db.CurrentDb<v_pay_record>().GetPageList(conditions.ToExpression(),page);
             return list;
         }
 
+        public List<wy_pay_record> GetPayRecord(string OpenId, string Type,int? payState, PageModel page)
+        {
+            var conditions = Expressionable.Create<wy_pay_record>();
+            if (!string.IsNullOrEmpty(OpenId))
+            {
+                conditions = conditions.And(c => c.OPEN_ID == OpenId);
+            }
+            if (!string.IsNullOrEmpty(Type) && Type != "-1")
+            {
+                conditions = conditions.And(c => c.JFLX == Type.Trim());
+            }
+            if (payState.HasValue)
+            {
+                conditions = conditions.And(c => c.JFZT == payState.Value);
+            }
+            var list = _db.CurrentDb<wy_pay_record>().GetPageList(conditions.ToExpression(), page);
+            return list;
+        }
     }
 }
