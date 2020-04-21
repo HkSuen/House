@@ -63,6 +63,8 @@ namespace HouseManage.Controllers
 
         public IActionResult EditCheckResult(string RESULT_ID)
         {
+            ViewBag.FWINFO= dailyCheckSvc.GetEditShopInfo(RESULT_ID);
+            ViewBag.CHECKINFO = dailyCheckSvc.GetEditTaskResultFormInfo(RESULT_ID);
             return View();
         }
     }

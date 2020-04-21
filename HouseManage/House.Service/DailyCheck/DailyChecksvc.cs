@@ -38,10 +38,11 @@ namespace House.Service
         public List<TaskListModel> GetTaskDetailInfo(string RWBH,string OPEN_ID,int page, int limit)
         {
             var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_shopinfo>((a, b, c) => new object[] {
-                JoinType.Left,a.FWID==b.FWID&&b.IS_DELETE==0,
-                JoinType.Left,b.CZ_SHID==c.CZ_SHID&&c.IS_DELETE==0
+                JoinType.Left,a.FWID==b.FWID,
+                JoinType.Left,b.CZ_SHID==c.CZ_SHID
             })
-                .Where(a => a.TASK_ID ==SqlFunc.Subqueryable<wy_check_task>().Where(s=>s.RWBH==RWBH).Select(s=>s.TASK_ID)
+                .Where((a,b,c) => b.IS_DELETE==0&&c.IS_DELETE==0&&
+                a.TASK_ID ==SqlFunc.Subqueryable<wy_check_task>().Where(s=>s.RWBH==RWBH).Select(s=>s.TASK_ID)
             &&a.IS_DELETE==0&&a.JCR==OPEN_ID)
                 .Select<TaskListModel>()
                 .Skip((page - 1) * limit).Take(limit).ToList();
@@ -144,11 +145,12 @@ namespace House.Service
 
         public List<SimpleShopInfo> GetEditShopInfo(string RESULT_ID)
         {
-            var list = DB.Db().Queryable<wy_check_result, wy_shopinfo>((a, b) => new object[]
+            var list = DB.Db().Queryable<wy_check_result, wy_houseinfo,wy_shopinfo>((a, b,c) => new object[]
             {
-                JoinType.Inner,a.FWID==b.FWID&&b.IS_DELETE==0
+                JoinType.Inner,a.FWID==b.FWID,
+                JoinType.Inner,b.CZ_SHID==c.CZ_SHID
             })
-                .Where(a => a.RESULT_ID == RESULT_ID)
+                .Where((a,b,c) => a.RESULT_ID == RESULT_ID&&b.IS_DELETE==0&&c.IS_DELETE==0)
                 .Select<SimpleShopInfo>()
                 .ToList();
             return list;
@@ -165,15 +167,30 @@ namespace House.Service
                 JoinType.Inner,e.TASK_ID==a.TASK_ID,
                 JoinType.Left,d.Code==f.DETAIL_CODE
               })
-                .Where((a, b, c, d, e, f) => f.RESULT_ID == RESULT_ID)
+                .Where((a, b, c, d, e, f) => e.RESULT_ID == RESULT_ID)
                 .Select((a, b, c, d, e, f) => new SimpleCheckResultDetail
                 {
-                    Code = c.Code,
-                    Name = c.Name,
+                    Code = d.Code,
+                    Name = d.Name,
                     CHECK_DETAIL_RESULT = f.CHECK_DETAIL_RESULT,
                     CHECK_RESULT_ID = f.CHECK_DETAIL_ID,
                 }).ToList();
+            
             return list;
+        }
+
+        public string PostUpdateCheckResult(Dictionary<string, object> d, string OPEN_ID)
+        {
+            wy_check_result wcr = new wy_check_result()
+            {
+                RESULT_ID = d["RESULT_ID"].ToString(),
+                FWID = d["FWID"].ToString(),
+                JCJG = Convert.ToInt32(d["JCJG"]),
+                WTMS = d["WTMS"].ToString(),
+                ZGYQ = d["ZGYQ"].ToString(),
+            };
+            List<Dictionary<string, object>> list = JArray.FromObject(d["CHECK_DETAIL_RESULT"]).ToObject<List<Dictionary<string, object>>>();
+            return "success";
         }
     }
 }

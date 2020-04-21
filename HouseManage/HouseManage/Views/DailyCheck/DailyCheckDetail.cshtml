@@ -142,7 +142,6 @@
             //timeout: 50000,
             //headers: { 'Content-Type': 'application/json' },
             success: function (data) {
-                var ele = document.getElementById("content").innerHTML;
                 document.getElementById("content").innerHTML = data;
             },
             error: function (xhr, type, errorThrown) {

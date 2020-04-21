@@ -160,15 +160,14 @@
             };
             function pass(id) {
                 console.log(id);
-                document.getElementById(id).className = "mui-btn mui-btn-primary";
+                var ele = document.getElementById(id);
+                ele.className = "mui-btn mui-btn-primary";
                 temp[id] = 1;
-                console.log(temp);
-                CreateListForm();
             }
             function unpass(id) {
+                var ele = document.getElementById(id);
+                ele.className = "mui-btn mui-btn-danger";
                 temp[id] = 0;
-                document.getElementById(id).className = "mui-btn mui-btn-danger";
-                console.log(temp);
             }
             function submit() {
                 var ele = document.getElementsByName("radio1");

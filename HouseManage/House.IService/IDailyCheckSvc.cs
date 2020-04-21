@@ -61,5 +61,7 @@ namespace House.IService
         /// <param name="RESULT_ID"></param>
         /// <returns></returns>
         List<SimpleCheckResultDetail> GetEditTaskResultFormInfo(string RESULT_ID);
+
+        string PostUpdateCheckResult(Dictionary<string, object> d, string OPEN_ID);
     }
 }
