@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "自助缴费";
+    ViewData["Title"] = Model.JFZT != 1 ? "自助缴费" : "缴费详情";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var d = Model;
 }
@@ -12,6 +12,10 @@
 <div class="mui-content">
     <div class="mui-card">
         <form class="mui-input-group">
+            <div class="mui-input-row" style="padding-bottom:20px">
+                <label>收款单位</label>
+                <input type="text" value="@ViewBag.Payee" readonly>
+            </div>
             <div class="mui-input-row" style="padding-bottom:20px">
                 <label>房屋编号</label>
                 <input type="text" value="@d.FWBH" readonly>
@@ -25,6 +29,17 @@
                 <input type="text" value="@d.JFLXName" readonly>
             </div>
             @{
+                if (d.JFLX == "0")
+                {
+                    <div class="mui-input-row">
+                        <label>有效期起</label>
+                        <input type="text" value="@d.YXQS" readonly>
+                    </div>
+                    <div class="mui-input-row">
+                        <label>有效期止</label>
+                        <input type="text" value="@d.YXQZ" readonly>
+                    </div>
+                }
                 if (d.JFLX == "1")
                 {
                     <div class="mui-input-row">
@@ -55,7 +70,16 @@
     </div>
     <p style="margin: 40px 10px;"></p>
     <div class="mui-col-sm-12 mui-col-xs-12" style="text-align:center;">
-        <button type="button" class="mui-btn mui-btn-primary pay" style="width:91%;" id="submit">立即支付</button>
+        @{
+            if (d.JFZT != 1)
+            {
+                <button type="button" class="mui-btn mui-btn-primary pay" style="width:91%;" id="submit">立即支付</button>
+            }
+            else
+            {
+                <button type="button" class="mui-btn mui-btn-success detail" style="width:91%;" id="submit">查看收据</button>
+            }
+        }
     </div>
 </div>
 <style>
@@ -111,6 +135,10 @@
                var data = res.data || null;
                 if (data != null) {
                     Sign = data.sign;
+                    if (Sign == null) {
+                        mui.hideLoading();
+                        mui.alert("预支付失败！", "提示");
+                    }
                     payInit();
                 } else {
                     mui.hideLoading();
@@ -119,6 +147,9 @@
                }
             });
         })
+        jq("button.detail").on("tap", function () {
+            window.location.href = "OrderDetail/@d.ID";
+        });
     })(mui)
 
 

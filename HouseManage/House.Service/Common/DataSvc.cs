@@ -8,8 +8,8 @@ namespace House.Service.Common
     public class DataSvc
     {
         protected IDataConfig _db = null;
-        public DataSvc(IDataConfig config) { 
-        
+        public DataSvc(IDataConfig config) {
+            _db = config;
         }
     }
 }

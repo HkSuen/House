@@ -1,4 +1,5 @@
 ﻿using Data.MSSQL.Model.Data;
+using House.IService.Model.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -47,7 +48,7 @@ namespace House.IService.Order
         /// </summary>
         /// <param name="record"></param>
         /// <returns></returns>
-        wy_wxpay GetWxPay(v_pay_record record);
+        wy_wxpay GetWxPay(OrderDto record);
 
         /// <summary>
         /// 插入数据
@@ -65,6 +66,14 @@ namespace House.IService.Order
         v_pay_record GetRecord(string recordId, string HouseId);
 
         /// <summary>
+        /// 获取Recore提醒信息转成订单数据
+        /// </summary>
+        /// <param name="recoredId"></param>
+        /// <param name="HouseId"></param>
+        /// <returns></returns>
+        OrderDto GetWxPay(string recordId, string HouseId);
+
+        /// <summary>
         /// 根据参数获取支付展示详情
         /// </summary>
         /// <param name="UserId"></param>
@@ -73,6 +82,11 @@ namespace House.IService.Order
         /// <returns></returns>
         List<object> GetPayDetails(string UserId,string HouseId,string RecordId);
 
-
+        /// <summary>
+        /// 根据订单ID获取微信支付的详细内容
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        wy_wxpay GetWxOrderDetail(string Id);
     }
 }

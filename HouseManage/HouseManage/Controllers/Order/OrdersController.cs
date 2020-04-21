@@ -30,6 +30,7 @@ namespace HouseManage.Controllers.Order
         {
             dynamic DetailInfo = this._order.GetPayDetails(u,f,r).FirstOrDefault();
             DetailInfo.JFLXName = Fee.GetKey(Convert.ToInt32(DetailInfo.JFLX));
+            ViewBag.Payee = CommonFiled.MchName(Convert.ToInt32(DetailInfo.JFLX));
             return View(DetailInfo);
         }
 
@@ -46,7 +47,7 @@ namespace HouseManage.Controllers.Order
             if (pay == null || DateTime.Now > pay.PREPAY_ENDTIME)
             {
                 //获取提醒订单信息
-                var PayRecord = this._order.GetRecord(recordId, houseId);
+                var PayRecord = this._order.GetWxPay(recordId, houseId);
                 pay = this._order.GetWxPay(PayRecord);
                 pay.USER_IP = UserIP;
                 //将订单存到数据库
@@ -55,7 +56,7 @@ namespace HouseManage.Controllers.Order
                 };
             }
             // 这里需要过滤订单信息
-            return Data(ResultCode.SCCUESS, new { data = pay, sign = this._order.GetPayParamsByWxModel(pay) });
+            return Data(ResultCode.SCCUESS, new { sign = this._order.GetPayParamsByWxModel(pay) });
         }
 
         /// <summary>
@@ -82,5 +83,16 @@ namespace HouseManage.Controllers.Order
             }
             return Content(result, "text/xml");
         }
+
+        [AllowAnonymous]
+        //[Authorize(Roles ="Admin")]
+        public ActionResult OrderDetail(string id)
+        {
+            wy_wxpay Model = this._order.GetWxOrderDetail(id);
+            ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
+            ViewBag.MoneyNum = CommonFiled.CmycurD(Model.TOTAL_FEE / 10);
+            return View(Model);
+        }
+             
     }
 }

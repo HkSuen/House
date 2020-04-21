@@ -76,7 +76,7 @@ namespace House.Service.Common
         public async Task<string> CheckServer()
         {
             //1 自己的服务器代码接受微信提交过来的4个参数
-            string token = Config.JsonReader.Get("WxInfo:Token");
+            string token =  CommonFiled.token;
             string signature = ParamsQuery("signature");
             string timestamp = ParamsQuery("timestamp");
             string nonce = ParamsQuery("nonce");
@@ -127,7 +127,7 @@ namespace House.Service.Common
         {
             string openid = "";
             var host1 = _httpContext.HttpContext.Request.Host.Value;
-            var host = "http://1402b84a.ngrok.io"; //测试先写死
+            var host = CommonFiled.DomainURL; //测试先写死
             string url = host + _httpContext.HttpContext.Request.Path.Value;
             //先要判断是否是获取code后跳转过来的
             string code = ParamsQuery("code");

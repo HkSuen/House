@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewData["Title"] = "单据详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var d = Model;
+}
+
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">@ViewData["Title"]</h1>
+</header>
+<div class="mui-content">
+    <div class="mui-card">
+        <div class="mui-row">
+            <div class="mui-col-sm-12 mui-col-xs-12">
+                <span class="mui-col-sm-12 mui-col-xs-12 dj_title">普丰物业（收款收据）</span>
+            </div>
+            <div class="mui-col-sm-12 mui-col-xs-12">
+                <span class="mui-col-sm-10 mui-col-xs-10" style="display:block;text-align:center">收款时间：@d.CREATE_TIME</span>
+            </div>
+            <div class="mui-col-sm-12 mui-col-xs-12 dj_content">
+                <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
+                    <div class="mui-col-sm-12 mui-col-xs-12 flleft">
+                        <span>订单号码：</span>
+                        <span>@d.OPEN_ID</span>
+                    </div>
+                </div>
+                <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
+                    <div class="mui-col-sm-6 mui-col-xs-6 flleft">
+                        <span>商户姓名：</span>
+                        <span>@d.USER_NAME</span>
+                    </div>
+                    <div class="mui-col-sm-6 mui-col-xs-6 flleft">
+                        <span>底商位置：</span>
+                        <span>@d.HOUSE_ADDRESS</span>
+                    </div>
+                </div>
+                <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
+                    <div class="mui-col-sm-6 mui-col-xs-6 flleft">
+                        <span>费用项目：</span>
+                        <span>@ViewBag.Type</span>
+                    </div>
+                    <div class="mui-col-sm-6 mui-col-xs-6 flleft">
+                        <span>底商面积：</span>
+                        <span>@d.HOUSE_AREA</span>
+                    </div>
+                </div>
+                <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
+                    <div class="mui-col-sm-6 mui-col-xs-6 flleft">
+                        <span>单 价：</span>
+                        <span>@d.UNIT_PRICE</span>
+                    </div>
+                    <div class="mui-col-sm-6 mui-col-xs-6 flleft">
+                        <span>金 额：</span>
+                        <span>@ViewBag.MoneyNum</span>
+                    </div>
+                </div>
+                <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
+                    <div class="mui-col-sm-12 mui-col-xs-12 flleft">
+                        <span>金额大写：</span>
+                        <span>@d.TOTAL_FEE_CH</span>
+                    </div>
+                </div>
+                @*<div class="mui-col-sm-12 mui-col-xs-12 dj_row">
+                    <div class="mui-col-sm-12 mui-col-xs-12 flleft">
+                        <span>有效起止时间：</span>
+                        <span>2019-02-02 · 2019-02-02</span>
+                    </div>
+                </div>*@
+            </div>
+            <div class="mui-col-sm-12 mui-col-xs-12" style="margin-top:20px;">
+                <span class="mui-col-sm-10 mui-col-xs-10" style="display:block;text-align:right">收款人：@d.MECH_NAME</span>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /*隐藏google touch事件错误*/
+    * {
+        touch-action: none;
+    }
+
+    .dj_title {
+        display: block;
+        text-align: center;
+        font-size: 20px;
+        line-height: 50px;
+    }
+
+    .flleft {
+        float: left;
+    }
+
+    .dj_content {
+        margin-top:15px;
+        padding: 10px;
+        /*border: 1px solid;*/
+    }
+
+    .dj_content .dj_row{
+        height:30px;
+    }
+        .dj_content .dj_row div {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dj_content div span:last-child {
+            text-decoration: underline
+        }
+</style>
+<script type="text/javascript">
+    jq = $;
+    (function ($) {
+        $.init({
+            swipeBack: true //启用右滑关闭功能
+        });
+    })(mui)
+
+
+</script>

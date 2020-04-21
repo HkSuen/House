@@ -22,7 +22,8 @@ namespace Data.MSSQL.Common
         public static string Get(string key)
         {
             Init();
-            return _configuration.GetSection(key).Value;
+            IConfigurationSection value = _configuration.GetSection(key);
+            return value.Value;
         }
     }
 }

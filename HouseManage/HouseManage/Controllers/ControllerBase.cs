@@ -12,9 +12,8 @@ namespace HouseManage.Controllers
 {
     public class ControllerBase : Controller
     {
-        
-        //protected string OpenID => Request.HttpContext.User.Identity.Name;
-        protected string OpenID => "123";
+
+        protected string OpenID => Request.HttpContext.User.Identity.Name;
 
         protected string UserIP
         {

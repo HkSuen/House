@@ -39,9 +39,13 @@ namespace House.Service.Common
             //3.获取PrepayId
             string ResponseInfo = HttpHelper.PostHttpResponse(CommonFiled.payUrl, XmlPay);
             string ReprepayId = GetPrepayId(ResponseInfo);
-            //4.根据prepayId生成JSAPI请求数据
-            var MchSec = CommonFiled.MchSecret(payModel.FEE_TYPES);
-            return GetParamStrByPrePayId(payModel.APP_ID, ReprepayId, MchSec);
+            if (!string.IsNullOrEmpty(ReprepayId))
+            {
+                //4.根据prepayId生成JSAPI请求数据
+                var MchSec = CommonFiled.MchSecret(payModel.FEE_TYPES);
+                return GetParamStrByPrePayId(payModel.APP_ID, ReprepayId, MchSec);
+            }
+            return null;
         }
 
         public Dictionary<string,object> GetParamStrByPrePayId(string appId, string prePayId,string MchSecret)
@@ -121,7 +125,7 @@ namespace House.Service.Common
                     return wxPay;
                 };
             }
-            return wxPay;
+            return wxPay; 
         }
 
     }

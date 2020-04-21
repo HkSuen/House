@@ -16,7 +16,7 @@ namespace Data.MSSQL.Model.Data
            /// <summary>
            /// Desc:
            /// Default:
-           /// Nullable:True
+           /// Nullable:False
            /// </summary>           
            public string RESULT_ID {get;set;}
 

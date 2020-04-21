@@ -1,15 +1,17 @@
 {
-  "ConnectionString": "server=114.115.142.34;user id=root;pwd=123456;database=pfhouse;SslMode = none;Charset=utf8",
+  "ConnectionString": "server=114.115.142.34;user id=root;pwd=123456;database=pfhouse_back;SslMode = none;Charset=utf8",
   "WxInfo": {
+    "Domain_Url": "http://55acb256.ngrok.io", //åŸŸå
     "AppId": "wx3731307d4a3b4ac9",
     "AppSecret": "ac058e53102afe48a60760f2c8f1ccba",
-    "Token": "",
+    "Token": "wxjhkj",
+    "RegPage": "/User/Register",
     "Pay": {
-      "MchName": "{'sec':'123123123123123',}", //{"ÉÌ»§ID":"ÉÌ»§Ãû³Æ"}
-      "Secret": "{'sec':'123123123123123',}", //{"ÉÌ»§ID":"ÉÌ»§Secret"}
-      "MchID": "{'0':'sec','1':'sec','2':'sec'}", //{"½É·ÑÀàĞÍ":"ÉÌ»§ID"}
+      "MchName": "{'1584864331':'æ™®ä¸°ç‰©ä¸šåˆ†å…¬å¸','1585873541':'æ™®ä¸°æˆ¿åœ°äº§åˆ†å…¬å¸'}", //{"å•†æˆ·ID":"å•†æˆ·åç§°"}
+      "Secret": "{'1584864331':'123123123123123','1585873541':'123123123123123'}", //{"å•†æˆ·ID":"å•†æˆ·Secret"}
+      "MchID": "{'0':'1584864331','1':'1584864331','2':'1585873541'}", //{"ç¼´è´¹ç±»å‹":"å•†æˆ·ID"}
       "Pay_url": "https://api.mch.weixin.qq.com/pay/unifiedorder",
-      "CallBackUrl": "https://api.mch.weixin.qq.com"
+      "CallBackUrl": "http://55acb256.ngrok.io/Orders/PayResult"
     }
   }
 }
