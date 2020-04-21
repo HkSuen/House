@@ -161,7 +161,7 @@ namespace House.Service
             var list = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config, wy_check_result, wy_check_result_detail>
                 ((a, b, c, d, e, f) => new object[]
               {
-                JoinType.Inner,a.PLAN_DETAIL_ID==b.PLAN_DETAIL_ID&&b.IS_DELETE==0,
+                JoinType.Inner,a.PLAN_DETAIL_ID==b.PLAN_DETAIL_ID,
                 JoinType.Inner,b.JCLX==c.Code,
                 JoinType.Inner,c.ID==d.ParentID,
                 JoinType.Inner,e.TASK_ID==a.TASK_ID,
@@ -175,7 +175,25 @@ namespace House.Service
                     CHECK_DETAIL_RESULT = f.CHECK_DETAIL_RESULT,
                     CHECK_RESULT_ID = f.CHECK_DETAIL_ID,
                 }).ToList();
-            
+
+            var sql = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config, wy_check_result, wy_check_result_detail>
+                ((a, b, c, d, e, f) => new object[]
+              {
+                JoinType.Inner,a.PLAN_DETAIL_ID==b.PLAN_DETAIL_ID,
+                JoinType.Inner,b.JCLX==c.Code,
+                JoinType.Inner,c.ID==d.ParentID,
+                JoinType.Inner,e.TASK_ID==a.TASK_ID,
+                JoinType.Left,d.Code==f.DETAIL_CODE
+              })
+                .Where((a, b, c, d, e, f) => e.RESULT_ID == RESULT_ID)
+                .Select((a, b, c, d, e, f) => new SimpleCheckResultDetail
+                {
+                    Code = d.Code,
+                    Name = d.Name,
+                    CHECK_DETAIL_RESULT = f.CHECK_DETAIL_RESULT,
+                    CHECK_RESULT_ID = f.CHECK_DETAIL_ID,
+                }).ToSql();
+
             return list;
         }
 
