@@ -25,7 +25,6 @@ namespace HouseManage.Controllers.Order
             _xml = xml;
         }
 
-        [AllowAnonymous]
         public ActionResult Order(string r,string f,string u)
         {
             dynamic DetailInfo = this._order.GetPayDetails(u,f,r).FirstOrDefault();
@@ -34,7 +33,6 @@ namespace HouseManage.Controllers.Order
             return View(DetailInfo);
         }
 
-        [AllowAnonymous]
         public JsonResult CreateOrder(string recordId,string houseId,string UId)
         {
             if (string.IsNullOrEmpty(recordId) || string.IsNullOrEmpty(houseId) || string.IsNullOrEmpty(UId))
@@ -63,7 +61,6 @@ namespace HouseManage.Controllers.Order
         /// 微信异步通知支付
         /// </summary>
         /// <returns></returns>
-        [AllowAnonymous]
         public ActionResult PayResult() {
             string SUCCESS = "SUCCESS";
             string FAIL = "FAIL";
@@ -75,7 +72,6 @@ namespace HouseManage.Controllers.Order
                 stream.Read(buffer, 0, buffer.Length);
                 string content = Encoding.UTF8.GetString(buffer);
                 Dictionary<string, object> valuePairs = this._xml.XmlStrToDic(content);
-
             }
             catch (Exception ex)
             {
@@ -84,7 +80,6 @@ namespace HouseManage.Controllers.Order
             return Content(result, "text/xml");
         }
 
-        [AllowAnonymous]
         //[Authorize(Roles ="Admin")]
         public ActionResult OrderDetail(string id)
         {

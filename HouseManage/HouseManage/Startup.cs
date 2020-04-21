@@ -82,7 +82,7 @@ namespace HouseManage
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "WeChat/{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
