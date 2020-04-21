@@ -127,7 +127,7 @@ namespace House.Service.Common
         {
             string openid = "";
             var host1 = _httpContext.HttpContext.Request.Host.Value;
-            var host = CommonFiled.DomainURL; //测试先写死
+            var host = CommonFiled.DomainURL; 
             string url = host + _httpContext.HttpContext.Request.Path.Value;
             //先要判断是否是获取code后跳转过来的
             string code = ParamsQuery("code");

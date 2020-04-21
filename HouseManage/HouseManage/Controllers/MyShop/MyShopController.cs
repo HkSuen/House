@@ -13,7 +13,7 @@ using Paramter = HouseManage.Models.Request;
 
 namespace HouseManage.Controllers.MyShop
 {
-    [AllowAnonymous]
+
     public class MyShopController : ControllerBase
     {
         private IMyShopSvc _shop;
