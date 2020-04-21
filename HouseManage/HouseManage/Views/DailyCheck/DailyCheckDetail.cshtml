@@ -110,7 +110,7 @@
         //})
     };
     function GetCheckResultDetail(RESULT_ID) {
-        console.log(RESULT_ID);
+        window.location.href = "/DailyCheck/EditCheckResult?RESULT_ID=" + RESULT_ID;
     }
     function GetMoreCheckResult() {
         this.temp.page++;
@@ -151,7 +151,9 @@
         })
     }
     function CreateCheckResult() {
-        window.location.href = "/DailyCheck/CreateCheckResult";
+        var idArray = window.location.search.split("=");
+        var id = idArray[1];
+        window.location.href = "/DailyCheck/CreateCheckResult?RWBH=" + id;
     }
 
 </script>

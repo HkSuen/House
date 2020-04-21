@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using House.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace HouseManage.Controllers
 {
@@ -43,7 +44,24 @@ namespace HouseManage.Controllers
             return PartialView(dailyCheckSvc.GetTaskDetailInfo(RWBH, OPEN_ID, page, limit));
         }
 
-        public IActionResult CreateCheckResult()
+        public IActionResult CreateCheckResult(string RWBH)
+        {
+            return View(dailyCheckSvc.GetCreateTaskResultFormInfo(RWBH));
+        }
+        [HttpGet]
+        public IActionResult GetShopInfo(string RWBH)
+        {
+            return Ok(dailyCheckSvc.GetShopInfo(RWBH));
+        }
+        [HttpPost]
+        public IActionResult PostCheckResult([FromBody]JObject value)
+        {
+            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
+            string OPEN_ID = "123123123123";
+            return Ok(dailyCheckSvc.PostCheckResult(value.ToObject<Dictionary<string, object>>(), OPEN_ID));
+        }
+
+        public IActionResult EditCheckResult(string RESULT_ID)
         {
             return View();
         }

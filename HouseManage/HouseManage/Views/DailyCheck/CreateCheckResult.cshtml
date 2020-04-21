@@ -2,7 +2,204 @@
 @{
     ViewData["Title"] = "CreateCheckResult";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @model List<Data.MSSQL.Model.Data.wy_task_detail_config>
 }
+    <div id="popover" class="mui-popover">
+        <div class="mui-scroll-wrapper" id="scroll">
+            <div class="mui-scroll">
+                <ul class="mui-table-view" id="menu">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="main-container" class="mui-content mui-scroll-wrapper" style="height:100%">
+        <div class="mui-scroll">
+            <div class="mui-card">
+                <div class="mui-card-header">商户信息</div>
+                <!--内容区-->
+                <div class="mui-card-content">
+                    <div class="mui-row">
+                        <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                            商户编号:<label id="SHOPBH"></label>
+                        </div>
+                        <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                            租户姓名:<label id="ZHXM"></label>
+                        </div>
+                    </div>
+                    <div class="mui-row">
+                        <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                            商铺名称:<label id="SHOP_NAME"></label>
+                        </div>
+                    </div>
+                    <a href="#popover" id="bottomPopover" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined" style="padding: 5px 20px;">选择商户</a>
+                </div>
+                <!--页脚，放置补充信息或支持的操作-->
+            </div>
+            <div class="mui-card">
+                <div class="mui-card-header">检查内容</div>
+                <div class="mui-card-content">
+                    <ul class="mui-table-view">
+                        @foreach (var item in Model)
+                        {
+                            <li class="mui-table-view-cell">
+                                <div class="mui-row" id="list">
+                                    <div class="mui-col-sm-3 mui-col-xs-3">
+                                        <button type="button" class="mui-btn mui-btn-primary" onclick="pass('@item.Code')" value="1">合格</button>
+                                    </div>
+                                    <div class="mui-col-sm-3 mui-col-xs-3">
+                                        <button type="button" class="mui-btn mui-btn-danger" onclick="unpass('@item.Code')" value="0">不合格</button>
+                                    </div>
+                                    <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
+                                        <button type="button" class="mui-btn" id="@item.Code" value="0" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="mui-card">
+                <div class="mui-card-header">检查结果</div>
+                <div class="mui-card-content">
+                    <div class="mui-row">
+                        <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
+                            <label>检查结果:</label>
+                        </div>
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                            <div class="mui-input-row mui-radio">
+                                <label>合格</label>
+                                <input name="radio1" value="1" type="radio">
+                            </div>
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                            <div class="mui-input-row mui-radio">
+                                <label>不合格</label>
+                                <input name="radio1" value="0" type="radio">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mui-row">
+                        <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
+                            <label>问题描述:</label>
+                        </div>
+                        <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                            <input type="text" class="mui-input-clear" placeholder="请输入问题描述" style="width:95%" id="describe" value="">
+                        </div>
+                    </div>
+                    <div class="mui-row">
+                        <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
+                            <label>整改要求:</label>
+                        </div>
+                        <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                            <input type="text" class="mui-input-clear" placeholder="请输入整改要求" style="width:95%" id="Requirement" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="mui-btn mui-btn-primary" style="width:100%" onclick="submit()">提交</button>
 
-<h1>CreateCheckResult</h1>
+            
+        </div>
+            
+        </div>
 
+        <script>
+            var temp = {
+                FWID: "",
+            };
+            mui('.mui-scroll-wrapper').scroll({
+                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+            });
+            mui('.bottomPopover').popover('toggle');
+            window.onload = function () {
+                var height = document.documentElement.clientWidth;
+                this.console.log(height);
+                var idArray = window.location.search.split("=");
+                var id = idArray[1];
+                var scroll = this.document.getElementById("scroll");
+                scroll.style.height = 0.6 * height + "px";
+                this.mui.ajax('/DailyCheck/GetShopInfo?RWBH=' + id, {
+                    type: 'get',
+                    //timeout: 50000,
+                    //headers: { 'Content-Type': 'application/json' },
+                    success: function (data) {
+                        mui = this.mui;
+                        var ele = document.getElementById("menu");
+                        for (var i = 0; i < data.length; i++) {
+                            let copydata = data[i];
+                            var li = document.createElement("li");
+                            li.className = "mui-table-view-cell";
+                            var a = document.createElement("a");
+                            a.href = "#";
+                            a.innerHTML = data[i].SHOPBH + ":" + data[i].SHOP_NAME;
+                            a.id = data[i].FWID;
+                            a.addEventListener("click", function (e) {
+                                console.log(copydata);
+                                document.getElementById("SHOPBH").innerHTML = copydata.SHOPBH;
+                                document.getElementById("SHOPBH").value = copydata.SHOPBH;
+                                document.getElementById("ZHXM").innerHTML = copydata.ZHXM;
+                                document.getElementById("ZHXM").value = copydata.ZHXM;
+                                document.getElementById("SHOP_NAME").innerHTML = copydata.SHOP_NAME;
+                                document.getElementById("SHOP_NAME").value = copydata.SHOP_NAME;
+                                temp.FWID = copydata.FWID;
+
+                            });
+                            li.appendChild(a);
+                            ele.appendChild(li);
+                        }
+                    },
+                    error: function (xhr, type, errorThrown) {
+                        console.log(type);
+                    }
+                })
+
+            }
+            function CreateListForm() {
+                var ele = document.getElementById("statusbutton").firstChild;
+                console.log(ele);
+            };
+            function pass(id) {
+                console.log(id);
+                document.getElementById(id).className = "mui-btn mui-btn-primary";
+                temp[id] = 1;
+                console.log(temp);
+                CreateListForm();
+            }
+            function unpass(id) {
+                temp[id] = 0;
+                document.getElementById(id).className = "mui-btn mui-btn-danger";
+                console.log(temp);
+            }
+            function submit() {
+                var ele = document.getElementsByName("radio1");
+                let radiovalue = "";
+                for (var i = 0; i < ele.length; i++) {
+                    if (ele[i].checked) {
+                    radiovalue = ele[i].value;
+                    };
+                };
+                let RWBH=window.location.search.split("=")[1]
+                let Alltemp = {
+                    RWBH: RWBH,
+                    JCJG: radiovalue,
+                    ZGYQ: document.getElementById("describe").value,
+                    WTMS: document.getElementById("Requirement").value,
+                };
+                Alltemp.RESULT_DETAIL = temp;
+                mui.ajax('/DailyCheck/PostCheckResult', {
+                    type: 'post',
+                    data: Alltemp,
+                    timeout: 50000,
+                    headers: { 'Content-Type': 'application/json' },
+                    success: function (data) {
+                        if (data.trim().toString() == "success") {
+                            console.log(123123);
+                            window.location.href = "/DailyCheck/DailyCheckDetail?RWBH=" + RWBH
+                        }
+                    },
+                    error: function (data) {
+
+                    },
+                })
+            }
+        </script>

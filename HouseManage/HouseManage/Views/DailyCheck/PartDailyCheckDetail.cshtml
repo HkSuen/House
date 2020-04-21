@@ -29,17 +29,17 @@
                     <label style="padding-top:10px">@item.SHOP_NAME</label>
                 </div>
                 <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
-                    <label style="padding-top:10px">检查状态</label>
+                    <label style="padding-top:10px">检查结果</label>
                 </div>
                 @{
                     var status = "";
                     if (item.JCJG == 0)
                     {
-                        status = "未完成";
+                        status = "不合格";
                     }
                     else
                     {
-                        status = "已完成";
+                        status = "合格";
                     }
                 }
                 <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
@@ -53,7 +53,7 @@
 
         <!--页脚，放置补充信息或支持的操作-->
         <div class="mui-card-footer" style="text-align:center;">
-            <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;" onclick="GetCheckResultDetail(@item.RESULT_ID)">修改</button>
+            <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;" onclick="GetCheckResultDetail('@item.RESULT_ID')">修改</button>
             <div class="mui-row">
                 <div class="mui-col-sm-4 mui-col-xs-4"></div>
                 <div class="mui-col-sm-4 mui-col-xs-4">

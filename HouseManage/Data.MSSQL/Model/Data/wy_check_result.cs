@@ -111,5 +111,19 @@ namespace Data.MSSQL.Model.Data
            /// </summary>           
            public string FWID {get;set;}
 
+           /// <summary>
+           /// Desc:整改要求
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string ZGYQ {get;set;}
+
+           /// <summary>
+           /// Desc:问题描述
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string WTMS {get;set;}
+
     }
 }
