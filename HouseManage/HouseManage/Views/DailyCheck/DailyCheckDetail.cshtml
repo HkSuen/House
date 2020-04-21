@@ -110,11 +110,11 @@
         //})
     };
     function GetCheckResultDetail(RESULT_ID) {
-        window.location.href = "/DailyCheck/EditCheckResult?RESULT_ID=" + RESULT_ID;
+        window.location.href = "EditCheckResult?RESULT_ID=" + RESULT_ID;
     }
     function GetMoreCheckResult() {
         this.temp.page++;
-        mui.ajax('/DailyCheck/PartDailyCheckDetail', {
+        mui.ajax('PartDailyCheckDetail', {
             data: temp,
             type: 'get',
             //timeout: 50000,
@@ -136,7 +136,7 @@
     }
     function GetIndex() {
         this.temp.page = 1;
-        mui.ajax('/DailyCheck/DailyCheckDetail', {
+        mui.ajax('DailyCheckDetail', {
             data: temp,
             type: 'get',
             //timeout: 50000,
@@ -152,7 +152,7 @@
     function CreateCheckResult() {
         var idArray = window.location.search.split("=");
         var id = idArray[1];
-        window.location.href = "/DailyCheck/CreateCheckResult?RWBH=" + id;
+        window.location.href = "CreateCheckResult?RWBH=" + id;
     }
 
 </script>

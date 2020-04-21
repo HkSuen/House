@@ -118,7 +118,7 @@
                 var id = idArray[1];
                 var scroll = this.document.getElementById("scroll");
                 scroll.style.height = 0.6 * height + "px";
-                this.mui.ajax('/DailyCheck/GetShopInfo?RWBH=' + id, {
+                this.mui.ajax('GetShopInfo?RWBH=' + id, {
                     type: 'get',
                     //timeout: 50000,
                     //headers: { 'Content-Type': 'application/json' },
@@ -185,7 +185,7 @@
                     WTMS: document.getElementById("Requirement").value,
                 };
                 Alltemp.RESULT_DETAIL = temp;
-                mui.ajax('/DailyCheck/PostCheckResult', {
+                mui.ajax('PostCheckResult', {
                     type: 'post',
                     data: Alltemp,
                     timeout: 50000,
@@ -193,7 +193,7 @@
                     success: function (data) {
                         if (data.trim().toString() == "success") {
                             console.log(123123);
-                            window.location.href = "/DailyCheck/DailyCheckDetail?RWBH=" + RWBH
+                            window.location.href = "DailyCheckDetail?RWBH=" + RWBH
                         }
                     },
                     error: function (data) {
