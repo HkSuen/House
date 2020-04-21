@@ -96,7 +96,7 @@
     function getHouseInfo() {
         var fwid = $("#fwid").text();
         var CZ_SHID = $("#CZ_SHID").text();
-        $.get('/Merchants/GetMerchantShopInfoListDetail', { FWID: fwid, CZ_SHID: CZ_SHID}, function (data) {
+        $.get('GetMerchantShopInfoListDetail', { FWID: fwid, CZ_SHID: CZ_SHID}, function (data) {
             if (data) {
                 if (data.list) {
                     setHouseInfo(data.list);
@@ -151,7 +151,7 @@
     //function getShopJiaoFei() {
     //    var fwid = $("#fwid").text();
     //    var CZ_SHID = $("#CZ_SHID").text();
-    //    $.get('/Merchants/GetMerchantShopJiaoFeiList', { FWID: fwid, CZ_SHID: CZ_SHID }, function (data) {
+    //    $.get('GetMerchantShopJiaoFeiList', { FWID: fwid, CZ_SHID: CZ_SHID }, function (data) {
     //        if (data) {
     //            if (data.list) {
     //                var div = document.body.querySelector('#div_parent');

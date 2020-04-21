@@ -128,7 +128,7 @@
     })(mui);
     function getHouseInfo() {
         var fwid = $("#fwid").text();
-        $.get('/Merchants/GetMerchantListHouseDetail', { FWID: fwid }, function (data) {
+        $.get('GetMerchantListHouseDetail', { FWID: fwid }, function (data) {
             if (data) {
                 if (data.list) {
                     setHouseInfo(data.list);
@@ -158,7 +158,7 @@
     }
     function getShopInfo() {
         var fwid = $("#fwid").text();
-        $.get('/Merchants/GetMerchantListShopDetail', { FWID: fwid }, function (data) {
+        $.get('GetMerchantListShopDetail', { FWID: fwid }, function (data) {
             if (data) {
                 if (data.list) {
                     setShopInfo(data.list);

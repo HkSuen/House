@@ -87,7 +87,7 @@
         });
         mui("#list_ul").on('tap', 'li', function (event) {
             var fwid = this.firstChild.getAttribute("fwid")
-            window.location.href = "/Merchants/GetMerchantListDetail?FWID=" + fwid;
+            window.location.href = "GetMerchantListDetail?FWID=" + fwid;
         });
     })(mui);
 
@@ -99,7 +99,7 @@
     }
     function getData() {
         $("#txt_housesxcode").val(-1);
-        $.get('/Merchants/GetBaseData', { areaCode: 'SSQY', companyCode: 'LSFGS' }, function (data) {
+        $.get('GetBaseData', { areaCode: 'SSQY', companyCode: 'LSFGS' }, function (data) {
             if (data) {
                 dataArea = data.areaList;
                 dataCompany = data.companyList;
@@ -180,7 +180,7 @@
         var txtFWSX = $("#txt_housesxcode").val();
         var txtSSQY = $("#txt_houseareacode").val();
         var txtLSFGS = $("#txt_housecompanycode").val();
-        $.get('/Merchants/GetMerchantList', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS }, function (data) {
+        $.get('GetMerchantList', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS }, function (data) {
             mui.hideLoading();
             if (data) {
                 setSpan(data.grayCount, data.greenCount, data.yellowCount);
@@ -230,7 +230,7 @@
             var txtSSQY = $("#txt_houseareacode").val();
             var txtLSFGS = $("#txt_housecompanycode").val();
 
-            $.get('/Merchants/GetMerchantListByPage', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS, page: Page, size: Size }, function (data) {
+            $.get('GetMerchantListByPage', { FWBH: txtFWBH, FWSX: txtFWSX, SSQY: txtSSQY, LSFGS: txtLSFGS, page: Page, size: Size }, function (data) {
                 mui.hideLoading();
                 if (data) {
                     setSpan(data.grayCount, data.greenCount, data.yellowCount);
