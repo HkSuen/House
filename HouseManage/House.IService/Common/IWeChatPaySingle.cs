@@ -22,5 +22,12 @@ namespace House.IService.Common
         /// <returns></returns>
         Dictionary<string, object> GetParamStrByPrePayId(string appId, string prePayId, string MchSecret);
 
+        /// <summary>
+        /// 检查签名
+        /// </summary>
+        /// <param name="Dic"></param>
+        /// <returns></returns>
+        bool CheckWxSign(Dictionary<string, object> Dic);
+
     }
 }

@@ -53,5 +53,15 @@ namespace House.Service.Common.Sign
             }
         }
 
+        public bool CheckSign(Dictionary<string, object> InDict, string TechPay_Key,string SignFiled = "sign")
+        {
+            if (InDict.Count <= 0 || string.IsNullOrEmpty(TechPay_Key) || !InDict.ContainsKey(SignFiled))
+            {
+                return false;
+            }
+            string sign = InDict[SignFiled].ToString();
+            InDict.Remove(SignFiled);
+            return this.WePaySign(InDict, TechPay_Key) == sign;
+        }
     }
 }

@@ -15,7 +15,6 @@ using System.Text;
 namespace House.Service.Order
 {
     public class OrderSvc : DataSvc, IOrderSvc
-
     {
         private IWeChatPaySingle _pay = null;
         public OrderSvc(IDataConfig config, IWeChatPaySingle paySingle)
@@ -38,9 +37,9 @@ namespace House.Service.Order
             throw new NotImplementedException();
         }
 
-        public wy_wxpay GetWxModelById(string OrderId)
+        public wy_wxpay GetWxPayById(string OrderId)
         {
-            throw new NotImplementedException();
+            return this._db.CurrentDb<wy_wxpay>().GetSingle(c => c.ORDER_ID == OrderId);
         }
 
         public wy_wxpay FindSingle(string recoredId, string HouseId, string UserId, string OpenId)
@@ -177,6 +176,17 @@ namespace House.Service.Order
                 return this._db.CurrentDb<wy_wxpay>().GetSingle(pay => pay.ID == Id);
             }
             return null;
+        }
+
+        public int Update(wy_wxpay wxpay)
+        {
+            int Result = 0;
+            using (var db = this._db.Db())
+            { //sql锁，正确处理避免死锁
+                Result = db.Updateable<wy_wxpay>().UpdateColumns(c => new { c.STATUS, c.PAY_TIME, c.STATUS_REMARK })
+                    .With(SqlWith.UpdLock).ExecuteCommand();
+            }
+            return Result;
         }
     }
 }

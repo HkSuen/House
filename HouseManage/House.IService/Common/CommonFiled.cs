@@ -188,6 +188,9 @@ namespace House.IService.Common
 
         #endregion
 
+        public static string FAIL = "FAIL";
+        public static string SUCCESS = "SUCCESS";
+
         #region 交易类型
         public static string JSAPI = "JSAPI";
         public static string NATIVE = "NATIVE";

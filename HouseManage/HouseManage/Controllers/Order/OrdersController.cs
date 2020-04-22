@@ -19,10 +19,12 @@ namespace HouseManage.Controllers.Order
     {
         private IOrderSvc _order = null;
         private IXMLHelperSingle _xml = null;
-        public OrdersController(IOrderSvc order, IXMLHelperSingle xml)
+        private IWeChatPaySingle _pay = null;
+        public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay)
         {
             _order = order;
             _xml = xml;
+            _pay = pay;
         }
 
         public ActionResult Order(string r, string f, string u)
@@ -50,8 +52,18 @@ namespace HouseManage.Controllers.Order
             //1.订单查询有无此数据,无数据默认创建新数据
             wy_wxpay pay = this._order.FindSingle(recordId, houseId, UId, OpenID);
             //原订单失效，异步更改状态
-            if (pay == null || DateTime.Now > pay.PREPAY_ENDTIME)
+            bool UpdateTime = DateTime.Now > pay.PREPAY_ENDTIME;
+            if (pay == null || UpdateTime)
             {
+                if (UpdateTime) //异步更新过期订单信息，并生成新的订单信息
+                {
+                    Task.Run(() =>
+                    {
+                        pay.STATUS = 1;
+                        pay.PAY_TIME = DateTime.Now;
+                        this._order.Update(pay);
+                    });
+                }
                 //获取提醒订单信息
                 var PayRecord = this._order.GetWxPay(recordId, houseId);
                 pay = this._order.GetWxPay(PayRecord);
@@ -72,9 +84,8 @@ namespace HouseManage.Controllers.Order
         /// <returns></returns>
         public ActionResult PayResult()
         {
-            string SUCCESS = "SUCCESS";
-            string FAIL = "FAIL";
             string result = "<xml><return_code><![CDATA[{0}]]></return_code><return_msg><![CDATA[{1}]]></return_msg></xml>";
+            bool resultBool = false;
             try
             {
                 Stream stream = Request.Body;
@@ -82,10 +93,37 @@ namespace HouseManage.Controllers.Order
                 stream.Read(buffer, 0, buffer.Length);
                 string content = Encoding.UTF8.GetString(buffer);
                 Dictionary<string, object> valuePairs = this._xml.XmlStrToDic(content);
+                //验证返回code
+                if (valuePairs["return_code"].ToString() == CommonFiled.SUCCESS
+                    && CommonFiled.SUCCESS == valuePairs["result_code"].ToString())
+                {
+                    //校验签名
+                    if (this._pay.CheckWxSign(valuePairs)) {
+                        if (valuePairs.ContainsKey("out_trade_no") || valuePairs.ContainsKey("cash_fee"))
+                        {
+                            //验证订单信息金额
+                            wy_wxpay pay = this._order.GetWxPayById(valuePairs["out_trade_no"].ToString());
+                            if (pay.STATUS == 0 && pay.TOTAL_FEE == Convert.ToInt32(valuePairs["cash_fee"])) {
+                                pay.STATUS = 2;
+                                pay.PAY_TIME = DateTime.Now;
+                                pay.STATUS_REMARK = content;
+                                if (this._order.Update(pay) > 0) {
+                                    //返回信息
+                                    resultBool = true;
+                                    result = string.Format(result, CommonFiled.SUCCESS, CommonFiled.SUCCESS);
+                                }
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                return Content(string.Format(result, FAIL, FAIL), "text/xml");
+                result = string.Format(result, CommonFiled.FAIL, ex.Message);
+                return Content(result, "text/xml");
+            }
+            if (!resultBool) {
+                result = string.Format(result, CommonFiled.FAIL, CommonFiled.FAIL);
             }
             return Content(result, "text/xml");
         }

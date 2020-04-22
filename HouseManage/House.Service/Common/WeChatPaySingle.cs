@@ -128,5 +128,14 @@ namespace House.Service.Common
             return wxPay; 
         }
 
+        public bool CheckWxSign(Dictionary<string, object> Dic)
+        {
+            if (!Dic.ContainsKey("mch_id"))
+            {
+                return false;
+            }
+            string MchId = CommonFiled.MchSecret(Dic["mch_id"].ToString());
+            return this._Sign.CheckSign(Dic, MchId);
+        }
     }
 }

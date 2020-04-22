@@ -27,5 +27,13 @@ namespace House.IService.Common.Sign
         /// <param name="TenPayV3_Key">用于签名的Key,商户平台设置的密钥key</param>
         /// <returns>MD5签名字符串</returns>
         string WePaySign(IDictionary<string, object> InDict, string TenPayV3_Key);
+
+        /// <summary>
+        /// 校验微信签名
+        /// </summary>
+        /// <param name="InDict"></param>
+        /// <param name="TechPay_Key"></param>
+        /// <returns></returns>
+        bool CheckSign(Dictionary<string, object> InDict, string TechPay_Key, string SignFiled = "sign");
     }
 }

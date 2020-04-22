@@ -26,11 +26,11 @@ namespace House.IService.Order
         Dictionary<string, object> GetPayParamsByWxModel(string appId,string prePayId,string PaySecret);
 
         /// <summary>
-        /// 获取支付的订单根据主键。
+        /// 获取支付的订单根据微信Order
         /// </summary>
         /// <param name="OrderId"></param>
         /// <returns></returns>
-        wy_wxpay GetWxModelById(string OrderId);
+        wy_wxpay GetWxPayById(string OrderId);
 
         /// <summary>
         ///  根据recoreId 及其他参数获取支付订单信息
@@ -56,6 +56,14 @@ namespace House.IService.Order
         /// <param name="wxpay"></param>
         /// <returns></returns>
         int Inert(wy_wxpay wxpay);
+
+        /// <summary>
+        /// 更新订单状态信息
+        /// </summary>
+        /// <param name="wxpay"></param>
+        /// <returns></returns>
+        int Update(wy_wxpay wxpay);
+
 
         /// <summary>
         /// 获取Recore提醒信息
@@ -88,5 +96,6 @@ namespace House.IService.Order
         /// <param name="Id"></param>
         /// <returns></returns>
         wy_wxpay GetWxOrderDetail(string Id);
+
     }
 }
