@@ -165,7 +165,7 @@ namespace House.Service
                 JoinType.Inner,b.JCLX==c.Code,
                 JoinType.Inner,c.ID==d.ParentID,
                 JoinType.Inner,e.TASK_ID==a.TASK_ID,
-                JoinType.Left,d.Code==f.DETAIL_CODE
+                JoinType.Left,d.Code==f.DETAIL_CODE&&f.RESULT_ID==RESULT_ID
               })
                 .Where((a, b, c, d, e, f) => e.RESULT_ID == RESULT_ID)
                 .Select((a, b, c, d, e, f) => new SimpleCheckResultDetail
