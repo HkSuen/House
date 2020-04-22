@@ -173,6 +173,10 @@
             }
             $.post("GetShopDetails", function (result) {
                 List = result;
+                if (List.length <= 0) {
+                    window.location.href = "../home/error?msg='未查询到店铺信息'"
+                    return;
+                }
                 setData(result);
             });
         })(mui);

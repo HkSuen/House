@@ -27,7 +27,8 @@ namespace HouseManage.Common.Middleware
             }
             catch (Exception ex)
             {
-                await context.Response.WriteAsync("Server Exception :"+ex.ToString());
+                string html = $"<script>window.location.href='../home/error?msg={ex.Message}'</script>";
+                await context.Response.WriteAsync(html);
             }
         }
     }

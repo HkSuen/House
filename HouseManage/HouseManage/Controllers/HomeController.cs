@@ -29,9 +29,11 @@ namespace HouseManage.Controllers
             return await this._wx.CheckServer();
         }
 
-        public string In()
+        [AllowAnonymous]
+        public ActionResult Error(string msg)
         {
-            return "你进来了。";
+            ViewBag.Error = msg;
+            return View();
         }
 
 

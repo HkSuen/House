@@ -40,5 +40,12 @@ namespace HouseManage.Controllers
         {
             return Json(new Response() { code = code, data = data, msg = msg });
         }
+
+        protected ActionResult Error(string msg = "Abnormal access!")
+        {
+            return Redirect($"../Home/Error?msg={msg}");
+        }
+
+
     }
 }

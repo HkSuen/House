@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Identity;
 namespace HouseManage.Controllers
 {
     [AllowAnonymous]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private IUsersSvc _user = null;
 
@@ -27,6 +27,11 @@ namespace HouseManage.Controllers
 
         public ActionResult Register(string uid, string redirect)
         {
+            var UserId = Request.Query["uid"].FirstOrDefault();
+            if (string.IsNullOrEmpty(UserId))
+            {
+                return Error("用户非正确来源访问。");
+            }
             ViewBag.UID = Request.Query["uid"].FirstOrDefault();
             ViewBag.REDIRECT = Request.Query["redirect"].FirstOrDefault();
             return View();

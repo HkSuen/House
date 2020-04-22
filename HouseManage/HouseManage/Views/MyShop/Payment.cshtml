@@ -304,7 +304,7 @@
                 if (data.JFZT == 0) {
                     Html += '<button type="button" class="mui-btn mui-btn-primary gopay" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">去支付</button>';
                 } else {
-                    Html += '<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined">详 情</button>'
+                    Html += '<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined gopay" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">详 情</button>'
                 }
                 Html += `                </div>
                                                     </div>
@@ -313,7 +313,7 @@
                 return Html;
             }
             var getHtmlOrder = function (data) {
-                var html = `<li class="mui-table-view-cell flleft">
+                var html = `<li class="mui-table-view-cell flleft detail" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">
                                                     <div class="mui-col-sm-9 mui-col-xs-9">
                                                         <div class="mui-col-sm-12 mui-col-xs-12">
                                                             {JFLX}{JFJE}元
@@ -326,7 +326,7 @@
                                                         {STATE}
                                                     </div>
                                                 </li>`;
-                html = html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), CREATE_TIME: new Date(data.CREATE_TIME).formatDate("yyyy-MM-dd hh:mm:ss"), STATE:"缴费成功"});
+                html = html.format({ FWID: data.FWID,CZ_SHID: data.CZ_SHID,RECORD_ID: data.RECORD_ID,JFJE: data.JFJE, JFLX: getType(data.JFLX), CREATE_TIME: new Date(data.CREATE_TIME).formatDate("yyyy-MM-dd hh:mm:ss"), STATE:"缴费成功"});
                 return html;
             }
             var getPayReminder = function (setVal, callback) {
@@ -414,7 +414,7 @@
                 ///
                 downLoad();
             });
-            var reminderPage = { PageIndex: 0, PageSize: 1, PageCount: 2 };
+            var reminderPage = { PageIndex: 0, PageSize: 15, PageCount: 2 };
             var orderPage = JSON.parse(JSON.stringify(reminderPage));
             var conditions = { Page: reminderPage, Conditions: { feeType: -1 }, Url: "PayReminder" };
             var urlChange = function (yes, no) {
@@ -440,7 +440,11 @@
             var tapInit = function () {
                 jq("button.gopay").on("click", function () {
                     var urlParam = this.getAttribute("url");
-                    window.location.href = "/Orders/Order?" + urlParam;
+                    window.location.href = "../Orders/Order?" + urlParam;
+                })
+                jq("li.detail").on("click", function () {
+                    var urlParam = this.getAttribute("url");
+                    window.location.href = "../Orders/Order?" + urlParam;
                 })
             }
         })(mui);

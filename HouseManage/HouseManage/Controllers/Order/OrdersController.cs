@@ -27,6 +27,10 @@ namespace HouseManage.Controllers.Order
 
         public ActionResult Order(string r,string f,string u)
         {
+            if (string.IsNullOrEmpty(r) || string.IsNullOrEmpty(f) || string.IsNullOrEmpty(u))
+            {
+                return Error("请求参数错误！");
+            }
             dynamic DetailInfo = this._order.GetPayDetails(u,f,r).FirstOrDefault();
             DetailInfo.JFLXName = Fee.GetKey(Convert.ToInt32(DetailInfo.JFLX));
             ViewBag.Payee = CommonFiled.MchName(Convert.ToInt32(DetailInfo.JFLX));
@@ -83,6 +87,10 @@ namespace HouseManage.Controllers.Order
         //[Authorize(Roles ="Admin")]
         public ActionResult OrderDetail(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                return Error();
+            }
             wy_wxpay Model = this._order.GetWxOrderDetail(id);
             ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
             ViewBag.MoneyNum = CommonFiled.CmycurD(Model.TOTAL_FEE / 10);

@@ -122,12 +122,13 @@ namespace House.Service.Users
 
         public UserDto FindUserByOpenId(string OpenId)
         {
-            string Sql = @"SELECT *  FROM (SELECT PHONE_MOBILE AS PHONE,WX_OPEN_ID AS OPENID, 'Admin' AS 'AUTHORITY' FROM ts_uidp_userinfo
-                            UNION
-                            SELECT MOBILE_PHONE AS PHONE,OPEN_ID AS OPENID,'Merchant' AS 'AUTHORITY' FROM wy_shopinfo
-                            UNION
-                            SELECT MOBILE AS PHONE,WX_OPEN_ID AS OPENID,'Inspector' AS 'AUTHORITY' FROM wy_region_director) AS uModel
-                            WHERE OPENID =  @OpenId";
+            string Sql = @"SELECT *  FROM (
+SELECT PHONE_MOBILE AS PHONE,WX_OPEN_ID AS OPENID, 'Admin' AS 'AUTHORITY', '1' AS 'Top' FROM ts_uidp_userinfo
+  UNION
+ SELECT MOBILE AS PHONE,WX_OPEN_ID AS OPENID,'Inspector' AS 'AUTHORITY', '2' AS 'Top' FROM wy_region_director
+  UNION
+ SELECT MOBILE_PHONE AS PHONE,OPEN_ID AS OPENID,'Merchant' AS 'AUTHORITY', '3' AS 'Top' FROM wy_shopinfo) AS uModel
+    WHERE OPENID =  @OpenId ORDER BY TOP ASC";
             return this._db.Sql().SqlQuery<UserDto>(Sql,new { OpenId }).FirstOrDefault();
         }
 

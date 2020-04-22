@@ -13,7 +13,7 @@ using Paramter = HouseManage.Models.Request;
 
 namespace HouseManage.Controllers.MyShop
 {
-
+    //[Authorize(Roles = "Admin,Inspector,Merchant")]
     public class MyShopController : ControllerBase
     {
         private IMyShopSvc _shop;

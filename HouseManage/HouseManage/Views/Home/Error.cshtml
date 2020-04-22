@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "资源不存在";
+}
+
+    <div class="mui-content">
+        <div class="mui-row">
+            <div class="mui-col-sm-12 mui-col-xs-12">
+                <div class="text-center" style="padding:30px 0">
+                    <h3 style="color:orange">资源不存在</h3>
+                </div>
+            </div>
+            <div class="mui-col-sm-12 mui-col-xs-12">
+                <img src="~/wxstatic/img/error.png" />
+            </div>
+            <div class="mui-col-sm-12 mui-col-xs-12">
+                <p>如果异常信息有歧义，请联系维护人员。</p>
+                @{
+                    if (ViewBag.Error != null)
+                    {
+                        <p>异常信息：@ViewBag.Error</p>
+                    }
+                    else
+                    {
+                        <p>异常信息：权限不足。</p>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+<style>
+    img {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>

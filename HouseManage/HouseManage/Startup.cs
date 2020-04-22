@@ -50,8 +50,7 @@ namespace HouseManage
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
              .AddCookie(options =>
              {
-                 options.LoginPath = new PathString("/user/register");
-                 //options.AccessDeniedPath = new PathString("/denied");
+                 options.AccessDeniedPath = new PathString("/WeChat/home/error");
              });
             return AutofacConfig.Register(services);
         }
