@@ -111,10 +111,10 @@ namespace House.Service.Order
             {
                 conditions = conditions.And((record, house, shop, wxpay) => record.FWID == HouseId);
             }
-            conditions = conditions.And((record, house, shop, wxpay) =>house.IS_DELETE == 0 && shop.IS_DELETE == 0);
+            //conditions = conditions.And((record, house, shop, wxpay) =>house.IS_DELETE == 0 && shop.IS_DELETE == 0);
             var List = this._db.Db().Queryable<wy_pay_record, wy_houseinfo, wy_shopinfo, wy_wxpay>((record, house, shop, wxpay) => new object[] {
                 JoinType.Left,record.FWID == house.FWID,
-                JoinType.Left,house.CZ_SHID == shop.CZ_SHID,
+                JoinType.Left,record.CZ_SHID == shop.CZ_SHID,
                 JoinType.Left,wxpay.RECORD_ID == record.RECORD_ID
             }).Where(conditions.ToExpression())
             .Select<object>((record, house, shop, wxpay) => new

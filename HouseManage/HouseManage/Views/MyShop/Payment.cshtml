@@ -388,9 +388,10 @@
                     SetHtml(function (html, page) {
                         var ul = self.element.querySelector('.mui-table-view');
                         ul.innerHTML += html;
-                        if (page.PageIndex < page.PageCount) { //最后一页
+                        if (page.PageIndex < (page.PageCount / page.PageSize)) { //最后一页
                             self.endPullUpToRefresh();
                         } else {
+                            console.log("end")
                             self.endPullUpToRefresh(true);
                         }
                         mui.hideLoading();//隐藏后的回调函数
@@ -414,7 +415,7 @@
                 ///
                 downLoad();
             });
-            var reminderPage = { PageIndex: 0, PageSize: 15, PageCount: 2 };
+            var reminderPage = { PageIndex: 0, PageSize: 10, PageCount: 1 };
             var orderPage = JSON.parse(JSON.stringify(reminderPage));
             var conditions = { Page: reminderPage, Conditions: { feeType: -1 }, Url: "PayReminder" };
             var urlChange = function (yes, no) {
@@ -443,7 +444,6 @@
                     window.location.href = "../Orders/Order?" + urlParam;
                 })
                 jq("li.detail").on("tap", function () {
-                    alert(1);
                     var urlParam = this.getAttribute("url");
                     window.location.href = "../Orders/Order?" + urlParam;
                 })

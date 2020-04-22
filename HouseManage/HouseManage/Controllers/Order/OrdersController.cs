@@ -19,32 +19,36 @@ namespace HouseManage.Controllers.Order
     {
         private IOrderSvc _order = null;
         private IXMLHelperSingle _xml = null;
-        public OrdersController(IOrderSvc order,IXMLHelperSingle xml)
+        public OrdersController(IOrderSvc order, IXMLHelperSingle xml)
         {
             _order = order;
             _xml = xml;
         }
 
-        public ActionResult Order(string r,string f,string u)
+        public ActionResult Order(string r, string f, string u)
         {
             if (string.IsNullOrEmpty(r) || string.IsNullOrEmpty(f) || string.IsNullOrEmpty(u))
             {
                 return Error("请求参数错误！");
             }
-            dynamic DetailInfo = this._order.GetPayDetails(u,f,r).FirstOrDefault();
+            dynamic DetailInfo = this._order.GetPayDetails(u, f, r).FirstOrDefault();
+            if (null == DetailInfo)
+            {
+                return Error("未找到订单信息！");
+            }
             DetailInfo.JFLXName = Fee.GetKey(Convert.ToInt32(DetailInfo.JFLX));
             ViewBag.Payee = CommonFiled.MchName(Convert.ToInt32(DetailInfo.JFLX));
             return View(DetailInfo);
         }
 
-        public JsonResult CreateOrder(string recordId,string houseId,string UId)
+        public JsonResult CreateOrder(string recordId, string houseId, string UId)
         {
             if (string.IsNullOrEmpty(recordId) || string.IsNullOrEmpty(houseId) || string.IsNullOrEmpty(UId))
             {
-                return Data(ResultCode.PARAMS_IS_NULL , null , ResultCode.PARAMS_IS_NULL.GetEnumDescription());
+                return Data(ResultCode.PARAMS_IS_NULL, null, ResultCode.PARAMS_IS_NULL.GetEnumDescription());
             }
             //1.订单查询有无此数据,无数据默认创建新数据
-            wy_wxpay pay = this._order.FindSingle(recordId,houseId,UId,OpenID);
+            wy_wxpay pay = this._order.FindSingle(recordId, houseId, UId, OpenID);
             //原订单失效，异步更改状态
             if (pay == null || DateTime.Now > pay.PREPAY_ENDTIME)
             {
@@ -53,7 +57,8 @@ namespace HouseManage.Controllers.Order
                 pay = this._order.GetWxPay(PayRecord);
                 pay.USER_IP = UserIP;
                 //将订单存到数据库
-                if (this._order.Inert(pay) <= 0) {
+                if (this._order.Inert(pay) <= 0)
+                {
                     return Data(ResultCode.DATA_IS_WRONG);
                 };
             }
@@ -65,7 +70,8 @@ namespace HouseManage.Controllers.Order
         /// 微信异步通知支付
         /// </summary>
         /// <returns></returns>
-        public ActionResult PayResult() {
+        public ActionResult PayResult()
+        {
             string SUCCESS = "SUCCESS";
             string FAIL = "FAIL";
             string result = "<xml><return_code><![CDATA[{0}]]></return_code><return_msg><![CDATA[{1}]]></return_msg></xml>";
@@ -96,6 +102,6 @@ namespace HouseManage.Controllers.Order
             ViewBag.MoneyNum = CommonFiled.CmycurD(Model.TOTAL_FEE / 10);
             return View(Model);
         }
-             
+
     }
 }
