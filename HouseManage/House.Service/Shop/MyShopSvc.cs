@@ -46,6 +46,7 @@ namespace House.Service.Shop
             {
                 conditions = conditions.And(c => c.JFLX == Type.Trim());
             }
+            conditions = conditions.And(c => c.JFZT == 0);
             var list = _db.CurrentDb<v_pay_record>().GetPageList(conditions.ToExpression(),page,c=>c.CREATE_TIME,OrderByType.Desc);
             return list;
         }

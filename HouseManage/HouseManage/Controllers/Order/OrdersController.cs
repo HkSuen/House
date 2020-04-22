@@ -89,7 +89,7 @@ namespace HouseManage.Controllers.Order
         {
             if (string.IsNullOrEmpty(id))
             {
-                return Error();
+                return Error("没有查询到单据信息。");
             }
             wy_wxpay Model = this._order.GetWxOrderDetail(id);
             ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);

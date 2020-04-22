@@ -98,24 +98,25 @@ namespace House.Service.Order
 
         public List<object> GetPayDetails(string UserId, string HouseId, string RecordId)
         {
-            var conditions = Expressionable.Create<wy_pay_record, wy_houseinfo, wy_shopinfo>();
+            var conditions = Expressionable.Create<wy_pay_record, wy_houseinfo, wy_shopinfo, wy_wxpay>();
             if (!string.IsNullOrEmpty(UserId))
             {
-                conditions = conditions.And((record, house, shop) => record.CZ_SHID == UserId);
+                conditions = conditions.And((record, house, shop, wxpay) => record.CZ_SHID == UserId);
             }
             if (!string.IsNullOrEmpty(RecordId))
             {
-                conditions = conditions.And((record, house, shop) => record.RECORD_ID == RecordId);
+                conditions = conditions.And((record, house, shop, wxpay) => record.RECORD_ID == RecordId);
             }
             if (!string.IsNullOrEmpty(HouseId))
             {
-                conditions = conditions.And((record, house, shop) => record.FWID == HouseId);
+                conditions = conditions.And((record, house, shop, wxpay) => record.FWID == HouseId);
             }
+            conditions = conditions.And((record, house, shop, wxpay) =>house.IS_DELETE == 0 && shop.IS_DELETE == 0);
             var List = this._db.Db().Queryable<wy_pay_record, wy_houseinfo, wy_shopinfo, wy_wxpay>((record, house, shop, wxpay) => new object[] {
                 JoinType.Left,record.FWID == house.FWID,
                 JoinType.Left,house.CZ_SHID == shop.CZ_SHID,
                 JoinType.Left,wxpay.RECORD_ID == record.RECORD_ID
-            }).Where((record, house, shop, wxpay) => house.IS_DELETE == 0 && shop.IS_DELETE == 0)
+            }).Where(conditions.ToExpression())
             .Select<object>((record, house, shop, wxpay) => new
             {
                 RECORD_ID = record.RECORD_ID, //record id

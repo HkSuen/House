@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.Merchants
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     //[AllowAnonymous]
     public class MerchantsController : Controller
     {

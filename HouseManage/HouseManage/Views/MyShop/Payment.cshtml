@@ -314,7 +314,7 @@
             }
             var getHtmlOrder = function (data) {
                 var html = `<li class="mui-table-view-cell flleft detail" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">
-                                                    <div class="mui-col-sm-9 mui-col-xs-9">
+                                                    <div class="mui-col-sm-9 mui-col-xs-9 detail">
                                                         <div class="mui-col-sm-12 mui-col-xs-12">
                                                             {JFLX}{JFJE}元
                                                         </div>
@@ -442,7 +442,8 @@
                     var urlParam = this.getAttribute("url");
                     window.location.href = "../Orders/Order?" + urlParam;
                 })
-                jq("li.detail").on("click", function () {
+                jq("li.detail").on("tap", function () {
+                    alert(1);
                     var urlParam = this.getAttribute("url");
                     window.location.href = "../Orders/Order?" + urlParam;
                 })

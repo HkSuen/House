@@ -43,7 +43,7 @@ namespace HouseManage.Controllers
 
         protected ActionResult Error(string msg = "Abnormal access!")
         {
-            return Redirect($"../Home/Error?msg={msg}");
+            return Redirect($"/WeChat/Home/Error?msg={msg}");
         }
 
 
