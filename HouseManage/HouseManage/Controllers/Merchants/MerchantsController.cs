@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.Merchants
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public class MerchantsController : Controller
     {
         private IMerchantSvc _machantSvc = null;
@@ -29,7 +29,7 @@ namespace HouseManage.Controllers.Merchants
         {
             return View();
         }
-        [AllowAnonymous]
+        
         [HttpGet]
         public IActionResult GetBaseData(DictionaryModel model)
         {
