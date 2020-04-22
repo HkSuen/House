@@ -171,7 +171,7 @@
              * 下拉刷新具体业务实现
              */
     function pulldownRefresh() {
-        mui.showLoading("请稍后。。。","div");
+        mui.showLoading("","div");
         setTimeout(function () {
             addData();
             mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
@@ -226,7 +226,7 @@
     var count = 2;
     var Page = 1, Size = 20;
     function pullupRefresh() {
-        mui.showLoading("请稍后。。。", "div");
+        mui.showLoading("", "div");
         setTimeout(function () {
             mui('#pullrefresh').pullRefresh().endPullupToRefresh((count < 2)); //参数为true代表没有更多数据了。
             var txtShopName = $("#txt_shopinfo").val();

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HouseManage.Controllers.Merchants
 {
     [Authorize(Roles = "Admin")]
+    //[AllowAnonymous]
     public class MerchantsController : Controller
     {
         private IMerchantSvc _machantSvc = null;

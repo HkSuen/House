@@ -44,6 +44,7 @@ namespace House.Service.Merchants
             try
             {
                 var list = _Db.Db().Queryable<wy_houseinfo>();
+                list = list.Where(e => e.IS_DELETE==0);
                 if (!string.IsNullOrWhiteSpace(model.FWBH))
                 {
                     list = list.Where(e => e.FWBH.Contains(model.FWBH));
@@ -97,6 +98,7 @@ namespace House.Service.Merchants
             try
             {
                 var list = _Db.Db().Queryable<wy_houseinfo>();
+                list = list.Where(e => e.IS_DELETE == 0);
                 if (!string.IsNullOrWhiteSpace(FWBH))
                 {
                     list = list.Where(e => e.FWBH.Contains(FWBH));
@@ -211,7 +213,7 @@ namespace House.Service.Merchants
                 var obj = _Db.Db().Queryable<wy_houseinfo, wy_shopinfo,wy_leasinginfo>((a, b,c) => new object[]{
                      JoinType.Inner,a.CZ_SHID==b.CZ_SHID,
                      JoinType.Left,b.LEASE_ID==c.LEASE_ID
-                }).WhereIF(!string.IsNullOrWhiteSpace(ShopName),(a,b)=>b.ZHXM.Contains(ShopName))
+                }).Where((a,b,c)=>a.IS_DELETE==0&&b.IS_DELETE==0).WhereIF(!string.IsNullOrWhiteSpace(ShopName),(a,b)=>b.ZHXM.Contains(ShopName))
                 .WhereIF(FWSX>0, (a, b) => a.FWSX==FWSX)
                 .WhereIF(!string.IsNullOrWhiteSpace(SSQY), (a, b) => a.SSQY==SSQY)
                 .WhereIF(!string.IsNullOrWhiteSpace(LSFGS), (a, b) => a.LSFGS==LSFGS)
@@ -237,7 +239,7 @@ namespace House.Service.Merchants
                 var obj = _Db.Db().Queryable<wy_houseinfo, wy_shopinfo,wy_leasinginfo>((a, b,c) => new object[]{
                      JoinType.Inner,a.CZ_SHID==b.CZ_SHID,
                       JoinType.Left,b.LEASE_ID==c.LEASE_ID
-                }).WhereIF(!string.IsNullOrWhiteSpace(ShopName), (a, b) => b.ZHXM.Contains(ShopName))
+                }).Where((a, b, c) => a.IS_DELETE == 0 && b.IS_DELETE == 0).WhereIF(!string.IsNullOrWhiteSpace(ShopName), (a, b) => b.ZHXM.Contains(ShopName))
                 .WhereIF(FWSX > 0, (a, b) => a.FWSX == FWSX)
                 .WhereIF(!string.IsNullOrWhiteSpace(SSQY), (a, b) => a.SSQY == SSQY)
                 .WhereIF(!string.IsNullOrWhiteSpace(LSFGS), (a, b) => a.LSFGS == LSFGS)
