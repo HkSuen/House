@@ -52,7 +52,7 @@
     });
     window.onload = function () {
         var idArray = window.location.search.split("=");
-        var id = idArray[1];
+        var id = idArray[1].split("&")[0];
         this.document.getElementById("RWBH").innerHTML = id;
         this.temp.RWBH = id;
          mui.init({
@@ -150,9 +150,9 @@
         })
     }
     function CreateCheckResult() {
-        var idArray = window.location.search.split("=");
+        var idArray = window.location.search.split("?");
         var id = idArray[1];
-        window.location.href = "CreateCheckResult?RWBH=" + id;
+        window.location.href = "CreateCheckResult?" + id;
     }
 
 </script>

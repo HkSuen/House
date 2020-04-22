@@ -35,29 +35,30 @@ namespace House.Service
             return list;
         }
 
-        public List<TaskListModel> GetTaskDetailInfo(string RWBH,string OPEN_ID,int page, int limit)
+        public List<TaskListModel> GetTaskDetailInfo(string RWBH,string TASK_ID,string OPEN_ID,int page, int limit)
         {
             var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_shopinfo>((a, b, c) => new object[] {
                 JoinType.Left,a.FWID==b.FWID,
                 JoinType.Left,b.CZ_SHID==c.CZ_SHID
             })
-                .Where((a,b,c) => b.IS_DELETE==0&&c.IS_DELETE==0&&
-                a.TASK_ID ==SqlFunc.Subqueryable<wy_check_task>().Where(s=>s.RWBH==RWBH).Select(s=>s.TASK_ID)
-            &&a.IS_DELETE==0&&a.JCR==OPEN_ID)
+                .Where((a,b,c) => b.IS_DELETE==0&&c.IS_DELETE==0&&a.TASK_ID==TASK_ID
+            //    a.TASK_ID ==SqlFunc.Subqueryable<wy_check_task>().Where(s=>s.RWBH==RWBH).Select(s=>s.TASK_ID)
+            //&&a.IS_DELETE==0&&a.JCR==OPEN_ID
+            )
                 .Select<TaskListModel>()
                 .Skip((page - 1) * limit).Take(limit).ToList();
 
             return list;
         }
 
-        public List<wy_task_detail_config> GetCreateTaskResultFormInfo(string RWBH)
+        public List<wy_task_detail_config> GetCreateTaskResultFormInfo(string RWBH,string TASK_ID)
         {
             var list = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config>((a, b, c, d) => new object[] {
                 JoinType.Inner,b.PLAN_DETAIL_ID==a.PLAN_DETAIL_ID,
                 JoinType.Inner,b.JCLX==c.Code,
                 JoinType.Inner,c.ID==d.ParentID,
             })
-                .Where(a=>a.RWBH==RWBH)
+                .Where(a=>a.TASK_ID==TASK_ID)
                 .Select((a, b, c, d) => new wy_task_detail_config()
             {
                 ID = d.ID,
@@ -102,7 +103,8 @@ namespace House.Service
             Dictionary<string, object> ww = JObject.FromObject(d["RESULT_DETAIL"]).ToObject<Dictionary<string, object>>();
             string RESULT_ID = Guid.NewGuid().ToString();
             wcr.RESULT_ID = RESULT_ID;
-            wcr.TASK_ID = DB.Db().Queryable<wy_check_task>().Where(a => a.RWBH == d["RWBH"].ToString()).Select(a => a.TASK_ID).ToList()[0];
+            //wcr.TASK_ID = DB.Db().Queryable<wy_check_task>().Where(a => a.RWBH == d["RWBH"].ToString()).Select(a => a.TASK_ID).ToList()[0];
+            wcr.TASK_ID = d["TASK_ID"].ToString();
             if (d["JCJG"].ToString() != "")
             {
                 wcr.JCJG = Convert.ToInt32(d["JCJG"]);
@@ -175,25 +177,6 @@ namespace House.Service
                     CHECK_DETAIL_RESULT = f.CHECK_DETAIL_RESULT,
                     CHECK_RESULT_ID = f.CHECK_DETAIL_ID,
                 }).ToList();
-
-            var sql = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config, wy_check_result, wy_check_result_detail>
-                ((a, b, c, d, e, f) => new object[]
-              {
-                JoinType.Inner,a.PLAN_DETAIL_ID==b.PLAN_DETAIL_ID,
-                JoinType.Inner,b.JCLX==c.Code,
-                JoinType.Inner,c.ID==d.ParentID,
-                JoinType.Inner,e.TASK_ID==a.TASK_ID,
-                JoinType.Left,d.Code==f.DETAIL_CODE
-              })
-                .Where((a, b, c, d, e, f) => e.RESULT_ID == RESULT_ID)
-                .Select((a, b, c, d, e, f) => new SimpleCheckResultDetail
-                {
-                    Code = d.Code,
-                    Name = d.Name,
-                    CHECK_DETAIL_RESULT = f.CHECK_DETAIL_RESULT,
-                    CHECK_RESULT_ID = f.CHECK_DETAIL_ID,
-                }).ToSql();
-
             return list;
         }
 
@@ -243,6 +226,24 @@ namespace House.Service
                 return e.Message;
             }
             return "success";
+        }
+
+        public Dictionary<string,string> RWHBANDTask_ID(string RESULT_ID)
+        {
+            var item = DB.Db().Queryable<wy_check_result, wy_check_task>((a, b) => new object[]
+              {
+                JoinType.Inner,a.TASK_ID==b.TASK_ID&&b.IS_DELETE==0
+              }).Where((a, b) => a.RESULT_ID == RESULT_ID).Select((a, b) => new
+              {
+                  TASK_ID = b.TASK_ID,
+                  RWBH = b.RWBH
+              }).First();
+            Dictionary<string, string> d = new Dictionary<string, string>()
+            {
+                {"TASK_ID",item.TASK_ID },
+                {"RWBH",item.RWBH }
+            };
+            return d;
         }
     }
 }

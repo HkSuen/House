@@ -167,9 +167,9 @@
             }
         })
     };
-    function GetTaskDetail(RWBH) {
+    function GetTaskDetail(RWBH,TASK_ID) {
         console.log(RWBH);
-        window.location.href = "DailyCheckDetail?RWBH=" + RWBH;
+        window.location.href = "DailyCheckDetail?RWBH=" + RWBH + "&TASK_ID=" + TASK_ID;
     };
     function GetIndex() {
         this.temp.page = 1;

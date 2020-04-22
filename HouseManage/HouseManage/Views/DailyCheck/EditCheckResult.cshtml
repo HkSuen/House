@@ -86,18 +86,40 @@
                     <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
                         <label>检查结果:</label>
                     </div>
-                    <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                        <div class="mui-input-row mui-radio">
-                            <label>合格</label>
-                            <input name="radio1" value="1" type="radio" checked="@FWINFO[0].JCJG==1" >
-                        </div>
-                    </div>
-                    <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                        <div class="mui-input-row mui-radio">
-                            <label>不合格</label>
-                            <input name="radio1" value="0" type="radio" checked="@FWINFO[0].JCJG==0">
-                        </div>
-                    </div>
+                    @{
+                        var check = "checked";
+                        if (@FWINFO[0].JCJG == 1)
+                        {
+                            <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                                <div class="mui-input-row mui-radio">
+                                    <label>合格</label>
+                                    <input name="radio1" value="1" id="pass" type="radio" checked="checked" onclick="passall()">
+                                </div>
+                            </div>
+                            <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                                <div class="mui-input-row mui-radio">
+                                    <label>不合格</label>
+                                    <input name="radio1" value="0" id="unpass" type="radio" onclick="unpassall()">
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                                <div class="mui-input-row mui-radio">
+                                    <label>合格</label>
+                                    <input name="radio1" value="1" id="pass" type="radio"  onclick="passall()">
+                                </div>
+                            </div>
+                            <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                                <div class="mui-input-row mui-radio">
+                                    <label>不合格</label>
+                                    <input name="radio1" value="0" id="unpass" type="radio" checked="checked" onclick="unpassall()">
+                                </div>
+                            </div>
+                        }
+                    }
+
                 </div>
                 <div class="mui-row">
                     <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
@@ -196,6 +218,14 @@
         }
         CreateListForm();
     }
+    function passall() {
+        var ele = document.getElementById("pass");
+        ele.checked = "checked";
+    }
+    function unpassall() {
+        var ele = document.getElementById("unpass");
+        ele.checked = "checked";
+    }
     function unpass(RESULT_ID, Code) {
         if (RESULT_ID.trim() == "") {
             console.log(Code);
@@ -207,7 +237,6 @@
             ele.className = "mui-btn mui-btn-danger";
             ele.value = 0;
         };
-        console.log(temp);
     }
     function submit() {
         var ele = document.getElementsByName("radio1");
@@ -231,10 +260,10 @@
                 CHECK_DETAIL_ID: CHECKINFO[i].CHECK_RESULT_ID,
                 VALUE: checkele.value,
                 }
-                console.log(temp);
                 temp.CHECK_DETAIL_RESULT.push(item);
             }
         }
+        console.log(temp);
         mui.ajax('PostUpdateCheckResult', {
             type: 'post',
             data: temp,
@@ -242,7 +271,8 @@
             headers: { 'Content-Type': 'application/json' },
             success: function (data) {
                 if (data.trim().toString() == "success") {
-                    //window.location.href = "DailyCheckDetail?RWBH=" + RWBH
+
+                    window.location.href = "DailyCheckDetail?RWBH=" + '@ViewBag.RWBH'+"&TASK_ID="+'@ViewBag.TASK_ID';
                 }
             },
             error: function (data) {

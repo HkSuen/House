@@ -114,11 +114,11 @@
             window.onload = function () {
                 var height = document.documentElement.clientWidth;
                 this.console.log(height);
-                var idArray = window.location.search.split("=");
+                var idArray = window.location.search.split("?");
                 var id = idArray[1];
                 var scroll = this.document.getElementById("scroll");
                 scroll.style.height = 0.6 * height + "px";
-                this.mui.ajax('GetShopInfo?RWBH=' + id, {
+                this.mui.ajax('GetShopInfo?' + id, {
                     type: 'get',
                     //timeout: 50000,
                     //headers: { 'Content-Type': 'application/json' },
@@ -177,9 +177,10 @@
                     radiovalue = ele[i].value;
                     };
                 };
-                let RWBH=window.location.search.split("=")[1]
+                let RWBH = window.location.search.split("?")[1]
+                console.log(window.location.search.split("?")[1].split("=")[2]);
                 let Alltemp = {
-                    RWBH: RWBH,
+                    TASK_ID: window.location.search.split("?")[1].split("=")[2],
                     JCJG: radiovalue,
                     ZGYQ: document.getElementById("describe").value,
                     WTMS: document.getElementById("Requirement").value,
@@ -193,7 +194,7 @@
                     success: function (data) {
                         if (data.trim().toString() == "success") {
                             console.log(123123);
-                            window.location.href = "DailyCheckDetail?RWBH=" + RWBH
+                            window.location.href = "DailyCheckDetail?RWBH=" + RWBH;
                         }
                     },
                     error: function (data) {

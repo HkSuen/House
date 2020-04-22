@@ -27,13 +27,13 @@ namespace House.IService
         /// <param name="page"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        List<TaskListModel> GetTaskDetailInfo(string RWBH,string OPEN_ID,int page=1, int limit=10);
+        List<TaskListModel> GetTaskDetailInfo(string RWBH,string TASK_ID,string OPEN_ID,int page=1, int limit=10);
         /// <summary>
         /// 获取创建任务表单时所需要检查的明细列表
         /// </summary>
         /// <param name="RWBH"></param>
         /// <returns></returns>
-        List<wy_task_detail_config> GetCreateTaskResultFormInfo(string RWBH);
+        List<wy_task_detail_config> GetCreateTaskResultFormInfo(string RWBH,string TASK_ID);
         /// <summary>
         /// 获取任务可以检查的房屋列表
         /// </summary>
@@ -61,7 +61,14 @@ namespace House.IService
         /// <param name="RESULT_ID"></param>
         /// <returns></returns>
         List<SimpleCheckResultDetail> GetEditTaskResultFormInfo(string RESULT_ID);
-
+        /// <summary>
+        /// 提交修改信息
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="OPEN_ID"></param>
+        /// <returns></returns>
         string PostUpdateCheckResult(Dictionary<string, object> d, string OPEN_ID);
+
+        Dictionary<string,string> RWHBANDTask_ID(string RESULT_ID);
     }
 }

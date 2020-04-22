@@ -30,23 +30,23 @@ namespace HouseManage.Controllers
             //return Ok(dailyCheckSvc.GetTaskInfo(status, starttime, endtime));
         }
         [HttpGet]
-        public IActionResult DailyCheckDetail(string RWBH)
+        public IActionResult DailyCheckDetail(string RWBH,string TASK_ID)
         {
             //string OPEN_ID=Request.HttpContext.User.Identity.Name;
             string OPEN_ID = "123123123123";
-            return View(dailyCheckSvc.GetTaskDetailInfo(RWBH, OPEN_ID));
+            return View(dailyCheckSvc.GetTaskDetailInfo(RWBH,TASK_ID,OPEN_ID));
         }
         [HttpGet]
-        public PartialViewResult PartDailyCheckDetail(string RWBH, int page, int limit)
+        public PartialViewResult PartDailyCheckDetail(string RWBH,string TASK_ID,int page, int limit)
         {
             //string OPEN_ID=Request.HttpContext.User.Identity.Name;
             string OPEN_ID = "123123123123";
-            return PartialView(dailyCheckSvc.GetTaskDetailInfo(RWBH, OPEN_ID, page, limit));
+            return PartialView(dailyCheckSvc.GetTaskDetailInfo(RWBH, TASK_ID,OPEN_ID, page, limit));
         }
 
-        public IActionResult CreateCheckResult(string RWBH)
+        public IActionResult CreateCheckResult(string RWBH,string TASK_ID)
         {
-            return View(dailyCheckSvc.GetCreateTaskResultFormInfo(RWBH));
+            return View(dailyCheckSvc.GetCreateTaskResultFormInfo(RWBH,TASK_ID));
         }
         [HttpGet]
         public IActionResult GetShopInfo(string RWBH)
@@ -63,6 +63,9 @@ namespace HouseManage.Controllers
 
         public IActionResult EditCheckResult(string RESULT_ID)
         {
+            Dictionary<string, string> d = dailyCheckSvc.RWHBANDTask_ID(RESULT_ID);
+            ViewBag.RWBH = d["RWBH"];
+            ViewBag.TASK_ID = d["TASK_ID"];
             ViewBag.FWINFO= dailyCheckSvc.GetEditShopInfo(RESULT_ID);
             ViewBag.CHECKINFO = dailyCheckSvc.GetEditTaskResultFormInfo(RESULT_ID);
             return View();
