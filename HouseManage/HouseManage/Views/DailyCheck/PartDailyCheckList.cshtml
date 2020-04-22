@@ -13,7 +13,7 @@
                         <span>任务编号:@item.RWBH</span>
                     </div>
                     <div class="mui-col-sm-4 mui-col-xs-4">
-                        <button type="button" class="mui-btn mui-btn-primary" onclick="GetTaskDetail('@item.RWBH')"style="float:right">详情</button>
+                        <button type="button" class="mui-btn mui-btn-primary" onclick="GetTaskDetail('@item.RWBH','@item.TASK_ID')"style="float:right">详情</button>
                     </div>
                     @*<div class="mui-col-sm-2 mui-col-xs-2">
                         <div class="mui-icon mui-icon-forward" style="float:right" onclick="GetTaskDetail('@item.RWBH')"></div>
@@ -26,13 +26,13 @@
             <div class="mui-row">
                 <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white">
                     <div class="mui-row" style="padding-left:15px;">
-                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:10px;">
                             <span>任务名称</span>
                         </div>
-                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:10px;">
                             <span>开始时间</span>
                         </div>
-                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:10px;">
                             <span>结束时间</span>
                         </div>
                         @*<div class="mui-col-sm-3 mui-col-xs-3" style="background-color:white;font-size:15px;">
@@ -42,17 +42,17 @@
                 </div>
             </div>
             <div class="mui-row" style="padding-left:15px;">
-                <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white;font-size:15px;padding-top:5px">
+                <div class="mui-col-sm-12 mui-col-xs-12" style="background-color:white;font-size:15px;padding-top:5px;padding-bottom:10px;">
                     <div class="mui-row">
-                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:5px">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:5px;padding-bottom:10px;">
                             <span>@item.RWMC</span>
                         </div>
-                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:5px">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:5px;padding-bottom:10px;">
                             <span>
                             @item.RWKSSJ.Value.ToString("yyyy/MM/dd")
                             </span>
                         </div>
-                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:5px">
+                        <div class="mui-col-sm-4 mui-col-xs-4" style="background-color:white;font-size:15px;padding-top:5px;padding-bottom:10px;">
                             <span>@item.RWJSSJ.Value.ToString("yyyy/MM/dd")</span>
                         </div>
 

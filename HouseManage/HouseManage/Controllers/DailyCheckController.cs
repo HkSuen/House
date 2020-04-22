@@ -67,5 +67,13 @@ namespace HouseManage.Controllers
             ViewBag.CHECKINFO = dailyCheckSvc.GetEditTaskResultFormInfo(RESULT_ID);
             return View();
         }
+
+        [HttpPost]
+        public IActionResult PostUpdateCheckResult([FromBody]JObject value)
+        {
+            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
+            string OPEN_ID = "123123123123";
+            return Ok(dailyCheckSvc.PostUpdateCheckResult(value.ToObject<Dictionary<string, object>>(), OPEN_ID));
+        }
     }
 }

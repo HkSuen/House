@@ -199,15 +199,49 @@ namespace House.Service
 
         public string PostUpdateCheckResult(Dictionary<string, object> d, string OPEN_ID)
         {
-            wy_check_result wcr = new wy_check_result()
+            try
             {
-                RESULT_ID = d["RESULT_ID"].ToString(),
-                FWID = d["FWID"].ToString(),
-                JCJG = Convert.ToInt32(d["JCJG"]),
-                WTMS = d["WTMS"].ToString(),
-                ZGYQ = d["ZGYQ"].ToString(),
-            };
-            List<Dictionary<string, object>> list = JArray.FromObject(d["CHECK_DETAIL_RESULT"]).ToObject<List<Dictionary<string, object>>>();
+                wy_check_result wcr = new wy_check_result()
+                {
+                    RESULT_ID = d["RESULT_ID"].ToString(),
+                    //FWID = d["FWID"].ToString(),
+                    JCJG = Convert.ToInt32(d["JCJG"]),
+                    WTMS = d["WTMS"].ToString(),
+                    ZGYQ = d["ZGYQ"].ToString(),
+                };
+                List<Dictionary<string, object>> updatelist = JArray.FromObject(d["CHECK_DETAIL_RESULT"]).ToObject<List<Dictionary<string, object>>>();
+                List<wy_check_result_detail> list = new List<wy_check_result_detail>();
+                foreach (Dictionary<string, object> dd in updatelist)
+                {
+                    wy_check_result_detail item = new wy_check_result_detail();
+                    item.CHECK_DETAIL_ID = dd["CHECK_DETAIL_ID"].ToString();
+                    item.CHECK_DETAIL_RESULT = Convert.ToInt32(dd["VALUE"]);
+                    list.Add(item);
+                }
+                Dictionary<string, object> insertlist = JObject.FromObject(d["INSERTINFO"]).ToObject<Dictionary<string, object>>();
+                List<wy_check_result_detail> list1 = new List<wy_check_result_detail>();
+                foreach(KeyValuePair<string,object> kp in insertlist)
+                {
+                    wy_check_result_detail item1 = new wy_check_result_detail()
+                    {
+                        CHECK_DETAIL_ID = Guid.NewGuid().ToString(),
+                        DETAIL_CODE = kp.Key,
+                        CHECK_DETAIL_RESULT = Convert.ToInt32(kp.Value),
+                        CHECK_DETAIL_TIME=DateTime.Now,
+                        JCR=OPEN_ID
+                    };
+                    list1.Add(item1);
+                }
+                DB.Db().BeginTran();
+                DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID }).ExecuteCommand();
+                DB.Db().Updateable(list).IgnoreColumns(it => new { it.DETAIL_CODE,it.RESULT_ID }).ExecuteCommand();
+                DB.Db().Insertable(list1).ExecuteCommand();
+                DB.Db().CommitTran();
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
             return "success";
         }
     }

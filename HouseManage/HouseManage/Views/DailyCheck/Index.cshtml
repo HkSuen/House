@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "日常结果检查";
     Layout = "~/Views/Shared/_Layout.cshtml";
     @model List<Data.MSSQL.Model.Data.wy_check_task>;
 }
@@ -148,7 +148,7 @@
         //    limit: 10,
         //    page: 1
         //};
-        mui.ajax('/PartDailyCheckList', {
+        mui.ajax('PartDailyCheckList', {
             data: this.temp,
             type: 'get',
             //timeout: 50000,

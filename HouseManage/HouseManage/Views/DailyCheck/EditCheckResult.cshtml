@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "EditCheckResult";
+    ViewData["Title"] = "编辑检查结果";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var FWINFO = ViewBag.FWINFO as List<Data.MSSQL.Model.BusinessModel.SimpleShopInfo>;
     var CHECKINFO = ViewBag.CHECKINFO as List<Data.MSSQL.Model.BusinessModel.SimpleCheckResultDetail>;
@@ -56,13 +56,13 @@
                                     if (item.CHECK_DETAIL_RESULT == 0)
                                     {
                                         <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
-                                            <button type="button" class="mui-btn mui-btn-danger" id="@item.CHECK_RESULT_ID.Trim()==''?@item.Code:@item.CHECK_RESULT_ID"  value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
+                                            <button type="button" class="mui-btn mui-btn-danger" id="@item.CHECK_RESULT_ID"  value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                     else if (item.CHECK_DETAIL_RESULT == 1)
                                     {
                                         <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
-                                            <button type="button" class="mui-btn mui-btn-primary" id="@item.CHECK_RESULT_ID.Trim()==''?@item.Code:@item.CHECK_RESULT_ID" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
+                                            <button type="button" class="mui-btn mui-btn-primary" id="@item.CHECK_RESULT_ID" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                     else
@@ -126,7 +126,7 @@
 <script>
     var temp = {
             RESULT_ID:'@ViewBag.FWINFO[0].RESULT_ID',
-            FWID: '@ViewBag.FWINFO[0].FWID',
+            @*FWID: '@ViewBag.FWINFO[0].FWID',*@
             JCJG: "",
             WTMS: "",
             ZGYQ: "",
@@ -225,32 +225,30 @@
         for (var i = 0; i < CHECKINFO.length; i++) {
             console.log(CHECKINFO[i].CHECK_RESULT_ID);
             var checkele = document.getElementById(CHECKINFO[i].CHECK_RESULT_ID);
+            console.log(checkele);
             if (checkele != null) {
                 let item = {
-                CHECK_RESULT_ID: CHECKINFO[i].CHECK_RESULT_ID,
+                CHECK_DETAIL_ID: CHECKINFO[i].CHECK_RESULT_ID,
                 VALUE: checkele.value,
-            }
+                }
+                console.log(temp);
                 temp.CHECK_DETAIL_RESULT.push(item);
             }
-            
-            console.log(temp);
         }
-        console.log(temp);
-        //mui.ajax('/DailyCheck/PostCheckResult', {
-        //    type: 'post',
-        //    data: Alltemp,
-        //    timeout: 50000,
-        //    headers: { 'Content-Type': 'application/json' },
-        //    success: function (data) {
-        //        if (data.trim().toString() == "success") {
-        //            console.log(123123);
-        //            window.location.href = "/DailyCheck/DailyCheckDetail?RWBH=" + RWBH
-        //        }
-        //    },
-        //    error: function (data) {
+        mui.ajax('PostUpdateCheckResult', {
+            type: 'post',
+            data: temp,
+            timeout: 50000,
+            headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                if (data.trim().toString() == "success") {
+                    //window.location.href = "DailyCheckDetail?RWBH=" + RWBH
+                }
+            },
+            error: function (data) {
 
-        //    },
-        //})
+            },
+        })
     }
 </script>
 
