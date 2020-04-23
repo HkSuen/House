@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using House.IService.Common;
 using House.IService.Model.Enum;
+using Microsoft.Extensions.Logging;
 
 namespace HouseManage.Controllers.Order
 {
@@ -20,11 +21,13 @@ namespace HouseManage.Controllers.Order
         private IOrderSvc _order = null;
         private IXMLHelperSingle _xml = null;
         private IWeChatPaySingle _pay = null;
-        public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay)
+        ILogger<OrdersController> _log;
+        public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay,ILogger<OrdersController> log)
         {
             _order = order;
             _xml = xml;
             _pay = pay;
+            _log = log;
         }
 
         public ActionResult Order(string r, string f, string u)
@@ -92,6 +95,7 @@ namespace HouseManage.Controllers.Order
                 byte[] buffer = new byte[HttpContext.Request.ContentLength.Value];
                 stream.Read(buffer, 0, buffer.Length);
                 string content = Encoding.UTF8.GetString(buffer);
+                _log.LogInformation("微信支付异步回调请求[Body]:" + content);
                 Dictionary<string, object> valuePairs = this._xml.XmlStrToDic(content);
                 //验证返回code
                 if (valuePairs["return_code"].ToString() == CommonFiled.SUCCESS
@@ -119,12 +123,14 @@ namespace HouseManage.Controllers.Order
             }
             catch (Exception ex)
             {
+                _log.LogError(ex,"PayError!!");
                 result = string.Format(result, CommonFiled.FAIL, ex.Message);
                 return Content(result, "text/xml");
             }
             if (!resultBool) {
                 result = string.Format(result, CommonFiled.FAIL, CommonFiled.FAIL);
             }
+            _log.LogInformation("微信支付异步回调请求[Retrun]:" + result);
             return Content(result, "text/xml");
         }
 
@@ -133,7 +139,7 @@ namespace HouseManage.Controllers.Order
         {
             if (string.IsNullOrEmpty(id))
             {
-                return Error("没有查询到单据信息。");
+                Exception("没有查询到单据信息");
             }
             wy_wxpay Model = this._order.GetWxOrderDetail(id);
             ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);

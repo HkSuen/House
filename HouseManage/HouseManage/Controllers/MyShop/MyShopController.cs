@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using House.IService.Model.Enum;
 using House.IService.Shop;
 using HouseManage.Models.Enum;
+using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SqlSugar;
 using Paramter = HouseManage.Models.Request;
 
@@ -16,10 +18,12 @@ namespace HouseManage.Controllers.MyShop
     //[Authorize(Roles = "Admin,Inspector,Merchant")]
     public class MyShopController : ControllerBase
     {
+        ILogger<MyShopController> _log;
         private IMyShopSvc _shop;
-        public MyShopController(IMyShopSvc shop)
+        public MyShopController(IMyShopSvc shop,ILogger<MyShopController> _loger)
         {
             this._shop = shop;
+            this._log = _loger;
         }
 
 

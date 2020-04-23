@@ -46,6 +46,11 @@ namespace HouseManage.Controllers
             return Redirect($"/WeChat/Home/Error?msg={msg}");
         }
 
+        protected ActionResult Exception(string msg = "Abnormal access!")
+        {
+            throw new Exception(msg);
+        }
+
 
     }
 }
