@@ -34,5 +34,21 @@ namespace House.IService.Shop
         /// <returns></returns>
 
         List<wy_pay_record> GetPayRecord(string OpenId, string Type, int? payState,PageModel page);
+
+        /// <summary>
+        /// 根据水表编号获取水的最新信息
+        /// </summary>
+        /// <param name="wId"></param>
+        /// <returns></returns>
+        wy_w_amount GetWater(string WId);
+
+        /// <summary>
+        /// 根据采集器ID和电的ID获取最新的电数据
+        /// </summary>
+        /// <param name="CollectId"></param>
+        /// <param name="ElectricityId"></param>
+        /// <returns></returns>
+        wy_ele_balance GetElectricity(string CollectId, string ElectricityId);
+
     }
 }

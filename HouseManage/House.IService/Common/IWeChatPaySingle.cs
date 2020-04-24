@@ -13,7 +13,7 @@ namespace House.IService.Common
         /// 接口返回预付订单签名对象
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, object> GetPrepaySign(wy_wxpay payModel);
+        Dictionary<string, object> GetPrepaySign(wy_wx_pay payModel);
 
         /// <summary>
         ///根据参数生成预付订单签名对象

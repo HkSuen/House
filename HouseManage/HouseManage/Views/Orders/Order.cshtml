@@ -63,9 +63,33 @@
         </form>
     </div>
     <div class="mui-card">
+        @{
+            if (d.JFLX == "1")
+            {
+                <div class="mui-input-row">
+                    <label>缴纳水量(吨)</label>
+                    <div class="mui-numbox" id="wnumber" data-numbox-step='5' data-numbox-min='0' data-numbox-max='1000' style="width:170px">
+                        <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
+                        <input class="mui-numbox-input" type="number" />
+                        <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
+                    </div>
+                </div>
+            }
+            else if (d.JFLX != "2")
+            {
+                <div class="mui-input-row">
+                    <label>缴纳金额(元)</label>
+                    <div class="mui-numbox" id="emoney" data-numbox-step='50' data-numbox-min='0' data-numbox-max='10000' style="width:170px">
+                        <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
+                        <input class="mui-numbox-input" type="number" />
+                        <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
+                    </div>
+                </div>
+            }
+        }
         <div class="mui-input-row" style="padding-bottom:20px;padding-top:10px">
             <label>缴费金额</label>
-            <input type="text" value="￥@d.JFJE.ToString("0.00")" style="color:orange;font-size:25px" readonly>
+            <input type="text" value="￥@d.JFJE.ToString("0.00")" style="color:orange;font-size:25px" readonly id="total_money">
         </div>
     </div>
     <p style="margin: 40px 10px;"></p>
@@ -119,23 +143,47 @@
                     if (res.err_msg == "get_brand_wcpay_request:ok") {
                         payed = true;
                         mui.hideLoading();
-                        // 使用以上方式判断前端返回,微信团队郑重提示：
                         //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
                         var btnArray = ['否', '是'];
                         mui.confirm('是否已付款？', '提示', btnArray, function (e) {
                             if (e.index == 1) {
-                                window.location.reload;
+                                var i = 5;
+                                setInterval(function () {
+                                    if (i != 0) {
+                                        mui.showLoading("正在检测订单状态， " + i + "秒！");
+                                        i--;
+                                    } else {
+                                        location.reload();
+                                    }
+                                }, 1100);
                             }
                         })
                         console.log(res);
                     }
                 });
         }
+        var postUrl = function (url, data, callback) {
+            mui.showLoading()
+            $.post(url, data, function (res) {
+                mui.hideLoading();
+                if (res != null && res.code == 1000) {
+                    var data = res.data || null
+                    callback(data);
+                }
+            })
+        }
+        var numbox = function (Selector) {
+            var numbox = mui(Selector);
+            if (numbox.length > 0) {
+                return mui(Selector).numbox().getValue();
+            }
+            return 0;
+        }
         jq("button.pay").on("tap", function () {
             mui.showLoading();
-            $.post("CreateOrder", { houseId: "@d.FWID", recordId: "@d.RECORD_ID", UId: "@d.CZ_SHID" }, function (res) {
+            $.post("CreateOrder", { houseId: "@d.FWID", recordId: "@d.RECORD_ID", UId: "@d.CZ_SHID", WNum: numbox("#wnumber"), EPrice: numbox("#emoney") }, function (res) {
                 if (res == null || res.code != 1000) {
-                    mui.hideLoading();
+                   mui.hideLoading();
                    mui.alert("生成订单失败！","提示");
                    return;
                }
@@ -157,6 +205,25 @@
         jq("button.detail").on("tap", function () {
             window.location.href = "OrderDetail/@d.ID";
         });
+        jq("#wnumber input").on("change", function () {
+            var number = jq(this).val();
+            if (unitprice != null) {
+                jq("#total_money").val("￥" + (number * unitprice));
+            } else {
+                loadUnitPrice();
+            }
+        });
+        jq("#emoney input").on("change", function () {
+            var number = jq(this).val();
+            jq("#total_money").val("￥" + number);
+        });
+        var unitprice = null;
+        var loadUnitPrice = function () {
+            postUrl("GetUnitPriceOfWater", null, function (data) {
+                unitprice = data;
+            });
+        }
+        loadUnitPrice();
     })(mui)
 
 

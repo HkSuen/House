@@ -13,7 +13,7 @@ namespace House.IService.Order
         /// </summary>
         /// <param name="wxpay"></param>
         /// <returns></returns>
-        Dictionary<string, object> GetPayParamsByWxModel(wy_wxpay wxpay);
+        Dictionary<string, object> GetPayParamsByWxModel(wy_wx_pay wxpay);
 
         /// <summary>
         /// 根据已经生成的订单生成支付参数
@@ -30,7 +30,7 @@ namespace House.IService.Order
         /// </summary>
         /// <param name="OrderId"></param>
         /// <returns></returns>
-        wy_wxpay GetWxPayById(string OrderId);
+        wy_wx_pay GetWxPayById(string OrderId);
 
         /// <summary>
         ///  根据recoreId 及其他参数获取支付订单信息
@@ -41,28 +41,28 @@ namespace House.IService.Order
         /// <param name="OpenId">用户ID</param>
         /// <param name="Type">缴费类型 备注:0物业费 1水费 2 电费</param>
         /// <returns></returns>
-        wy_wxpay FindSingle(string recoredId,string HouseId,string UserId,string OpenId);
+        wy_wx_pay FindSingle(string recoredId,string HouseId,string UserId,string OpenId);
 
         /// <summary>
         /// 根据v_pay_record 生成 支付订单信息
         /// </summary>
         /// <param name="record"></param>
         /// <returns></returns>
-        wy_wxpay GetWxPay(OrderDto record);
+        wy_wx_pay GetWxPay(OrderDto record);
 
         /// <summary>
         /// 插入数据
         /// </summary>
         /// <param name="wxpay"></param>
         /// <returns></returns>
-        int Inert(wy_wxpay wxpay);
+        int Inert(wy_wx_pay wxpay);
 
         /// <summary>
         /// 更新订单状态信息
         /// </summary>
         /// <param name="wxpay"></param>
         /// <returns></returns>
-        int Update(wy_wxpay wxpay);
+        int Update(wy_wx_pay wxpay);
 
 
         /// <summary>
@@ -95,7 +95,29 @@ namespace House.IService.Order
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        wy_wxpay GetWxOrderDetail(string Id);
+        wy_wx_pay GetWxOrderDetail(string Id);
+
+        /// <summary>
+        /// 插入水表数据
+        /// </summary>
+        /// <param name="Amount"></param>
+        /// <returns></returns>
+        int InsertWater(wy_w_amount Amount);
+
+        /// <summary>
+        /// 插入电的数据
+        /// </summary>
+        /// <param name="Balance"></param>
+        /// <returns></returns>
+        int InsertElectricity(wy_ele_balance Balance);
+
+
+        /// <summary>
+        /// 获取水的单价
+        /// </summary>
+        /// <param name="WaterKey"></param>
+        /// <returns></returns>
+        double GetUnitPrice(string WaterKey); 
 
     }
 }

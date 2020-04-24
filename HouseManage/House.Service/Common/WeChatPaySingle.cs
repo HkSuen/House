@@ -30,9 +30,9 @@ namespace House.Service.Common
             this._Sign = sign;
         }
 
-        public Dictionary<string,object> GetPrepaySign(wy_wxpay payModel)
+        public Dictionary<string,object> GetPrepaySign(wy_wx_pay payModel)
         {
-            //1.wy_wxpay生成payModel
+            //1.wy_wx_pay生成payModel
             Dictionary<string,object> pay = ToWeChatPayModel(payModel);
             //2.排序去重，并将其生成字符串sign
            string XmlPay = this._Xml.DicToXmlStr(pay);
@@ -60,8 +60,8 @@ namespace House.Service.Common
             return Params;
         }
 
-        //1.wy_wxpay生成payModel
-        private Dictionary<string,object> ToWeChatPayModel(wy_wxpay wxpay)
+        //1.wy_wx_pay生成payModel
+        private Dictionary<string,object> ToWeChatPayModel(wy_wx_pay wxpay)
         {
             //<sign> 0CB01533B8C1EF103065174F50BCA001 </sign>  
             Dictionary<string, object> Paramters = new Dictionary<string, object>();

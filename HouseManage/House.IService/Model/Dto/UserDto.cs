@@ -7,6 +7,10 @@ namespace House.IService.Model.Dto
     public class UserDto
     {
         /// <summary>
+        /// 用户标识
+        /// </summary>
+        public string ID { get; set; }
+        /// <summary>
         /// 手机号码
         /// </summary>
         public string PHONE { get; set; }

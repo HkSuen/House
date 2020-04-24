@@ -317,5 +317,7 @@ namespace House.IService.Common
             }
             return str5;
         }
+
+        public static string UnitPriceWaterKey = "PER_WATER_PRICE";
     }
 }

@@ -22,7 +22,7 @@ namespace HouseManage.Controllers.Order
         private IXMLHelperSingle _xml = null;
         private IWeChatPaySingle _pay = null;
         ILogger<OrdersController> _log;
-        public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay,ILogger<OrdersController> log)
+        public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay, ILogger<OrdersController> log)
         {
             _order = order;
             _xml = xml;
@@ -46,16 +46,16 @@ namespace HouseManage.Controllers.Order
             return View(DetailInfo);
         }
 
-        public JsonResult CreateOrder(string recordId, string houseId, string UId)
+        public JsonResult CreateOrder(string recordId, string houseId, string UId, int WNum, int EPrice)
         {
             if (string.IsNullOrEmpty(recordId) || string.IsNullOrEmpty(houseId) || string.IsNullOrEmpty(UId))
             {
                 return Data(ResultCode.PARAMS_IS_NULL, null, ResultCode.PARAMS_IS_NULL.GetEnumDescription());
             }
             //1.订单查询有无此数据,无数据默认创建新数据
-            wy_wxpay pay = this._order.FindSingle(recordId, houseId, UId, OpenID);
+            wy_wx_pay pay = this._order.FindSingle(recordId, houseId, UId, OpenID);
             //原订单失效，异步更改状态
-            bool UpdateTime = DateTime.Now > pay.PREPAY_ENDTIME;
+            bool UpdateTime = pay != null && DateTime.Now > pay.PREPAY_ENDTIME;
             if (pay == null || UpdateTime)
             {
                 if (UpdateTime) //异步更新过期订单信息，并生成新的订单信息
@@ -63,7 +63,6 @@ namespace HouseManage.Controllers.Order
                     Task.Run(() =>
                     {
                         pay.STATUS = 1;
-                        pay.PAY_TIME = DateTime.Now;
                         this._order.Update(pay);
                     });
                 }
@@ -71,6 +70,23 @@ namespace HouseManage.Controllers.Order
                 var PayRecord = this._order.GetWxPay(recordId, houseId);
                 pay = this._order.GetWxPay(PayRecord);
                 pay.USER_IP = UserIP;
+                //存储水量以及电量
+                if (pay.FEE_TYPES != 0) //非物业费
+                {
+                    //非物业默认记录电的价格
+                    pay.TOTAL_FEE = EPrice * 100; //从元转变为分
+                    if (pay.FEE_TYPES == 1)
+                    {
+                        // 为水的时候需要记录单价
+                        pay.UNIT_PRICE = Convert.ToInt32(this._order.GetUnitPrice(CommonFiled.UnitPriceWaterKey) * 100);
+                        pay.AMOUNT = WNum;
+                        pay.TOTAL_FEE = Convert.ToInt32(pay.UNIT_PRICE * 100 * pay.AMOUNT);
+                    }
+                }
+                if (pay.TOTAL_FEE <= 0) //如果订单生成为0元，直接视为无效订单，禁止生成。
+                {
+                    return Data(ResultCode.PARAMS_IS_INVALID);
+                }
                 //将订单存到数据库
                 if (this._order.Inert(pay) <= 0)
                 {
@@ -102,16 +118,19 @@ namespace HouseManage.Controllers.Order
                     && CommonFiled.SUCCESS == valuePairs["result_code"].ToString())
                 {
                     //校验签名
-                    if (this._pay.CheckWxSign(valuePairs)) {
+                    if (this._pay.CheckWxSign(valuePairs))
+                    {
                         if (valuePairs.ContainsKey("out_trade_no") || valuePairs.ContainsKey("cash_fee"))
                         {
                             //验证订单信息金额
-                            wy_wxpay pay = this._order.GetWxPayById(valuePairs["out_trade_no"].ToString());
-                            if (pay.STATUS == 0 && pay.TOTAL_FEE == Convert.ToInt32(valuePairs["cash_fee"])) {
+                            wy_wx_pay pay = this._order.GetWxPayById(valuePairs["out_trade_no"].ToString());
+                            if (pay.STATUS == 0 && pay.TOTAL_FEE == Convert.ToInt32(valuePairs["cash_fee"]))
+                            {
                                 pay.STATUS = 2;
                                 pay.PAY_TIME = DateTime.Now;
                                 pay.STATUS_REMARK = content;
-                                if (this._order.Update(pay) > 0) {
+                                if (this._order.Update(pay) > 0)
+                                {
                                     //返回信息
                                     resultBool = true;
                                     result = string.Format(result, CommonFiled.SUCCESS, CommonFiled.SUCCESS);
@@ -123,11 +142,12 @@ namespace HouseManage.Controllers.Order
             }
             catch (Exception ex)
             {
-                _log.LogError(ex,"PayError!!");
+                _log.LogError(ex, "PayError!!");
                 result = string.Format(result, CommonFiled.FAIL, ex.Message);
                 return Content(result, "text/xml");
             }
-            if (!resultBool) {
+            if (!resultBool)
+            {
                 result = string.Format(result, CommonFiled.FAIL, CommonFiled.FAIL);
             }
             _log.LogInformation("微信支付异步回调请求[Retrun]:" + result);
@@ -141,10 +161,44 @@ namespace HouseManage.Controllers.Order
             {
                 Exception("没有查询到单据信息");
             }
-            wy_wxpay Model = this._order.GetWxOrderDetail(id);
+            wy_wx_pay Model = this._order.GetWxOrderDetail(id);
             ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
             ViewBag.MoneyNum = CommonFiled.CmycurD(Model.TOTAL_FEE / 10);
             return View(Model);
+        }
+
+        public JsonResult GetUnitPriceOfWater()
+        {
+            return OK(this._order.GetUnitPrice(CommonFiled.UnitPriceWaterKey));
+        }
+
+        /// <summary>
+        /// 微信支付的后续操作
+        /// </summary>
+        /// <returns></returns>
+        private string WXPaidAfter(string OrderId) { //根据订单ID
+            try
+            {
+                return WXPaidAfter(this._order.GetWxPayById(OrderId));
+            }
+            catch (Exception ex)
+            {
+                _log.LogError("微信支付成功后逻辑处理错误：[OrderID]:" + OrderId);
+                return null;
+            }
+        }
+
+        private string WXPaidAfter(wy_wx_pay Order)
+        { //根据订单ID
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError("微信支付成功后逻辑处理错误：[OrderID]:" + Order.ORDER_ID);
+                return null;
+            }
         }
 
     }

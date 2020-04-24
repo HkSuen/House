@@ -97,5 +97,12 @@ namespace Data.MSSQL.Model.Data
            /// </summary>           
            public int? IS_DELETE {get;set;}
 
+           /// <summary>
+           /// Desc:商户ID 用于查询历史租赁信息
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string CZ_SHID {get;set;}
+
     }
 }

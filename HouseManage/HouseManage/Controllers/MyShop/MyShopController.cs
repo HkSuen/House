@@ -81,6 +81,26 @@ namespace HouseManage.Controllers.MyShop
             var ListInfo = _shop.GetShopDetails(OpenID);
             return Json(ListInfo);
         }
+
+        public JsonResult GetWater(string WaterId)
+        {
+            if (string.IsNullOrEmpty(WaterId))
+            {
+                return Data(ResultCode.PARAMS_IS_NULL);
+            }
+            var WaterInfo = _shop.GetWater(WaterId);
+            return OK(WaterInfo);
+        }
+
+        public JsonResult GetElectricity(string CollectId ,string ElectricityId)
+        {
+            if (string.IsNullOrEmpty(CollectId) || string.IsNullOrEmpty(ElectricityId))
+            {
+                return Data(ResultCode.PARAMS_IS_NULL);
+            }
+            var ElectricityInfo = _shop.GetElectricity(CollectId, ElectricityId);
+            return OK(ElectricityInfo);
+        }
         #endregion
     }
 }

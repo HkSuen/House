@@ -160,5 +160,12 @@ namespace Data.MSSQL.Model.Data
            /// </summary>           
            public string CID {get;set;}
 
+           /// <summary>
+           /// Desc:用于保存创建者的组织机构ID
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string ORG_CODE {get;set;}
+
     }
 }

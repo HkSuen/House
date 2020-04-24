@@ -29,7 +29,7 @@ namespace House.Service.Shop
             {
                 ho.FWID, ho.FWSX,ho.FWMC, ho.FWBH, SSQY = d3.Name, ho.JZMJ, LSFGS = d1.Name,
                 ho.ZLWZ, JGLX = d2.Name, ho.ZCYZ, sh.CZ_SHID, sh.SHOP_NAME, sh.SHOPBH, sh.ZHXM,
-                sh.JYNR,sh.SHOP_STATUS
+                sh.JYNR,sh.SHOP_STATUS,ho.WATER_NUMBER,ho.ELE_NUMBER,ho.CID
             }).ToList();
             return List;
         }
@@ -68,6 +68,29 @@ namespace House.Service.Shop
             }
             var list = _db.CurrentDb<wy_pay_record>().GetPageList(conditions.ToExpression(), page, c => c.CREATE_TIME, OrderByType.Desc);
             return list;
+        }
+
+        public wy_w_amount GetWater(string WId)
+        {
+            if (string.IsNullOrEmpty(WId))
+            {
+                return null;
+            }
+            var NewWaterInfo = _db.Db().Queryable<wy_w_amount>().Where(c => c.MeterID == WId)
+                .OrderBy(c => c.CreateDate).First();
+            return NewWaterInfo;
+        }
+
+        public wy_ele_balance GetElectricity(string CollectId, string ElectricityId)
+        {
+            if (string.IsNullOrEmpty(CollectId) || string.IsNullOrEmpty(ElectricityId))
+            {
+                return null;
+            }
+            var NewElectricityInfo = _db.Db().Queryable<wy_ele_balance>()
+                .Where(c => c.address == ElectricityId && c.cid == CollectId && c.Ustatus == "1")
+                .OrderBy(c => c.UpdateDate).First();
+            return NewElectricityInfo;
         }
     }
 }

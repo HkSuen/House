@@ -55,5 +55,12 @@ namespace Data.MSSQL.Model.Data
            /// </summary>           
            public double? WYDJ {get;set;}
 
+           /// <summary>
+           /// Desc:商户ID 用于查询历史记录
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string CZ_SHID {get;set;}
+
     }
 }

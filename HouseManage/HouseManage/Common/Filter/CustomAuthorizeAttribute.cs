@@ -44,8 +44,8 @@ namespace HouseManage.Common.Filter
                     var path = context.HttpContext.Request.Path;
                     var querString = context.HttpContext.Request.QueryString;
                     //2.如果未授权尝试获取openid。
-                    var openId = _wx.GetOpenId();
-                    //var openId = "oAY4Pv5JDd17NCPTO5BXCDOcnOT0";
+                    //var openId = _wx.GetOpenId();
+                    var openId = "oAY4Pv5JDd17NCPTO5BXCDOcnOT0";
                     if (!string.IsNullOrEmpty(openId)) //opneId参数为空，
                     {
                         //3.检查openid是否被注册过，如果没有被注册过跳转Register注册界面。
@@ -57,7 +57,8 @@ namespace HouseManage.Common.Filter
                         }
                         //4.openid 注册过以后，增加登录授权。
                         var ClaimsUser = new ClaimsPrincipal(new ClaimsIdentity(new[] 
-                        { 
+                        {
+                            new Claim("Uid",userDto.ID),
                             new Claim(ClaimTypes.Name, openId),
                             new Claim(ClaimTypes.Role,userDto.AUTHORITY)
                         },CookieAuthenticationDefaults.AuthenticationScheme));

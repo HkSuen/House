@@ -7,9 +7,9 @@ namespace Data.MSSQL.Model.Data
     ///<summary>
     ///
     ///</summary>
-    public partial class wy_wxpay
+    public partial class wy_wx_pay
     {
-           public wy_wxpay(){
+           public wy_wx_pay(){
 
 
            }
@@ -105,11 +105,11 @@ namespace Data.MSSQL.Model.Data
            public int FEE_TYPES {get;set;}
 
            /// <summary>
-           /// Desc:单个商品单价
+           /// Desc:单个商品单价(分)
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public decimal? UNIT_PRICE {get;set;}
+           public int? UNIT_PRICE {get;set;}
 
            /// <summary>
            /// Desc:商品的数量
