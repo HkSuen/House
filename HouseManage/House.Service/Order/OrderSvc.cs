@@ -167,6 +167,8 @@ namespace House.Service.Order
             pay.SHOP_NAME = oder.Shopinfo.SHOP_NAME;
             pay.TOTAL_FEE_CH = CommonFiled.CmycurD((pay.TOTAL_FEE / 100));
             pay.MECH_NAME = CommonFiled.MchName(pay.FEE_TYPES);
+            pay.TYPES_ID = pay.FEE_TYPES == 0 ? "" : (pay.FEE_TYPES == 1 ? oder.Houseinfo.WATER_NUMBER : oder.Houseinfo.ELE_NUMBER);
+            pay.TYPES_ID_ELE_COLL = oder.Houseinfo.CID;
             return pay;
         }
 
@@ -191,17 +193,6 @@ namespace House.Service.Order
             return Result;
         }
 
-        public int InsertWater(wy_w_amount Amount)
-        {
-            Amount.MeterID = CommonFiled.guid;
-            return 0;
-        }
-
-        public int InsertElectricity(wy_ele_balance Balance)
-        {
-            throw new NotImplementedException();
-        }
-
         public double GetUnitPrice(string WaterKey)
         {
             using (var db = this._db.Db()) {
@@ -209,5 +200,47 @@ namespace House.Service.Order
                 return Convert.ToDouble(price.CONF_VALUE);
             }
         }
+
+        public int UpdateRecoredJFZT(wy_pay_record record)
+        {
+            return DBAble<int>((db)=> { 
+                return db.Updateable(record).UpdateColumns(s => new { s.RECORD_ID, s.JFZT,s.JFRQ })
+                    .WhereColumns(it => new { it.RECORD_ID })
+                    .ExecuteCommand();
+            });
+        }
+
+        public int InsertW_Pay(wy_w_pay waterOrder)
+        {
+            return DBAble<int>((db)=> {
+                return db.Insertable(waterOrder).ExecuteCommand();
+            });
+        }
+
+        public int InsertElectricity(wy_ele_recharge electricityOrder)
+        {
+            return DBAble<int>((db) =>
+            {
+                return db.Insertable(electricityOrder).ExecuteCommand();
+            });
+        }
+
+        public int W_PayCount(string OrderId)
+        {
+            return DBAble<int>((db) =>
+            {
+                return db.Queryable<wy_w_pay>().Count(c => c.GUID == OrderId);
+            });
+        }
+
+        public int ElectricityCount(string OrderId)
+        {
+            return DBAble<int>((db) =>
+            {
+                return db.Queryable<wy_ele_recharge>().Count(c => c.id == OrderId);
+            });
+        }
+
+
     }
 }

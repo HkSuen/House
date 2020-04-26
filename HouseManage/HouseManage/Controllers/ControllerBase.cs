@@ -12,9 +12,9 @@ namespace HouseManage.Controllers
 {
     public class ControllerBase : Controller
     {
-
+        #region infomation of user.
         protected string OpenID => Request.HttpContext.User.Identity.Name;
-
+        protected string UserID => Request.HttpContext.User.FindFirst("Uid")?.Value;
         protected string UserIP
         {
             get
@@ -30,7 +30,7 @@ namespace HouseManage.Controllers
                 return "0.0.0.0";
             }
         }
-
+        #endregion
         protected JsonResult OK(object data)
         {
             return Data(ResultCode.SCCUESS, data);

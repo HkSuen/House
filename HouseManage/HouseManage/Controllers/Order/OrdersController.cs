@@ -107,6 +107,7 @@ namespace HouseManage.Controllers.Order
             bool resultBool = false;
             try
             {
+                _log.LogInformation("微信支付异步回调请求开始");
                 Stream stream = Request.Body;
                 byte[] buffer = new byte[HttpContext.Request.ContentLength.Value];
                 stream.Read(buffer, 0, buffer.Length);
@@ -132,6 +133,10 @@ namespace HouseManage.Controllers.Order
                                 if (this._order.Update(pay) > 0)
                                 {
                                     //返回信息
+                                    Task.Run(() => //异步操作，防止返回超时，被调用两次
+                                    {
+                                        WXPaidAfter(pay);
+                                    });
                                     resultBool = true;
                                     result = string.Format(result, CommonFiled.SUCCESS, CommonFiled.SUCCESS);
                                 }
@@ -142,7 +147,7 @@ namespace HouseManage.Controllers.Order
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "PayError!!");
+                _log.LogError(ex, "微信回调PayError!!");
                 result = string.Format(result, CommonFiled.FAIL, ex.Message);
                 return Content(result, "text/xml");
             }
@@ -172,34 +177,130 @@ namespace HouseManage.Controllers.Order
             return OK(this._order.GetUnitPrice(CommonFiled.UnitPriceWaterKey));
         }
 
+
+        #region 支付成功后，后续处理逻辑
+
         /// <summary>
         /// 微信支付的后续操作
         /// </summary>
         /// <returns></returns>
-        private string WXPaidAfter(string OrderId) { //根据订单ID
+        private bool WXPaidAfter(string OrderId)
+        { //根据订单ID
             try
             {
                 return WXPaidAfter(this._order.GetWxPayById(OrderId));
             }
             catch (Exception ex)
             {
-                _log.LogError("微信支付成功后逻辑处理错误：[OrderID]:" + OrderId);
-                return null;
+                _log.LogError(ex,"微信支付成功后逻辑处理错误：[OrderID]:" + OrderId);
+                return false;
             }
         }
 
-        private string WXPaidAfter(wy_wx_pay Order)
+        private bool WXPaidAfter(wy_wx_pay Order)
         { //根据订单ID
             try
             {
-                return null;
+                _log.LogInformation($"支付成功，更新类型：{CommonFiled.FeeTypeName(Order.FEE_TYPES)}");
+                //如果类型为物业费 // recoreId 不为空，证明为提醒订单，需要修改record表中的数据
+                if (Order != null && (string.IsNullOrEmpty(Order.RECORD_ID)))
+                {
+                    return PropertyCost(Order);
+                }
+                //如果类型为水费，
+                if (CommonFiled.EnumFeeTypes(Order.FEE_TYPES) == FeeTypes.Water)
+                {
+                    return WaterCost(Order);
+                }
+                //如果类型为电费
+                if (CommonFiled.EnumFeeTypes(Order.FEE_TYPES) == FeeTypes.Electricity)
+                {
+                    return ElectricityCost(Order);
+                }
+                return true;
             }
             catch (Exception ex)
             {
-                _log.LogError("微信支付成功后逻辑处理错误：[OrderID]:" + Order.ORDER_ID);
-                return null;
+                _log.LogError(ex,"微信支付成功后逻辑处理错误：[OrderID]:" + Order.ORDER_ID);
+                return false;
             }
         }
+        #region 支付成功后，水电物业费处理
+        private bool PropertyCost(wy_wx_pay Order) {
+            _log.LogInformation($"【wy_pay_record】准备更新:{Order.RECORD_ID}");
+            var Res = this._order.UpdateRecoredJFZT(new wy_pay_record()
+            {
+                RECORD_ID = Order.RECORD_ID,
+                JFZT = 1,
+                JFRQ = DateTime.Now
+            });
+            if (Res > 0)
+            {
+                _log.LogInformation($"【wy_pay_record】更新成功:{Order.RECORD_ID}");
+            }
+            else
+            {
+                _log.LogError($"【wy_pay_record】更新失败:{Order.RECORD_ID}，订单：{Order.ID}");
+                return false;
+            }
+            return true;
+        }
+        private bool WaterCost(wy_wx_pay Order)
+        {
+            _log.LogInformation($"【wy_w_pay】准备插入:{Order.ID}");
+            var Pay = this._order.W_PayCount(Order.ID);
+            if (Pay <= 0) // 未生成过订单
+            {
+                var Res = this._order.InsertW_Pay(new wy_w_pay()
+                {
+                    GUID = Order.ID,
+                    MeterID = Order.TYPES_ID,
+                    RechargeVolume = Convert.ToDouble(Order.AMOUNT),
+                    AddAmount = Convert.ToDouble(Order.TOTAL_FEE * 100),
+                    UnitPrice = Order.UNIT_PRICE,
+                    CreateDate = DateTime.Now
+                });
+                if (Res > 0)
+                {
+                    _log.LogInformation($"【wy_w_pay】更新成功:{Order.ID}");
+                }
+                else
+                {
+                    _log.LogError($"【wy_w_pay】更新失败:{Order.ID}");
+                    return false;
+                }
+            }
+            return true;
+        }
+        private bool ElectricityCost(wy_wx_pay Order)
+        {
+            _log.LogInformation($"【wy_ele_recharge】准备插入:{Order.ID}");
+            var Pay = this._order.ElectricityCount(Order.ID);
+            if (Pay <= 0)
+            {
+                var Res = this._order.InsertElectricity(new wy_ele_recharge()
+                {
+                    id = Order.ID,
+                    CreateDate = DateTime.Now,
+                    address = Order.TYPES_ID,
+                    cid = Order.TYPES_ID_ELE_COLL,
+                    Cost = Convert.ToDouble(Order.TOTAL_FEE * 100),
+                });
+                if (Res > 0)
+                {
+                    _log.LogInformation($"【wy_ele_recharge】更新成功:{Order.ID}");
+                }
+                else
+                {
+                    _log.LogError($"【wy_ele_recharge】更新失败:{Order.ID}");
+                    return false;
+                }
+            }
+            return true;
+        }
+        #endregion
+
+        #endregion
 
     }
 }

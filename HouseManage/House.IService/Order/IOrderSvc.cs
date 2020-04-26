@@ -102,14 +102,14 @@ namespace House.IService.Order
         /// </summary>
         /// <param name="Amount"></param>
         /// <returns></returns>
-        int InsertWater(wy_w_amount Amount);
+        int InsertW_Pay(wy_w_pay waterOrder);
 
         /// <summary>
         /// 插入电的数据
         /// </summary>
         /// <param name="Balance"></param>
         /// <returns></returns>
-        int InsertElectricity(wy_ele_balance Balance);
+        int InsertElectricity(wy_ele_recharge electricityOrder);
 
 
         /// <summary>
@@ -117,7 +117,28 @@ namespace House.IService.Order
         /// </summary>
         /// <param name="WaterKey"></param>
         /// <returns></returns>
-        double GetUnitPrice(string WaterKey); 
+        double GetUnitPrice(string WaterKey);
+
+        /// <summary>
+        /// 更新pay_record提醒表中的状态信息
+        /// </summary>
+        /// <param name="record"></param>
+        /// <returns></returns>
+        int UpdateRecoredJFZT(wy_pay_record record);
+
+        /// <summary>
+        /// 根据条件获取水费单是否已经支付
+        /// </summary>
+        /// <param name="OrderId"></param>
+        /// <returns></returns>
+        int W_PayCount(string OrderId);
+
+        /// <summary>
+        /// 根据条件获取电费单是否已经支付
+        /// </summary>
+        /// <param name="OrderId"></param>
+        /// <returns></returns>
+        int ElectricityCount(string OrderId);
 
     }
 }

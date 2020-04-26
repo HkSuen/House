@@ -30,7 +30,7 @@ namespace Data.MSSQL.Model.Data
            /// <summary>
            /// Desc:缴费记录的主键
            /// Default:
-           /// Nullable:False
+           /// Nullable:True
            /// </summary>           
            public string RECORD_ID {get;set;}
 
@@ -96,6 +96,20 @@ namespace Data.MSSQL.Model.Data
            /// Nullable:False
            /// </summary>           
            public string OPEN_ID {get;set;}
+
+           /// <summary>
+           /// Desc:缴费类型的ID
+           /// Default:
+           /// Nullable:False
+           /// </summary>           
+           public string TYPES_ID {get;set;}
+
+           /// <summary>
+           /// Desc:电费采集器的字段
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string TYPES_ID_ELE_COLL {get;set;}
 
            /// <summary>
            /// Desc:缴费类型 备注:0物业费 1水费 2 电费

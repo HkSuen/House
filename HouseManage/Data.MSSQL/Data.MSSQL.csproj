@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Model\Data\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Model\DataBase.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
