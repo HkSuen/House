@@ -44,9 +44,25 @@ namespace House.Service.Order
 
         public wy_wx_pay FindSingle(string recoredId, string HouseId, string UserId, string OpenId)
         {
+            var conditions = Expressionable.Create<wy_wx_pay>();
+            if (!string.IsNullOrEmpty(recoredId))
+            {
+                conditions = conditions.And(c => c.RECORD_ID == recoredId);
+            }
+            if (!string.IsNullOrEmpty(HouseId))
+            {
+                conditions = conditions.And(c => HouseId == c.HOUSE_ID);
+            }
+            if (!string.IsNullOrEmpty(OpenId))
+            {
+                conditions = conditions.And(c => c.OPEN_ID == OpenId);
+            }
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                conditions = conditions.And(c => c.USER_ID == UserId);
+            }
             return this._db.Db().Queryable<wy_wx_pay>().OrderBy(c=>c.CREATE_TIME,OrderByType.Desc)
-                .First(c => c.RECORD_ID == recoredId
-            && HouseId == c.HOUSE_ID && c.USER_ID == UserId && c.OPEN_ID == OpenId);
+                .First(conditions.ToExpression());
         }
 
         public v_pay_record GetRecord(string recordId, string HouseId)
@@ -63,6 +79,23 @@ namespace House.Service.Order
             return this._db.CurrentDb<v_pay_record>().GetSingle(conditions.ToExpression());
         }
 
+
+        public OrderDto GetWxPay(string HouseId) {
+            var conditions = Expressionable.Create<wy_houseinfo, wy_shopinfo>();
+            if (string.IsNullOrEmpty(HouseId))
+            {
+                conditions = conditions.And((ho, sh) => ho.FWID == HouseId);
+            }
+            OrderDto Data = this._db.Db().Queryable<wy_houseinfo, wy_shopinfo>((ho, sh) => new object[] {
+                JoinType.Left,ho.FWID == sh.FWID
+            }).Where(conditions.ToExpression())
+            .Select((ho, sh) => new OrderDto
+            {
+                Houseinfo = ho,
+                Shopinfo = sh
+            }).First();
+            return Data;
+        }
         public OrderDto GetWxPay(string recordId, string HouseId)
         {
             var conditions = Expressionable.Create<v_pay_record, wy_houseinfo, wy_shopinfo>();
@@ -147,8 +180,8 @@ namespace House.Service.Order
             pay.APP_ID = CommonFiled.appID;
             pay.ORDER_ID = CommonFiled.ABC + CommonFiled.orderId;
             pay.RECORD_ID = record.RECORD_ID;
-            pay.HOUSE_ID = record.FWID;
-            pay.USER_ID = record.CZ_SHID; //用户ID
+            pay.HOUSE_ID = oder.Houseinfo.FWID;
+            pay.USER_ID = oder.Shopinfo.CZ_SHID; //用户ID
             pay.OPEN_ID = record.OPEN_ID;
             pay.FEE_TYPES = Convert.ToInt32(record.JFLX);
             pay.TOTAL_FEE = record.JFJE.HasValue ? Convert.ToInt32(record.JFJE.Value * 100) : 0;
@@ -241,6 +274,12 @@ namespace House.Service.Order
             });
         }
 
-
+        public int InsertRecord(wy_pay_record record)
+        {
+            return DBAble<int>((db) =>
+            {
+                return db.Insertable(record).ExecuteCommand();
+            });
+        }
     }
 }

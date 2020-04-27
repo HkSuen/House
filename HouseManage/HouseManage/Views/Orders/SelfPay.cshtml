@@ -1,0 +1,277 @@
+﻿
+@{
+    ViewData["Title"] = "自助缴费";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">自助缴费</h1>
+</header>
+<div class="mui-content">
+    <div class="mui-card">
+        <form class="mui-input-group">
+            <div class="mui-input-row">
+                <label>缴费类型</label>
+                <input type="text" value="" placeholder="请选择" id="types">
+            </div>
+            <div class="mui-input-row">
+                <label>缴纳商铺</label>
+                <input type="text" value="" placeholder="请选择" id="house">
+            </div>
+            <div class="mui-input-row" style="padding-bottom:20px">
+                <label>收款单位</label>
+                <input type="text" value="" readonly id="costpay">
+            </div>
+            <div class="mui-input-row num" id="water">
+                <label>水 量(立方)</label>
+                <div class="mui-numbox" id="wnumber" data-numbox-step='5' data-numbox-min='0' data-numbox-max='10000' style="width:170px">
+                    <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
+                    <input class="mui-numbox-input" type="number" />
+                    <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
+                </div>
+            </div>
+            <div class="mui-input-row num" id="elec">
+                <label>电 费(元)</label>
+                <div class="mui-numbox" id="wnumber" data-numbox-step='10' data-numbox-min='0' data-numbox-max='10000' style="width:170px">
+                    <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
+                    <input class="mui-numbox-input" type="number" />
+                    <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
+                </div>
+            </div>
+            <div class="mui-input-row num" id="service">
+                <label>物业费(元)</label>
+                <input type="text" value="" placeholder="请输入缴纳的物业费">
+            </div>
+        </form>
+    </div>
+    <div class="mui-card">
+        <div class="mui-input-row" style="padding-bottom:20px;padding-top:10px">
+            <label>缴费金额</label>
+            <input type="text" value="￥0" style="color:orange;font-size:25px" id="total_money">
+        </div>
+    </div>
+    <p style="margin: 40px 10px;"></p>
+    <div class="mui-col-sm-12 mui-col-xs-12" style="text-align:center;">
+        <button type="button" class="mui-btn mui-btn-primary pay" style="width:91%;" id="submit">立即支付</button>
+    </div>
+</div>
+<style>
+    /*隐藏google touch事件错误*/
+    * {
+        touch-action: none;
+    }
+
+    .mui-card input {
+        text-align: right;
+    }
+</style>
+<script type="text/javascript">
+    jq = $;
+    (function ($) {
+        $.init({
+            swipeBack: true //启用右滑关闭功能
+        });
+        var pageModel = {
+            model: {},
+            Init: function () {
+                jq("div[class='mui-input-row num']").hide();
+                this.Bind();
+                var self = this;
+                this.picker = new mui.PopPicker();
+                this.housepicker = new mui.PopPicker();
+                this.getHouseInfo();
+                this.getTypes();
+                this.getBeneficiaries();
+                this.getUnitPriceOfWater();
+            },
+            Bind: function () {
+                var self = this;
+                jq("#types").on("tap", function () {
+                    self.picker.show(function (SelectedItem) {
+                        jq("#types").val(SelectedItem[0].text);
+                        self.model.Type = SelectedItem[0].value;
+                        var beneficiary = jq.grep(self.beneficiaries, function (val) {
+                            return val.value == SelectedItem[0].value;
+                        });
+                        if (beneficiary.length > 0) {
+                            jq("#costpay").val(beneficiary[0].text);
+                        }
+                        //show or hiden
+                        if (self.model.Type == 0) {
+                            jq("div[class='mui-input-row num']").hide();
+                            jq("#service").show();
+                        }
+                        if (self.model.Type == 1) {
+                            jq("div[class='mui-input-row num']").hide();
+                            jq("#water").show();
+                        }
+                        if (self.model.Type == 2) {
+                            jq("div[class='mui-input-row num']").hide();
+                            jq("#elec").show();
+                        }
+                    })
+                });
+                jq("#house").on("tap", function () {
+                    self.housepicker.show(function (SelectItem) {
+                        jq("#house").val(SelectItem[0].text);
+                        self.model.houseId = SelectItem[0].value;
+                        var houseinfo = jq.grep(self.houseinfos, function (val) {
+                            return val.FWID == SelectItem[0].value;
+                        });
+                        self.model.UId = houseinfo[0].CZ_SHID;
+                    });
+                });
+                jq("div.num input").on('change', function () {
+                    var reg = /^[0-9,.]*$/ //^[-\+]?\d+(\.\d+)?$/
+                    var money = parseFloat(this.value);
+                    if (!reg.test(money)) {
+                        mui.alert("格式错误，请重新输入", "提示");
+                        this.value = "";
+                        return;
+                    }
+                    jq("#total_money").val("￥" + money);
+                    self.model.WNum = money;
+                    self.model.EPrice = money;
+                });
+                jq("#submit").on("tap", function () {
+                    var model = self.model;
+                    if (model.Type == undefined) {
+                        mui.alert("请选择缴费类型！");
+                        return;
+                    }
+                    if (model.houseId == undefined) {
+                        mui.alert("请选择缴纳商铺！");
+                        return;
+                    }
+                    setTimeout(function () {
+                        self.createOrder();
+                    }, 200);
+                })
+            },
+            post: function (url, data, callback) {
+                mui.showLoading()
+                $.post(url, data, function (res) {
+                    mui.hideLoading();
+                    callback(res);
+                })
+            },
+            getTypes: function () {
+                var self = this;
+                this.post("../MyShop/TypesFee", null, function (data) {
+                    if (null != data && undefined != data) {
+                        self.types = [];
+                        for (var val in data) {
+                            if (data[val] != 0) { //过滤物业费
+                                self.types.push({ text: val, value: data[val] });
+                            }
+                        }
+                        self.picker.setData(self.types);
+                    }
+                });
+            },
+            getBeneficiaries: function () {
+                var self = this;
+                this.post("../MyShop/TypesFeeAndMech", null, function (data) {
+                    if (null != data && undefined != data) {
+                        self.beneficiaries = [];
+                        for (var val in data) {
+                            self.beneficiaries.push({ value: val, text: data[val] });
+                        }
+                    }
+                });
+            },
+            getHouseInfo: function () {
+                var self = this;
+                this.post("../MyShop/GetShopDetails", null, function (data) {
+                    self.houseinfos = data;
+                    self.houseinfopicker = [];
+                    jq.each(data, function (idx, val) {
+                        self.houseinfopicker.push({ value: val.FWID, text: val.SHOP_NAME });
+                    })
+                    self.housepicker.setData(self.houseinfopicker);
+                })
+            },
+            getUnitPriceOfWater: function () {
+                var self = this;
+                this.post("GetUnitPriceOfWater", null, function (data) {
+                    if (data.code == 1000) {
+                        self.waterUnitPrice = data.data || 0;
+                    }
+                })
+            },
+            payed: function () {
+                    //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                    var btnArray = ['否', '是'];
+                    mui.confirm('是否已付款？', '提示', btnArray, function (e) {
+                        if (e.index == 1) {
+                            var i = 5;
+                            setInterval(function () {
+                                if (i != 0) {
+                                    mui.showLoading("正在检测订单状态， " + i + "秒！");
+                                    i--;
+                                } else {
+                                    location.reload();
+                                }
+                            }, 1100);
+                        } else {
+                            mui.hideLoading();
+                        }
+                    })
+            },
+            createOrder: function () {
+                var self = this;
+                this.post("CreateOrder", self.model,function (res) {
+                    if (res == null || res.code != 1000) {
+                        mui.hideLoading();
+                        mui.alert("生成订单失败！", "提示");
+                        return;
+                    }
+                    var data = res.data || null;
+                    if (data != null) {
+                        self.Sign = data.sign;
+                        if (self.Sign == null) {
+                            mui.hideLoading();
+                            mui.alert("预支付失败！", "提示");
+                        }
+                        self.payed();
+                        mui.showLoading("订单支付中");
+                        self.payInit();
+                    } else {
+                        mui.hideLoading();
+                        mui.alert("数据错误！", "提示");
+                        return;
+                    }
+                });
+            },
+            payInit: function () {
+                if (typeof WeixinJSBridge == "undefined") {
+                    if (document.addEventListener) {
+                        document.addEventListener('WeixinJSBridgeReady', this.onBridgeReady, false);
+                    } else if (document.attachEvent) {
+                        document.attachEvent('WeixinJSBridgeReady', this.onBridgeReady);
+                        document.attachEvent('onWeixinJSBridgeReady', this.onBridgeReady);
+                    }
+                } else {
+                    this.onBridgeReady();
+                }
+            },
+            onBridgeReady: function () {
+                var self = this;
+                WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest', self.Sign,
+                    function (res) {
+                        if (res.err_msg == "get_brand_wcpay_request:ok") {
+                            payed = true;
+                            console.log(res);
+                        } else {
+                            mui.alert("支付失败！", "提示");
+                        }
+                    });
+            }
+        }
+        pageModel.Init();
+    })(mui)
+
+
+</script>

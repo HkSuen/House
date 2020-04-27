@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using House.IService.Common;
 using House.IService.Model.Enum;
 using Microsoft.Extensions.Logging;
+using House.IService.Model.Dto;
+using House.IService.Shop;
 
 namespace HouseManage.Controllers.Order
 {
@@ -21,13 +23,16 @@ namespace HouseManage.Controllers.Order
         private IOrderSvc _order = null;
         private IXMLHelperSingle _xml = null;
         private IWeChatPaySingle _pay = null;
+        private IMyShopSvc _shop;
         ILogger<OrdersController> _log;
-        public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay, ILogger<OrdersController> log)
+        public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay,
+            ILogger<OrdersController> log, IMyShopSvc shop)
         {
             _order = order;
             _xml = xml;
             _pay = pay;
             _log = log;
+            _shop = shop;
         }
 
         public ActionResult Order(string r, string f, string u)
@@ -46,14 +51,14 @@ namespace HouseManage.Controllers.Order
             return View(DetailInfo);
         }
 
-        public JsonResult CreateOrder(string recordId, string houseId, string UId, int WNum, int EPrice)
+        public JsonResult CreateOrder(string recordId, string houseId, string UId, int WNum, double EPrice, string Type)
         {
-            if (string.IsNullOrEmpty(recordId) || string.IsNullOrEmpty(houseId) || string.IsNullOrEmpty(UId))
+            if (string.IsNullOrEmpty(houseId) || string.IsNullOrEmpty(UId))
             {
                 return Data(ResultCode.PARAMS_IS_NULL, null, ResultCode.PARAMS_IS_NULL.GetEnumDescription());
             }
             //1.订单查询有无此数据,无数据默认创建新数据
-            wy_wx_pay pay = this._order.FindSingle(recordId, houseId, UId, OpenID);
+            wy_wx_pay pay = this._order.FindSingle(recordId, houseId, UId, OpenID); //自助缴费订单，每次都是新订单
             //原订单失效，异步更改状态
             bool UpdateTime = pay != null && DateTime.Now > pay.PREPAY_ENDTIME;
             if (pay == null || UpdateTime)
@@ -67,20 +72,41 @@ namespace HouseManage.Controllers.Order
                     });
                 }
                 //获取提醒订单信息
-                var PayRecord = this._order.GetWxPay(recordId, houseId);
+                OrderDto PayRecord = null;
+                if (string.IsNullOrEmpty(recordId))
+                {
+                    PayRecord = this._order.GetWxPay(houseId);
+                }
+                else
+                {
+                    PayRecord = this._order.GetWxPay(recordId, houseId);
+                }
+                //校验是否为自助缴费订单
+                if (PayRecord.Record == null || PayRecord.Record.RECORD_ID == null)
+                {
+                    PayRecord.Record = new v_pay_record()
+                    {
+                        OPEN_ID = OpenID,
+                        JFLX = Type,
+                        JFJE = EPrice, //默认物业费
+                        RECORD_ID = "0" //默认0为自助订单，非缴费提醒
+                    };
+                }
                 pay = this._order.GetWxPay(PayRecord);
                 pay.USER_IP = UserIP;
                 //存储水量以及电量
                 if (pay.FEE_TYPES != 0) //非物业费
                 {
                     //非物业默认记录电的价格
-                    pay.TOTAL_FEE = EPrice * 100; //从元转变为分
+                    pay.TOTAL_FEE = Convert.ToInt32(EPrice * 100); //从元转变为分
+                    pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal(EPrice));
                     if (pay.FEE_TYPES == 1)
                     {
                         // 为水的时候需要记录单价
                         pay.UNIT_PRICE = Convert.ToInt32(this._order.GetUnitPrice(CommonFiled.UnitPriceWaterKey) * 100);
                         pay.AMOUNT = WNum;
                         pay.TOTAL_FEE = Convert.ToInt32(pay.UNIT_PRICE * 100 * pay.AMOUNT);
+                        pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal(pay.UNIT_PRICE * pay.AMOUNT));
                     }
                 }
                 if (pay.TOTAL_FEE <= 0) //如果订单生成为0元，直接视为无效订单，禁止生成。
@@ -121,11 +147,11 @@ namespace HouseManage.Controllers.Order
                     //校验签名
                     if (this._pay.CheckWxSign(valuePairs))
                     {
-                        if (valuePairs.ContainsKey("out_trade_no") || valuePairs.ContainsKey("cash_fee"))
+                        if (valuePairs.ContainsKey("out_trade_no") || valuePairs.ContainsKey("total_fee"))
                         {
                             //验证订单信息金额
                             wy_wx_pay pay = this._order.GetWxPayById(valuePairs["out_trade_no"].ToString());
-                            if (pay.STATUS == 0 && pay.TOTAL_FEE == Convert.ToInt32(valuePairs["cash_fee"]))
+                            if (pay.STATUS == 0 && pay.TOTAL_FEE == Convert.ToInt32(valuePairs["total_fee"]))
                             {
                                 pay.STATUS = 2;
                                 pay.PAY_TIME = DateTime.Now;
@@ -192,7 +218,7 @@ namespace HouseManage.Controllers.Order
             }
             catch (Exception ex)
             {
-                _log.LogError(ex,"微信支付成功后逻辑处理错误：[OrderID]:" + OrderId);
+                _log.LogError(ex, "微信支付成功后逻辑处理错误：[OrderID]:" + OrderId);
                 return false;
             }
         }
@@ -202,6 +228,7 @@ namespace HouseManage.Controllers.Order
             try
             {
                 _log.LogInformation($"支付成功，更新类型：{CommonFiled.FeeTypeName(Order.FEE_TYPES)}");
+                //更新缴费记录表，如果为自主缴费记录，支付成功后，重新生成新数据
                 //如果类型为物业费 // recoreId 不为空，证明为提醒订单，需要修改record表中的数据
                 if (Order != null && (string.IsNullOrEmpty(Order.RECORD_ID)))
                 {
@@ -221,12 +248,13 @@ namespace HouseManage.Controllers.Order
             }
             catch (Exception ex)
             {
-                _log.LogError(ex,"微信支付成功后逻辑处理错误：[OrderID]:" + Order.ORDER_ID);
+                _log.LogError(ex, "微信支付成功后逻辑处理错误：[OrderID]:" + Order.ORDER_ID);
                 return false;
             }
         }
         #region 支付成功后，水电物业费处理
-        private bool PropertyCost(wy_wx_pay Order) {
+        private bool PropertyCost(wy_wx_pay Order)
+        {
             _log.LogInformation($"【wy_pay_record】准备更新:{Order.RECORD_ID}");
             var Res = this._order.UpdateRecoredJFZT(new wy_pay_record()
             {
@@ -256,12 +284,15 @@ namespace HouseManage.Controllers.Order
                     GUID = Order.ID,
                     MeterID = Order.TYPES_ID,
                     RechargeVolume = Convert.ToDouble(Order.AMOUNT),
-                    AddAmount = Convert.ToDouble(Order.TOTAL_FEE * 100),
+                    AddAmount = Convert.ToDouble(Order.TOTAL_FEE / 100),
                     UnitPrice = Order.UNIT_PRICE,
                     CreateDate = DateTime.Now
                 });
                 if (Res > 0)
                 {
+                    Task.Run(()=> {
+                        InsertPayRecord(Order);
+                    });
                     _log.LogInformation($"【wy_w_pay】更新成功:{Order.ID}");
                 }
                 else
@@ -284,10 +315,13 @@ namespace HouseManage.Controllers.Order
                     CreateDate = DateTime.Now,
                     address = Order.TYPES_ID,
                     cid = Order.TYPES_ID_ELE_COLL,
-                    Cost = Convert.ToDouble(Order.TOTAL_FEE * 100),
+                    Cost = Convert.ToDouble(Order.TOTAL_FEE / 100),
                 });
                 if (Res > 0)
                 {
+                    Task.Run(() => {
+                        InsertPayRecord(Order);
+                    });
                     _log.LogInformation($"【wy_ele_recharge】更新成功:{Order.ID}");
                 }
                 else
@@ -296,11 +330,82 @@ namespace HouseManage.Controllers.Order
                     return false;
                 }
             }
+            else
+            {
+                _log.LogInformation($"【wy_ele_recharge】订单已存在，过滤重复插入");
+                return false;
+            }
             return true;
+        }
+
+        private bool InsertPayRecord(wy_wx_pay Order)
+        {
+            _log.LogInformation($"【InsertPayRecord】准备插入新增支付记录:{Order.ID}");
+            if (Order.RECORD_ID == "0") //自主缴费
+            {
+                var record = new wy_pay_record()
+                {
+                    RECORD_ID = Order.ID,
+                    JFLX = Order.FEE_TYPES.ToString(),
+                    FWID = Order.HOUSE_ID,
+                    JFJE = (Order.TOTAL_FEE / 100.00),
+                    JFZT = 1,
+                    SFTZ = 1,
+                    JFRQ = Order.PAY_TIME,
+                    PAY_WAY = 1,
+                    SURPLUSVALUE = GetSurplus(Order.FEE_TYPES, Order.TYPES_ID, Order.TYPES_ID_ELE_COLL),
+                    CREATE_TIME = Order.CREATE_TIME,
+                    CZ_SHID = Order.USER_ID,
+                    OPEN_ID = Order.OPEN_ID,
+                    CONFIRM_RECIVEMONEY = 0,
+                    JFCS = 0
+                };
+                var Res = _order.InsertRecord(record) > 0;
+                if (Res)
+                {
+                    _log.LogInformation($"【InsertPayRecord】插入新增支付成功:{Order.ID}");
+                }
+                else
+                {
+                    _log.LogError($"【InsertPayRecord】插入新增支付失败:{Order.ID}");
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 获取水电的余额
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="typeId"></param>
+        /// <param name="CollId"></param>
+        /// <returns></returns>
+        private double GetSurplus(int type, string typeId, string CollId)
+        {
+            if (type == 1)
+            {
+                var waterSurplus = _shop.GetWater(typeId);
+                if (waterSurplus == null)
+                    return 0;
+                return Convert.ToDouble(waterSurplus.MeterAccflow);
+            }
+            if (type == 2)
+            {
+                var Surplus = _shop.GetElectricity(CollId, typeId);
+                if (Surplus == null)
+                    return 0;
+                return Convert.ToDouble(Surplus.EleBalance);
+            }
+            return 0;
         }
         #endregion
 
         #endregion
+
+        public ActionResult SelfPay()
+        {
+            return View();
+        }
 
     }
 }

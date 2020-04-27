@@ -8,7 +8,7 @@
     "RegPage": "/WeChat/User/Register",
     "Pay": {
       "MchName": "{'1584864331':'普丰物业分公司','1585873541':'普丰房地产分公司'}", //{"商户ID":"商户名称"}
-      "Secret": "{'1584864331':'123123123123123','1585873541':'123123123123123'}", //{"商户ID":"商户Secret"}
+      "Secret": "{'1584864331':'b406b8485c286091a46aca4999f294d3','1585873541':'b406b8485c286091a46aca4999f294d3'}", //{"商户ID":"商户Secret"}
       "MchID": "{'0':'1584864331','1':'1584864331','2':'1585873541'}", //{"缴费类型":"商户ID"}
       "Pay_url": "https://api.mch.weixin.qq.com/pay/unifiedorder",
       "CallBackUrl": "http://www.gxxcwsh.com/WeChat/Orders/PayResult"

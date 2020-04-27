@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using AppJson = Data.MSSQL.Common;
 
@@ -169,6 +170,19 @@ namespace House.IService.Common
         {
             string mId = MchId(type);
             return MchName(mId);
+        }
+
+        public static Dictionary<int, string> TypesAndMechName {
+            get
+            {
+                var Infos = new Dictionary<int, string>();
+                foreach(var type in Fee.Types)
+                {
+                    var value = type.Value;
+                    Infos.Add(value, MchName(value));
+                }
+                return Infos;
+            }
         }
 
         private static Dictionary<string, string> MchNameInfo {

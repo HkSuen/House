@@ -41,6 +41,7 @@ namespace House.Service.Common
             string ReprepayId = GetPrepayId(ResponseInfo);
             if (!string.IsNullOrEmpty(ReprepayId))
             {
+                payModel.PREPAYID = ReprepayId;
                 //4.根据prepayId生成JSAPI请求数据
                 var MchSec = CommonFiled.MchSecret(payModel.FEE_TYPES);
                 return GetParamStrByPrePayId(payModel.APP_ID, ReprepayId, MchSec);

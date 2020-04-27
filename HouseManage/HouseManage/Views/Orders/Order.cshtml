@@ -67,7 +67,7 @@
             if (d.JFLX == "1")
             {
                 <div class="mui-input-row">
-                    <label>缴纳水量(吨)</label>
+                    <label>缴纳水量(立方)</label>
                     <div class="mui-numbox" id="wnumber" data-numbox-step='5' data-numbox-min='0' data-numbox-max='1000' style="width:170px">
                         <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
                         <input class="mui-numbox-input" type="number" />
@@ -75,7 +75,7 @@
                     </div>
                 </div>
             }
-            else if (d.JFLX != "2")
+            else if (d.JFLX == "2")
             {
                 <div class="mui-input-row">
                     <label>缴纳金额(元)</label>
@@ -142,23 +142,9 @@
                 function (res) {
                     if (res.err_msg == "get_brand_wcpay_request:ok") {
                         payed = true;
-                        mui.hideLoading();
-                        //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
-                        var btnArray = ['否', '是'];
-                        mui.confirm('是否已付款？', '提示', btnArray, function (e) {
-                            if (e.index == 1) {
-                                var i = 5;
-                                setInterval(function () {
-                                    if (i != 0) {
-                                        mui.showLoading("正在检测订单状态， " + i + "秒！");
-                                        i--;
-                                    } else {
-                                        location.reload();
-                                    }
-                                }, 1100);
-                            }
-                        })
                         console.log(res);
+                    } else {
+                        mui.alert("支付失败！", "提示");
                     }
                 });
         }
@@ -179,6 +165,25 @@
             }
             return 0;
         }
+        var payed = function () {
+            //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+            var btnArray = ['否', '是'];
+            mui.confirm('是否已付款？', '提示', btnArray, function (e) {
+                if (e.index == 1) {
+                    var i = 5;
+                    setInterval(function () {
+                        if (i != 0) {
+                            mui.showLoading("正在检测订单状态， " + i + "秒！");
+                            i--;
+                        } else {
+                            location.reload();
+                        }
+                    }, 1100);
+                } else {
+                    mui.hideLoading();
+                }
+            })
+        }
         jq("button.pay").on("tap", function () {
             mui.showLoading();
             $.post("CreateOrder", { houseId: "@d.FWID", recordId: "@d.RECORD_ID", UId: "@d.CZ_SHID", WNum: numbox("#wnumber"), EPrice: numbox("#emoney") }, function (res) {
@@ -194,6 +199,8 @@
                         mui.hideLoading();
                         mui.alert("预支付失败！", "提示");
                     }
+                    payed();
+                    mui.showLoading("订单支付中");
                     payInit();
                 } else {
                     mui.hideLoading();

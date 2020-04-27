@@ -23,7 +23,7 @@ namespace House.IService.Order
         /// <param name="PaySecret"></param>
         /// <returns></returns>
 
-        Dictionary<string, object> GetPayParamsByWxModel(string appId,string prePayId,string PaySecret);
+        Dictionary<string, object> GetPayParamsByWxModel(string appId, string prePayId, string PaySecret);
 
         /// <summary>
         /// 获取支付的订单根据微信Order
@@ -41,7 +41,7 @@ namespace House.IService.Order
         /// <param name="OpenId">用户ID</param>
         /// <param name="Type">缴费类型 备注:0物业费 1水费 2 电费</param>
         /// <returns></returns>
-        wy_wx_pay FindSingle(string recoredId,string HouseId,string UserId,string OpenId);
+        wy_wx_pay FindSingle(string recoredId, string HouseId, string UserId, string OpenId);
 
         /// <summary>
         /// 根据v_pay_record 生成 支付订单信息
@@ -80,6 +80,7 @@ namespace House.IService.Order
         /// <param name="HouseId"></param>
         /// <returns></returns>
         OrderDto GetWxPay(string recordId, string HouseId);
+        OrderDto GetWxPay(string HouseId);
 
         /// <summary>
         /// 根据参数获取支付展示详情
@@ -88,7 +89,7 @@ namespace House.IService.Order
         /// <param name="HouseId"></param>
         /// <param name="RecordId"></param>
         /// <returns></returns>
-        List<object> GetPayDetails(string UserId,string HouseId,string RecordId);
+        List<object> GetPayDetails(string UserId, string HouseId, string RecordId);
 
         /// <summary>
         /// 根据订单ID获取微信支付的详细内容
@@ -139,6 +140,13 @@ namespace House.IService.Order
         /// <param name="OrderId"></param>
         /// <returns></returns>
         int ElectricityCount(string OrderId);
+
+        /// <summary>
+        /// 插入记录表
+        /// </summary>
+        /// <param name="record"></param>
+        /// <returns></returns>
+        int InsertRecord(wy_pay_record record);
 
     }
 }

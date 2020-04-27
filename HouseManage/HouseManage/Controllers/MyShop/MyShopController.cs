@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using House.IService.Common;
 using House.IService.Model.Enum;
 using House.IService.Shop;
 using HouseManage.Models.Enum;
@@ -61,6 +62,10 @@ namespace HouseManage.Controllers.MyShop
         public JsonResult TypesFee()
         {
             return Json(Fee.Types);
+        }
+        public JsonResult TypesFeeAndMech()
+        {
+            return Json(CommonFiled.TypesAndMechName);
         }
 
         #endregion
