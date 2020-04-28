@@ -16,7 +16,7 @@ namespace HouseManage.Controllers
         #region infomation of user.
         protected string OpenID => Request.HttpContext.User.Identity.Name;
         protected string UserID => Request.HttpContext.User.FindFirst("Uid")?.Value;
-        protected UserRole UserRole;
+        protected URole UserRole;
         protected string UserIP
         {
             get
