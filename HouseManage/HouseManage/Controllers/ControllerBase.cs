@@ -1,5 +1,6 @@
 ﻿using Data.MSSQL.Common;
 using House.IService.Common;
+using House.IService.Model.Enum;
 using HouseManage.Models.Enum;
 using HouseManage.Models.Request;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace HouseManage.Controllers
         #region infomation of user.
         protected string OpenID => Request.HttpContext.User.Identity.Name;
         protected string UserID => Request.HttpContext.User.FindFirst("Uid")?.Value;
+        protected UserRole UserRole;
         protected string UserIP
         {
             get

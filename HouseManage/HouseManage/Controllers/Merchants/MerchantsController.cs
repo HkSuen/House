@@ -12,7 +12,7 @@ namespace HouseManage.Controllers.Merchants
 {
     //[Authorize(Roles = "Admin")]
     //[AllowAnonymous]
-    public class MerchantsController : Controller
+    public class MerchantsController : ControllerBase
     {
         private IMerchantSvc _machantSvc = null;
         public MerchantsController(IMerchantSvc machantSvc)
