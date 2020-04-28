@@ -22,7 +22,7 @@
                 <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
                     <div class="mui-col-sm-12 mui-col-xs-12 flleft">
                         <span>订单号码：</span>
-                        <span>@d.OPEN_ID</span>
+                        <span>@d.ORDER_ID</span>
                     </div>
                 </div>
                 <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
@@ -47,13 +47,18 @@
                 </div>
                 <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
                     <div class="mui-col-sm-6 mui-col-xs-6 flleft">
-                        <span>单 价：</span>
-                        <span>@d.UNIT_PRICE</span>
-                    </div>
-                    <div class="mui-col-sm-6 mui-col-xs-6 flleft">
                         <span>金 额：</span>
-                        <span>@ViewBag.MoneyNum</span>
+                        <span>@ViewBag.MoneyNum 元</span>
                     </div>
+                    @{
+                        if (d.FEE_TYPES == 1)
+                        {
+                            <div class="mui-col-sm-6 mui-col-xs-6 flleft">
+                                <span>单 价：</span>
+                                <span>@d.UNIT_PRICE</span>
+                            </div>
+                        }
+                    }
                 </div>
                 <div class="mui-col-sm-12 mui-col-xs-12 dj_row">
                     <div class="mui-col-sm-12 mui-col-xs-12 flleft">
@@ -69,7 +74,7 @@
                 </div>*@
             </div>
             <div class="mui-col-sm-12 mui-col-xs-12" style="margin-top:20px;">
-                <span class="mui-col-sm-10 mui-col-xs-10" style="display:block;text-align:right">收款人：@d.MECH_NAME</span>
+                <span class="mui-col-sm-10 mui-col-xs-10" style="display:block;text-align:right">收款单位：@d.MECH_NAME</span>
             </div>
         </div>
     </div>

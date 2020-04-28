@@ -6,6 +6,7 @@ using House.IService.Common.Sign;
 using House.IService.Common.XML;
 using House.IService.Model;
 using House.IService.Model.Enum;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,12 @@ namespace House.Service.Common
     {
         private IXMLHelperSingle _Xml;
         private ISignSingle _Sign = null;
-
-        public WeChatPaySingle(IXMLHelperSingle XML, ISignSingle sign)
+        private ILogger<WeChatPaySingle> _log;
+        public WeChatPaySingle(IXMLHelperSingle XML, ISignSingle sign, ILogger<WeChatPaySingle> log)
         {
             this._Xml = XML;
             this._Sign = sign;
+            _log = log;
         }
 
         public Dictionary<string,object> GetPrepaySign(wy_wx_pay payModel)
@@ -37,6 +39,7 @@ namespace House.Service.Common
             //2.排序去重，并将其生成字符串sign
            string XmlPay = this._Xml.DicToXmlStr(pay);
             //3.获取PrepayId
+            _log.LogInformation("支付订单创建："+XmlPay);
             string ResponseInfo = HttpHelper.PostHttpResponse(CommonFiled.payUrl, XmlPay);
             string ReprepayId = GetPrepayId(ResponseInfo);
             if (!string.IsNullOrEmpty(ReprepayId))
@@ -44,12 +47,13 @@ namespace House.Service.Common
                 payModel.PREPAYID = ReprepayId;
                 //4.根据prepayId生成JSAPI请求数据
                 var MchSec = CommonFiled.MchSecret(payModel.FEE_TYPES);
-                return GetParamStrByPrePayId(payModel.APP_ID, ReprepayId, MchSec);
+                return GetParamStrByPrePayId(payModel.APP_ID, ReprepayId, MchSec,payModel.ORDER_ID,payModel.ID);
             }
             return null;
         }
 
-        public Dictionary<string,object> GetParamStrByPrePayId(string appId, string prePayId,string MchSecret)
+        public Dictionary<string,object> GetParamStrByPrePayId(string appId, string prePayId,string MchSecret,
+            string orderId ,string Id)
         {
             Dictionary<string, object> Params = new Dictionary<string, object>();
             Params.Add("appId", appId);
@@ -58,6 +62,8 @@ namespace House.Service.Common
             Params.Add("package", $"prepay_id={prePayId}");
             Params.Add("signType", "MD5");
             Params.Add("paySign", this._Sign.WePaySign(Params, MchSecret));
+            Params.Add("out_trade_no", orderId);
+            Params.Add("Id", Id);
             return Params;
         }
 
@@ -138,5 +144,33 @@ namespace House.Service.Common
             string MchId = CommonFiled.MchSecret(Dic["mch_id"].ToString());
             return this._Sign.CheckSign(Dic, MchId);
         }
+
+        public Dictionary<string, object> FindOrder(string appId, string orderId, string mchId)
+        {
+            Dictionary<string, object> orders = new Dictionary<string, object>();
+            orders.Add("appid", appId);
+            orders.Add("mch_id", mchId);
+            orders.Add("out_trade_no", orderId);
+            orders.Add("nonce_str", CommonFiled.guid);
+            orders.Add("sign_type", "MD5");
+            orders.Add("sign", this._Sign.WePaySign(orders,CommonFiled.MchSecret(mchId)));
+            return orders;
+        }
+
+        public Dictionary<string, object> CheckOrder(Dictionary<string,object> orderParams) {
+            string XmlPay = this._Xml.DicToXmlStr(orderParams);
+            var ResponseInfo = HttpHelper.PostHttpResponse(CommonFiled.findOrdersUrl, XmlPay);
+            Dictionary<string,object> resParams = this._Xml.XmlStrToDic(ResponseInfo);
+            if (resParams.ContainsKey("mch_id"))
+            {
+                 bool  CheckResult = this._Sign.CheckSign(resParams, CommonFiled.MchSecret(resParams["mch_id"].ToString()));
+                if (CheckResult)
+                {
+                    return resParams;
+                }
+            }
+            return null;
+        }
+
     }
 }
