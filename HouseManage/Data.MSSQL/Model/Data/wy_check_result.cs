@@ -125,5 +125,19 @@ namespace Data.MSSQL.Model.Data
            /// </summary>           
            public string WTMS {get;set;}
 
+           /// <summary>
+           /// Desc:复查次数
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public int? JCCS {get;set;}
+
+           /// <summary>
+           /// Desc:是否复查
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public int? IS_REVIEW {get;set;}
+
     }
 }
