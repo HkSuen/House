@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.Merchants
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Inspector")]
     //[AllowAnonymous]
     public class MerchantsController : ControllerBase
     {
@@ -41,7 +41,7 @@ namespace HouseManage.Controllers.Merchants
         [HttpGet]
         public IActionResult GetMerchantList(wy_houseinfo model)
         {
-            Dictionary<string, object> dic = _machantSvc.GetMerchantList(model);
+            Dictionary<string, object> dic = _machantSvc.GetMerchantList(model,UserID,URole);
             return Json(dic);
         }
         
@@ -49,7 +49,7 @@ namespace HouseManage.Controllers.Merchants
         public IActionResult GetMerchantListByPage(string FWBH,int FWSX,string SSQY,string LSFGS,int page,int size )
         {
 
-            Dictionary<string, object> dic = _machantSvc.GetMerchantListByPage( FWBH,  FWSX,  SSQY,  LSFGS,  page,  size);
+            Dictionary<string, object> dic = _machantSvc.GetMerchantListByPage( FWBH,  FWSX,  SSQY,  LSFGS,  page,  size, UserID, URole);
             return Json(dic);
         }
         [HttpGet]
@@ -85,14 +85,14 @@ namespace HouseManage.Controllers.Merchants
         public IActionResult GetShopInfoListByPage(string ShopName, int FWSX, string SSQY, string LSFGS, int page, int size)
         {
 
-            Dictionary<string, object> dic = _machantSvc.GetShopInfoListByPage(ShopName, FWSX, SSQY, LSFGS, page, size);
+            Dictionary<string, object> dic = _machantSvc.GetShopInfoListByPage(ShopName, FWSX, SSQY, LSFGS, page, size, UserID, URole);
             return Json(dic);
         }
         [HttpGet]
         public IActionResult GetShopInfoList(string ShopName, int FWSX, string SSQY, string LSFGS)
         {
 
-            Dictionary<string, object> dic = _machantSvc.GetShopInfoList(ShopName, FWSX, SSQY, LSFGS);
+            Dictionary<string, object> dic = _machantSvc.GetShopInfoList(ShopName, FWSX, SSQY, LSFGS, UserID, URole);
             return Json(dic);
         }
         [HttpGet]

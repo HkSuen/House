@@ -20,7 +20,7 @@ namespace House.IService.Common
         /// </summary>
         /// <param name="prePayId"></param>
         /// <returns></returns>
-        Dictionary<string, object> GetParamStrByPrePayId(string appId, string prePayId, string MchSecret);
+        Dictionary<string, object> GetParamStrByPrePayId(string appId, string prePayId, string MchSecret,string OrderId,string Id);
 
         /// <summary>
         /// 检查签名
@@ -28,6 +28,20 @@ namespace House.IService.Common
         /// <param name="Dic"></param>
         /// <returns></returns>
         bool CheckWxSign(Dictionary<string, object> Dic);
+
+        /// <summary>
+        /// 根据订单号查询订单状态
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        Dictionary<string, object> FindOrder(string appId, string orderId, string mchId);
+
+        /// <summary>
+        /// 请求微信检查订单支付状态
+        /// </summary>
+        /// <param name="orderParams"></param>
+        /// <returns></returns>
+        Dictionary<string, object> CheckOrder(Dictionary<string, object> orderParams);
 
     }
 }

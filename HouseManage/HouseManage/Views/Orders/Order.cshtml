@@ -64,7 +64,7 @@
     </div>
     <div class="mui-card">
         @{
-            if (d.JFLX == "1")
+            if (d.JFLX == "1" && d.JFZT != 1)
             {
                 <div class="mui-input-row">
                     <label>缴纳水量(立方)</label>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
             }
-            else if (d.JFLX == "2")
+            else if (d.JFLX == "2" && d.JFZT != 1)
             {
                 <div class="mui-input-row">
                     <label>缴纳金额(元)</label>
@@ -143,10 +143,31 @@
                     if (res.err_msg == "get_brand_wcpay_request:ok") {
                         payed = true;
                         console.log(res);
+                        setTimeout(function () { // 延迟1秒，留给服务器时间。
+                            checkOrder();
+                        }, 1000);
                     } else {
                         mui.alert("支付失败！", "提示");
                     }
                 });
+        }
+        var checkOrder = function () {
+            this.post("CheckOrderStatus", { orderId: self.orderId }, function (res) {
+                if (res == null || res.code != 1000) {
+                    mui.hideLoading();
+                    mui.alert("订单状态检查失败，订单号：" + self.orderId, "提示");
+                    return;
+                }
+                var data = res.data || null;
+                if (data) {
+                    mui.showLoading("支付成功！");
+                    window.location.href = "Order/" + self.oId;
+                } else {
+                    mui.hideLoading();
+                    mui.alert("当前订单未支付！", "提示");
+                    return;
+                }
+            });
         }
         var postUrl = function (url, data, callback) {
             mui.showLoading()
@@ -184,6 +205,7 @@
                 }
             })
         }
+        var self = this;
         jq("button.pay").on("tap", function () {
             mui.showLoading();
             $.post("CreateOrder", { houseId: "@d.FWID", recordId: "@d.RECORD_ID", UId: "@d.CZ_SHID", WNum: numbox("#wnumber"), EPrice: numbox("#emoney") }, function (res) {
@@ -195,11 +217,12 @@
                var data = res.data || null;
                 if (data != null) {
                     Sign = data.sign;
+                    self.orderId = data.sign.out_trade_no;
+                    self.oId = data.sign.Id;
                     if (Sign == null) {
                         mui.hideLoading();
                         mui.alert("预支付失败！", "提示");
                     }
-                    payed();
                     mui.showLoading("订单支付中");
                     payInit();
                 } else {

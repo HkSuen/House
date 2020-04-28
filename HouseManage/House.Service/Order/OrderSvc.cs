@@ -25,10 +25,6 @@ namespace House.Service.Order
 
         public Dictionary<string, object> GetPayParamsByWxModel(wy_wx_pay wxpay)
         {
-            wxpay.ID = Guid.NewGuid().ToString("N");
-            wxpay.ORDER_ID = $"{new Random().Next(100, 999)}{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
-            wxpay.STATUS = 0;//订单生成
-            wxpay.CREATE_TIME = DateTime.Now;
             return this._pay.GetPrepaySign(wxpay);
         }
 
@@ -148,7 +144,7 @@ namespace House.Service.Order
             var List = this._db.Db().Queryable<wy_pay_record, wy_houseinfo, wy_shopinfo, wy_wx_pay>((record, house, shop, wxpay) => new object[] {
                 JoinType.Left,record.FWID == house.FWID,
                 JoinType.Left,record.CZ_SHID == shop.CZ_SHID,
-                JoinType.Left,wxpay.RECORD_ID == record.RECORD_ID
+                JoinType.Left,(wxpay.RECORD_ID == record.RECORD_ID || wxpay.ID == record.RECORD_ID)
             }).Where(conditions.ToExpression())
             .Select<object>((record, house, shop, wxpay) => new
             {
@@ -220,6 +216,7 @@ namespace House.Service.Order
             using (var db = this._db.Db())
             { //sql锁，正确处理避免死锁
                 Result = db.Updateable(wxpay).UpdateColumns(c => new { c.STATUS, c.PAY_TIME, c.STATUS_REMARK })
+                    .Where(c=>c.STATUS != 2 && (c.ORDER_ID == wxpay.ORDER_ID || c.ID == wxpay.ID)) //订单支付成功，不可修改。
                      .With(SqlWith.UpdLock)
                     .ExecuteCommand();
             }
@@ -279,6 +276,25 @@ namespace House.Service.Order
             return DBAble<int>((db) =>
             {
                 return db.Insertable(record).ExecuteCommand();
+            });
+        }
+
+        public Dictionary<string,object> FindOrder(string orderId)
+        {
+            wy_wx_pay payOrder = GetWxPayById(orderId);
+            if (null != payOrder) {
+                var resInfo = this._pay.FindOrder(CommonFiled.appID,orderId,payOrder.MECH_ID);
+                var Orders = this._pay.CheckOrder(resInfo);
+                return Orders;
+            }
+            return null;
+        }
+
+        public bool CheckOrder(string OrderId, int TotalFee)
+        {
+            return this.DBAble<bool>((db)=> {
+                return db.Queryable<wy_wx_pay>().Where(c => c.ORDER_ID == OrderId
+                && c.TOTAL_FEE == TotalFee).Any();
             });
         }
     }

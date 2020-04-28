@@ -27,6 +27,7 @@ namespace HouseManage.Common.Middleware
         {
             try
             {
+                _loger.LogInformation($"request:{context.Request.Path},contentLength:{context.Request.ContentLength}");
                 await this._next.Invoke(context);
             }
             catch (Exception ex)

@@ -148,5 +148,18 @@ namespace House.IService.Order
         /// <returns></returns>
         int InsertRecord(wy_pay_record record);
 
+        /// <summary>
+        /// 微信查询订单
+        /// </summary>
+        /// <param name="orderId"></param>
+        Dictionary<string, object> FindOrder(string orderId);
+
+        /// <summary>
+        /// 检查订单状态
+        /// </summary>
+        /// <param name="OrderId"></param>
+        /// <param name="TotalFee"></param>
+        /// <returns></returns>
+        bool CheckOrder(string OrderId,int TotalFee);
     }
 }

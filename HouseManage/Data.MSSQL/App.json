@@ -11,7 +11,8 @@
       "Secret": "{'1584864331':'b406b8485c286091a46aca4999f294d3','1585873541':'b406b8485c286091a46aca4999f294d3'}", //{"商户ID":"商户Secret"}
       "MchID": "{'0':'1584864331','1':'1584864331','2':'1585873541'}", //{"缴费类型":"商户ID"}
       "Pay_url": "https://api.mch.weixin.qq.com/pay/unifiedorder",
-      "CallBackUrl": "http://www.gxxcwsh.com/WeChat/Orders/PayResult"
+      "CallBackUrl": "http://www.gxxcwsh.com/WeChat/Orders/PayResult",
+      "FindOrderUrl": "https://api.mch.weixin.qq.com/pay/orderquery"
     }
   }
 }

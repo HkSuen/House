@@ -15,6 +15,7 @@ using House.IService.Model.Enum;
 using Microsoft.Extensions.Logging;
 using House.IService.Model.Dto;
 using House.IService.Shop;
+using Newtonsoft.Json;
 
 namespace HouseManage.Controllers.Order
 {
@@ -127,6 +128,7 @@ namespace HouseManage.Controllers.Order
         /// 微信异步通知支付
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         public ActionResult PayResult()
         {
             string result = "<xml><return_code><![CDATA[{0}]]></return_code><return_msg><![CDATA[{1}]]></return_msg></xml>";
@@ -149,31 +151,32 @@ namespace HouseManage.Controllers.Order
                     {
                         if (valuePairs.ContainsKey("out_trade_no") || valuePairs.ContainsKey("total_fee"))
                         {
-                            //验证订单信息金额
-                            wy_wx_pay pay = this._order.GetWxPayById(valuePairs["out_trade_no"].ToString());
-                            if (pay.STATUS == 0 && pay.TOTAL_FEE == Convert.ToInt32(valuePairs["total_fee"]))
+                            string OId = valuePairs["out_trade_no"].ToString();
+                            int fee = Convert.ToInt32(valuePairs["total_fee"]);
+                            if (Payed(OId, fee, content))
                             {
-                                pay.STATUS = 2;
-                                pay.PAY_TIME = DateTime.Now;
-                                pay.STATUS_REMARK = content;
-                                if (this._order.Update(pay) > 0)
-                                {
-                                    //返回信息
-                                    Task.Run(() => //异步操作，防止返回超时，被调用两次
-                                    {
-                                        WXPaidAfter(pay);
-                                    });
-                                    resultBool = true;
-                                    result = string.Format(result, CommonFiled.SUCCESS, CommonFiled.SUCCESS);
-                                }
+                                resultBool = true;
+                                result = string.Format(result, CommonFiled.SUCCESS, CommonFiled.SUCCESS);
+                            }
+                            else
+                            {
+                                _log.LogInformation("微信支付异步回调请求，订单ID不存在，或已支付订单，或金额不同。");
                             }
                         }
+                        else
+                        {
+                            _log.LogInformation("微信支付异步回调请求，不包含out_trade_no，total_fee");
+                        }
                     }
+                }
+                else
+                {
+                    _log.LogInformation("微信支付异步回调请求状态码Fail");
                 }
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "微信回调PayError!!");
+                _log.LogError(ex, "微信回调异常。");
                 result = string.Format(result, CommonFiled.FAIL, ex.Message);
                 return Content(result, "text/xml");
             }
@@ -185,6 +188,33 @@ namespace HouseManage.Controllers.Order
             return Content(result, "text/xml");
         }
 
+        private bool Payed(string OrderId, int TotelFee, string content)
+        {
+            //验证订单信息金额
+            wy_wx_pay pay = this._order.GetWxPayById(OrderId);
+            if (pay != null && pay.STATUS == 0 && pay.TOTAL_FEE == Convert.ToInt32(TotelFee))
+            {
+                pay.STATUS = 2;
+                pay.PAY_TIME = DateTime.Now;
+                pay.STATUS_REMARK = content;
+                if (this._order.Update(pay) > 0)
+                {
+                    //返回信息
+                    Task.Run(() => //异步操作，防止返回超时，被调用两次
+                    {
+                        WXPaidAfter(pay);
+                    });
+                    return true;
+                }
+                else
+                {
+                    _log.LogInformation("微信支付异步回调请求:订单更新失败或已支付！");
+                }
+            }
+            return false;
+        }
+
+
         //[Authorize(Roles ="Admin")]
         public ActionResult OrderDetail(string id)
         {
@@ -194,7 +224,7 @@ namespace HouseManage.Controllers.Order
             }
             wy_wx_pay Model = this._order.GetWxOrderDetail(id);
             ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
-            ViewBag.MoneyNum = CommonFiled.CmycurD(Model.TOTAL_FEE / 10);
+            ViewBag.MoneyNum = Convert.ToDouble((Model.TOTAL_FEE / 100.00));
             return View(Model);
         }
 
@@ -284,7 +314,7 @@ namespace HouseManage.Controllers.Order
                     GUID = Order.ID,
                     MeterID = Order.TYPES_ID,
                     RechargeVolume = Convert.ToDouble(Order.AMOUNT),
-                    AddAmount = Convert.ToDouble(Order.TOTAL_FEE / 100),
+                    AddAmount = Convert.ToDouble(Order.TOTAL_FEE / 100.00),
                     UnitPrice = Order.UNIT_PRICE,
                     CreateDate = DateTime.Now
                 });
@@ -315,7 +345,7 @@ namespace HouseManage.Controllers.Order
                     CreateDate = DateTime.Now,
                     address = Order.TYPES_ID,
                     cid = Order.TYPES_ID_ELE_COLL,
-                    Cost = Convert.ToDouble(Order.TOTAL_FEE / 100),
+                    Cost = Convert.ToDouble(Order.TOTAL_FEE / 100.00),
                 });
                 if (Res > 0)
                 {
@@ -341,7 +371,7 @@ namespace HouseManage.Controllers.Order
         private bool InsertPayRecord(wy_wx_pay Order)
         {
             _log.LogInformation($"【InsertPayRecord】准备插入新增支付记录:{Order.ID}");
-            if (Order.RECORD_ID == "0") //自主缴费
+            if (Order.RECORD_ID.Trim() == "0") //自主缴费
             {
                 var record = new wy_pay_record()
                 {
@@ -405,6 +435,41 @@ namespace HouseManage.Controllers.Order
         public ActionResult SelfPay()
         {
             return View();
+        }
+
+
+        public JsonResult CheckOrderStatus(string orderId)
+        {
+            if (string.IsNullOrEmpty(orderId))
+            {
+                return Data(ResultCode.PARAMS_IS_NULL);
+            }
+            wy_wx_pay payOrder = this._order.GetWxPayById(orderId);
+            if (payOrder.STATUS == 2) //已经支付的订单
+            {
+                return Data(ResultCode.SCCUESS, true);
+            }
+            if (payOrder.STATUS == 0) //订单生成，且未支付,需要主动check订单状态
+            {
+                Dictionary<string, object> Orders = this._order.FindOrder(orderId);
+                if (Orders != null && Orders["return_code"].ToString() == "SUCCESS"
+                    && Orders["return_code"].ToString() == "SUCCESS")
+                {
+                    //检查支付的订单金额
+                    var totel_fee = Convert.ToInt32(Orders["total_fee"]);
+                    var checkStatus = this._order.CheckOrder(orderId, totel_fee);
+                    if (checkStatus)
+                    {
+                        Payed(orderId, totel_fee, JsonConvert.SerializeObject(Orders));
+                    }
+                    return Data(ResultCode.SCCUESS, checkStatus);
+                }
+                return Data(ResultCode.SCCUESS, false);
+            }
+            else //已经失效的订单和支付失败的订单直接返回false；
+            {
+                return Data(ResultCode.SCCUESS, false);
+            }
         }
 
     }

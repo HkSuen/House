@@ -70,6 +70,12 @@ namespace House.IService.Common
         /// 支付回调地址
         /// </summary>
         public static string payCallBack => GetJson("WxInfo:Pay:CallBackUrl");
+
+        /// <summary>
+        /// 支付查询订单二次校验地址。
+        /// </summary>
+        public static string findOrdersUrl => GetJson("WxInfo:Pay:FindOrderUrl");
+
         /// <summary>
         /// 支付Url
         /// </summary>
