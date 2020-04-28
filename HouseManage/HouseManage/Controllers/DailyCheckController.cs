@@ -19,13 +19,15 @@ namespace HouseManage.Controllers
         }
         public IActionResult Index()
         {
-            string OPEN_ID = Request.HttpContext.User.Identity.Name;
+            //string OPEN_ID = Request.HttpContext.User.Identity.Name;
+            string OPEN_ID = "123123123123";
             return View(dailyCheckSvc.GetTaskInfo("", "", "", OPEN_ID, 1, 10));
         }
         [HttpGet]
         public PartialViewResult PartDailyCheckList(string status, string starttime, string endtime, int page, int limit)
         {
-            string OPEN_ID = Request.HttpContext.User.Identity.Name;
+            //string OPEN_ID = Request.HttpContext.User.Identity.Name;
+            string OPEN_ID = "123123123123";
             return PartialView("../DailyCheck/PartDailyCheckList", dailyCheckSvc.GetTaskInfo(status, starttime, OPEN_ID, endtime, page, limit));
             //return Ok(dailyCheckSvc.GetTaskInfo(status, starttime, endtime));
         }
@@ -46,12 +48,24 @@ namespace HouseManage.Controllers
 
         public IActionResult CreateCheckResult(string RWBH,string TASK_ID)
         {
-            return View(dailyCheckSvc.GetCreateTaskResultFormInfo(RWBH,TASK_ID));
+            //return View(dailyCheckSvc.GetCreateTaskResultFormInfo(RWBH,TASK_ID));
+            return View();
+
+        }
+
+        [HttpGet]
+        public IActionResult PartCreateCheckResult(string FWID,string TASK_ID)
+        {
+            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
+            string OPEN_ID = "123123123123";
+            return PartialView(dailyCheckSvc.GetCreateTaskResultFormInfo(FWID,TASK_ID,OPEN_ID));
         }
         [HttpGet]
-        public IActionResult GetShopInfo(string RWBH)
+        public IActionResult GetShopInfo(string RWBH,string TASK_ID)
         {
-            return Ok(dailyCheckSvc.GetShopInfo(RWBH));
+            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
+            string OPEN_ID = "123123123123";
+            return Ok(dailyCheckSvc.GetShopInfo(RWBH,TASK_ID, OPEN_ID));
         }
         [HttpPost]
         public IActionResult PostCheckResult([FromBody]JObject value)

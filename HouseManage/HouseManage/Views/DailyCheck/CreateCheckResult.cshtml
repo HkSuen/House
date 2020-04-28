@@ -38,24 +38,11 @@
             <div class="mui-card">
                 <div class="mui-card-header">检查内容</div>
                 <div class="mui-card-content">
-                    <ul class="mui-table-view">
-                        @foreach (var item in Model)
-                        {
-                            <li class="mui-table-view-cell">
-                                <div class="mui-row" id="list">
-                                    <div class="mui-col-sm-3 mui-col-xs-3">
-                                        <button type="button" class="mui-btn mui-btn-primary" onclick="pass('@item.Code')" value="1">合格</button>
-                                    </div>
-                                    <div class="mui-col-sm-3 mui-col-xs-3">
-                                        <button type="button" class="mui-btn mui-btn-danger" onclick="unpass('@item.Code')" value="0">不合格</button>
-                                    </div>
-                                    <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
-                                        <button type="button" class="mui-btn" id="@item.Code" value="0" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
-                                    </div>
-                                </div>
-                            </li>
-                        }
-                    </ul>
+
+                    <div id="checkdetail">
+                        @*@Html.Partial("PartCreateCheckResult",Model)*@
+                    </div>
+
                 </div>
             </div>
             <div class="mui-card">
@@ -142,7 +129,22 @@
                                 document.getElementById("SHOP_NAME").innerHTML = copydata.SHOP_NAME;
                                 document.getElementById("SHOP_NAME").value = copydata.SHOP_NAME;
                                 temp.FWID = copydata.FWID;
-
+                                
+                                mui.ajax("PartCreateCheckResult?FWID=" + temp.FWID + "&TASK_ID=" + id.split("=")[2], {
+                                    type: "get",
+                                    success(data) {
+                                        if (data.trim() != "") {
+                                            document.getElementById("checkdetail").innerHTML += data;
+                                            
+                                            //DetailHtml += data;
+                                            console.log(DetailHtml);
+                                        }
+                                        console.log(data);
+                                    },
+                                    error: function (xhr, type, errorThrown) {
+                                        console.log(type);
+                                    }
+                                });
                             });
                             li.appendChild(a);
                             ele.appendChild(li);
@@ -177,7 +179,7 @@
                     radiovalue = ele[i].value;
                     };
                 };
-                let RWBH = window.location.search.split("?")[1]
+                let RWBH = window.location.search.split("?")[1].split("=")[2];
                 console.log(window.location.search.split("?")[1].split("=")[2]);
                 let Alltemp = {
                     TASK_ID: window.location.search.split("?")[1].split("=")[2],

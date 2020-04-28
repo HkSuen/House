@@ -22,15 +22,18 @@ namespace House.Service
 
         public List<wy_check_task> GetTaskInfo(string status, string statrtime, string endtime,string OPEN_ID,int page,int limit)
         {
-            var list = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_map_region, wy_region_director>((p, t, r, v) => new object[]
+            var list = DB.Db().Queryable<wy_check_task,wy_map_checkplandetail,wy_checkplan_detail, wy_map_region, wy_region_director>
+                ((a,b,c,d,e) => new object[]
                 {
-                JoinType.Left,p.PLAN_DETAIL_ID==t.PLAN_DETAIL_ID,
-                JoinType.Left,t.PLAN_DETAIL_ID==r.PLAN_DETAIL_ID,
-                JoinType.Inner,v.SSQY==r.REGION_CODE&&v.FZR!="",
-
+                    JoinType.Inner,a.TASK_ID==b.TASK_ID,
+                    JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID&&c.IS_DELETE==0,
+                    JoinType.Inner,c.PLAN_DETAIL_ID==d.PLAN_DETAIL_ID,
+                    JoinType.Inner,d.REGION_CODE==e.SSQY&&e.WX_OPEN_ID==OPEN_ID
                 })
-                .WhereIF(!string.IsNullOrEmpty(statrtime), p => p.RWKSSJ >= DateTime.Parse(statrtime))
-                .WhereIF(!string.IsNullOrEmpty(endtime), p => p.RWJSSJ <= DateTime.Parse(endtime))
+                .WhereIF(!string.IsNullOrEmpty(statrtime), a => a.RWKSSJ >= DateTime.Parse(statrtime))
+                .WhereIF(!string.IsNullOrEmpty(endtime), a => a.RWJSSJ <= DateTime.Parse(endtime))
+                .Where(a=>a.IS_DELETE==0)
+                .GroupBy(a => new { a.TASK_ID })
                 .Skip((page-1)*limit).Take(limit).ToList();
             return list;
         }
@@ -51,50 +54,98 @@ namespace House.Service
             return list;
         }
 
-        public List<wy_task_detail_config> GetCreateTaskResultFormInfo(string RWBH,string TASK_ID)
+        public List<wy_task_detail_config> GetCreateTaskResultFormInfo(string FWID,string TASK_ID,string OPEN_ID)
         {
-            var list = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config>((a, b, c, d) => new object[] {
-                JoinType.Inner,b.PLAN_DETAIL_ID==a.PLAN_DETAIL_ID,
-                JoinType.Inner,b.JCLX==c.Code,
-                JoinType.Inner,c.ID==d.ParentID,
-            })
-                .Where(a=>a.TASK_ID==TASK_ID)
-                .Select((a, b, c, d) => new wy_task_detail_config()
-            {
-                ID = d.ID,
-                ParentID = d.ParentID,
-                Name = d.Name,
-                Code = d.Code
-            })
-                .ToList();
+            //var list = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config>
+            //    ((a, b, c, d) => new object[] {
+            //    JoinType.Inner,b.PLAN_DETAIL_ID==a.PLAN_DETAIL_ID,
+            //    JoinType.Inner,b.JCLX==c.Code,
+            //    JoinType.Inner,c.ID==d.ParentID,
+            //})
+            //    .Where(a=>a.TASK_ID==TASK_ID)
+            //    .Select((a, b, c, d) => new wy_task_detail_config()
+            //{
+            //    ID = d.ID,
+            //    ParentID = d.ParentID,
+            //    Name = d.Name,
+            //    Code = d.Code
+            //})
+            //    .ToList();
+            //return list;
+            var list = DB.Db().Queryable
+                <wy_check_task, wy_map_checkplandetail, wy_checkplan_detail, wy_map_region, wy_houseinfo, wy_task_detail_config, wy_task_detail_config, wy_region_director>
+                ((a, b, c, d, e, f, g, h) => new object[] {
+                    JoinType.Inner,a.TASK_ID==b.TASK_ID,
+                    JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID&&c.IS_DELETE==0,
+                    JoinType.Inner,c.PLAN_DETAIL_ID==d.PLAN_DETAIL_ID,
+                    JoinType.Inner,d.REGION_CODE==e.SSQY&&e.IS_DELETE==0,
+                    JoinType.Inner,c.JCLX==f.Code,
+                    JoinType.Inner,f.ID==g.ParentID,
+                    JoinType.Inner,e.SSQY==h.SSQY&&h.IS_DELETE==0
+                })
+                .Where((a, b, c, d, e, f, g, h) => a.TASK_ID == TASK_ID && e.FWID == FWID && h.WX_OPEN_ID == OPEN_ID)
+                .GroupBy((a, b, c, d, e, f, g, h)=>new { g.ID,g.ParentID,g.Name,g.Code})
+                .Select((a, b, c, d, e, f, g, h) => new wy_task_detail_config()
+                {
+                    ID = g.ID,
+                    ParentID = g.ParentID,
+                    Name = g.Name,
+                    Code = g.Code
+                }).ToList();
             return list;
         }
 
-        public List<SimpleShopInfo> GetShopInfo(string RWBH)
+        public List<SimpleShopInfo> GetShopInfo(string RWBH,string TASK_ID,string OPEN_ID)
         {
-            //var list = DB.Db().Queryable<wy_houseinfo, wy_shopinfo, wy_map_region,wy_check_task>((a, b, c, d) => new object[]
-            //     {
-            //    JoinType.Inner,a.CZ_SHID==b.CZ_SHID&&b.IS_DELETE==0,
-            //    JoinType.Inner,a.SSQY==c.REGION_CODE,
-            //    JoinType.Inner,d.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID          
-            //     }).Where((a,b,c,d) => a.IS_DELETE == 0&&
-            //     !SqlFunc.Subqueryable<wy_check_result>()
-            //     .Where(s=>s.TASK_ID==
-            //     SqlFunc.Subqueryable<wy_check_task>().Where(p=>p.RWBH==RWBH).Select(t=>t.TASK_ID))
-            //     .Select(u=>u.FWID).Contains(a.FWID)
-            //     )
-            //     .Select<SimpleShopInfo>().ToList();
-            string sql = "select a.FWID,b.ZHXM,b.SHOP_NAME,b.SHOPBH from wy_houseinfo a " +
-                " join wy_shopinfo b on a.CZ_SHID=b.CZ_SHID and b.IS_DELETE=0" +
-                " join wy_map_region c on a.SSQY=c.REGION_CODE" +
-                " join wy_check_task d on d.PLAN_DETAIL_ID=c.PLAN_DETAIL_ID" +
-                " where a.IS_DELETE=0" +
-                " AND a.FWID NOT IN " +
-                " (SELECT FWID FROM wy_check_result WHERE TASK_ID=" +
-                " (SELECT TASK_ID FROM wy_check_task WHERE RWBH='" + RWBH + "'))";
-            var list1 = DB.Db().SqlQueryable<SimpleShopInfo>(sql).ToList();
+            //string sql = "select a.FWID,b.ZHXM,b.SHOP_NAME,b.SHOPBH from wy_houseinfo a " +
+            //    " join wy_shopinfo b on a.CZ_SHID=b.CZ_SHID and b.IS_DELETE=0" +
+            //    " join wy_map_region c on a.SSQY=c.REGION_CODE" +
+            //    " join wy_check_task d on d.PLAN_DETAIL_ID=c.PLAN_DETAIL_ID" +
+            //    " where a.IS_DELETE=0" +
+            //    " AND a.FWID NOT IN " +
+            //    " (SELECT FWID FROM wy_check_result WHERE TASK_ID=" +
+            //    " (SELECT TASK_ID FROM wy_check_task WHERE RWBH='" + RWBH + "'))";
+            //var list1 = DB.Db().SqlQueryable<SimpleShopInfo>(sql).ToList();
+            var list = DB.Db().Queryable<wy_check_task, wy_map_checkplandetail, wy_checkplan_detail, wy_map_region, wy_region_director, wy_houseinfo, wy_shopinfo>
+                ((a, b, c, d, e, f, g) => new object[]
+            {
+                JoinType.Inner,a.TASK_ID==b.TASK_ID,
+                JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID,
+                JoinType.Inner,c.PLAN_DETAIL_ID==d.PLAN_DETAIL_ID,
+                JoinType.Inner,d.REGION_CODE==e.SSQY&&e.IS_DELETE==0,
+                JoinType.Inner,e.SSQY==f.SSQY&&f.IS_DELETE==0&&e.WX_OPEN_ID==OPEN_ID,
+                JoinType.Inner,f.CZ_SHID==g.CZ_SHID&&g.IS_DELETE==0
+            }).Where((a, b, c, d, e, f, g) => a.TASK_ID == TASK_ID
+            && SqlFunc.Subqueryable<wy_check_result>().Where(t => t.TASK_ID == TASK_ID&&f.FWID==t.FWID).NotAny())
+            .GroupBy((a, b, c, d, e, f, g) => new { f.FWID,g.ZHXM,g.SHOP_NAME,g.SHOPBH})
+            .Select((a, b, c, d, e, f, g) => new SimpleShopInfo()
+            {
+                FWID = f.FWID,
+                ZHXM = g.ZHXM,
+                SHOP_NAME = g.SHOP_NAME,
+                SHOPBH = g.SHOPBH
+            }).ToList();
 
-            return list1;
+            //var sql = DB.Db().Queryable<wy_check_task, wy_map_checkplandetail, wy_checkplan_detail, wy_map_region, wy_region_director, wy_houseinfo, wy_shopinfo>
+            //    ((a, b, c, d, e, f, g) => new object[]
+            //{
+            //    JoinType.Inner,a.TASK_ID==b.TASK_ID,
+            //    JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID,
+            //    JoinType.Inner,c.PLAN_DETAIL_ID==d.PLAN_DETAIL_ID,
+            //    JoinType.Inner,d.REGION_CODE==e.SSQY&&e.IS_DELETE==0,
+            //    JoinType.Inner,e.SSQY==f.SSQY&&f.IS_DELETE==0&&e.WX_OPEN_ID==OPEN_ID,
+            //    JoinType.Inner,f.CZ_SHID==g.CZ_SHID&&g.IS_DELETE==0
+            //}).Where((a, b, c, d, e, f, g) => a.TASK_ID == TASK_ID
+            //&& SqlFunc.Subqueryable<wy_check_result>().Where(t => t.TASK_ID == TASK_ID && f.FWID == t.FWID).NotAny())
+            //.Select((a, b, c, d, e, f, g) => new SimpleShopInfo()
+            //{
+            //    FWID = f.FWID,
+            //    ZHXM = g.ZHXM,
+            //    SHOP_NAME = g.SHOP_NAME,
+            //    SHOPBH = g.SHOPBH
+            //}).ToSql();
+            return list;
+
         }
 
         public string PostCheckResult(Dictionary<string,object> d,string OPEN_ID)
@@ -160,22 +211,41 @@ namespace House.Service
 
         public List<SimpleCheckResultDetail> GetEditTaskResultFormInfo(string RESULT_ID)
         {
-            var list = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config, wy_check_result, wy_check_result_detail>
-                ((a, b, c, d, e, f) => new object[]
+            //var list = DB.Db().Queryable<wy_check_task, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config, wy_check_result, wy_check_result_detail>
+            //    ((a, b, c, d, e, f) => new object[]
+            //  {
+            //    JoinType.Inner,a.PLAN_DETAIL_ID==b.PLAN_DETAIL_ID,
+            //    JoinType.Inner,b.JCLX==c.Code,
+            //    JoinType.Inner,c.ID==d.ParentID,
+            //    JoinType.Inner,e.TASK_ID==a.TASK_ID,
+            //    JoinType.Left,d.Code==f.DETAIL_CODE&&f.RESULT_ID==RESULT_ID
+            //  })
+            //    .Where((a, b, c, d, e, f) => e.RESULT_ID == RESULT_ID)
+            //    .Select((a, b, c, d, e, f) => new SimpleCheckResultDetail
+            //    {
+            //        Code = d.Code,
+            //        Name = d.Name,
+            //        CHECK_DETAIL_RESULT = f.CHECK_DETAIL_RESULT,
+            //        CHECK_RESULT_ID = f.CHECK_DETAIL_ID,
+            //    }).ToList();
+            //return list;
+            var list = DB.Db().Queryable<wy_check_task,wy_map_checkplandetail, wy_checkplan_detail, wy_task_detail_config, wy_task_detail_config, wy_check_result, wy_check_result_detail>
+                ((a, b, c, d, e, f,g) => new object[]
               {
-                JoinType.Inner,a.PLAN_DETAIL_ID==b.PLAN_DETAIL_ID,
-                JoinType.Inner,b.JCLX==c.Code,
-                JoinType.Inner,c.ID==d.ParentID,
-                JoinType.Inner,e.TASK_ID==a.TASK_ID,
-                JoinType.Left,d.Code==f.DETAIL_CODE&&f.RESULT_ID==RESULT_ID
+                JoinType.Inner,a.TASK_ID==b.TASK_ID,
+                JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID,
+                JoinType.Inner,c.JCLX==d.Code,
+                JoinType.Inner,d.ID==e.ParentID,
+                JoinType.Inner,f.TASK_ID==a.TASK_ID,
+                JoinType.Left,e.Code==g.DETAIL_CODE&&g.RESULT_ID==RESULT_ID
               })
-                .Where((a, b, c, d, e, f) => e.RESULT_ID == RESULT_ID)
-                .Select((a, b, c, d, e, f) => new SimpleCheckResultDetail
+                .Where((a, b, c, d, e, f, g) => f.RESULT_ID == RESULT_ID)
+                .Select((a, b, c, d, e, f, g) => new SimpleCheckResultDetail
                 {
-                    Code = d.Code,
-                    Name = d.Name,
-                    CHECK_DETAIL_RESULT = f.CHECK_DETAIL_RESULT,
-                    CHECK_RESULT_ID = f.CHECK_DETAIL_ID,
+                    Code = e.Code,
+                    Name = e.Name,
+                    CHECK_DETAIL_RESULT = g.CHECK_DETAIL_RESULT,
+                    CHECK_RESULT_ID = g.CHECK_DETAIL_ID,
                 }).ToList();
             return list;
         }
