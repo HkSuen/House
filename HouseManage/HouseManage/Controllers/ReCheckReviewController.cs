@@ -43,10 +43,11 @@ namespace HouseManage.Controllers
         /// <param name="fwmc"></param>
         /// <param name="jcr_openid"></param>
         /// <returns></returns>
-        public IActionResult ReviewCheckDetail(string resultId, string rwbh, string fwbh, string fwmc,string jcr_openid)
+        public IActionResult ReviewCheckDetail(string resultId, string rwbh, string fwbh, string fwmc,string jcr_openid,string rwmc)
         {
             ViewBag.resultId = resultId;
             ViewBag.rwbh = rwbh;
+            ViewBag.rwmc = rwmc;
             ViewBag.fwbh = fwbh;
             ViewBag.fwmc = fwmc;
             ViewBag.jcr_openid = jcr_openid;
@@ -61,9 +62,9 @@ namespace HouseManage.Controllers
         {
             return Json(_recheck.GetRecheckReviewDataDetail(resultid));
         }
-        public IActionResult ReviewCheckConfirm(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid) {
+        public IActionResult ReviewCheckConfirm(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid,string rwmc) {
 
-            return Content(_recheck.ReviewCheckConfirm(resultId,  rwbh,  fwbh,  fwmc,  jcr_openid));
+            return Content(_recheck.ReviewCheckConfirm(resultId,  rwbh,  fwbh,  fwmc,  jcr_openid,rwmc));
         }
     }
 }
