@@ -473,12 +473,32 @@ namespace HouseManage.Controllers.Order
             }
         }
 
+        private async void SendMsg(wy_wx_pay order)
+        {
+            var data = new
+            {
+                openId = OpenID,
+                data = new
+                {
+                    content = "您已经成功缴费。",
+                    type = "",
+                    orderid = order.ORDER_ID,
+                    time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                    totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00)
+                }
+            };
+        }
+
+
         //[AllowAnonymous]
         //[HttpGet]
         //public async Task<string> Msg()
         //{
-        //    string data = JsonConvert.SerializeObject(new { openId = "ocRWVwrIhqMHJhnkT1otzdy6DgPc", 
-        //        data = new { first = "123" }});
+        //    string data = JsonConvert.SerializeObject(new
+        //    {
+        //        openId = "ocRWVwrIhqMHJhnkT1otzdy6DgPc",
+        //        data = new { first = "123" }
+        //    });
         //    return await PayMsg.SendMsg(data);
         //}
     }
