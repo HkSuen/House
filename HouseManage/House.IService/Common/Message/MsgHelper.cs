@@ -57,25 +57,35 @@ namespace House.IService.Common.Message
         /// <summary>
         /// reload 为重试推送次数，因为token在请求的一秒钟可能会出现同步的失效问题，
         /// </summary>
-        public async Task<string> SendMsg(string jsonData, int reload = 3)
+        public async Task<string> SendMsg(string jsonData, int reload = 2)
         {
-
-            return HttpHelper.PostJson(url, jsonData, token);
+            string content = await HttpHelper.PostJsonSync(url, jsonData, this.Token());
+            if (!string.IsNullOrEmpty(content))
+            {
+                dynamic Content = JsonConvert.DeserializeObject(content);
+                if (Content.code != 1000 && reload != 0)
+                {
+                    reload--;
+                    return await SendMsg(jsonData, reload);
+                }
+            }
+            return content;
         }
 
         public MsgHelper In(string u)
         {
             url = u;
-            return this.Token();
+            this.Token();
+            return this;
         }
 
-        public MsgHelper Token()
+        public string Token()
         {
             if (string.IsNullOrEmpty(token) || !jwt.Validate(token))
             {
                 token = jwt.CreateToken();
             }
-            return this;
+            return this.token;
         }
 
     }

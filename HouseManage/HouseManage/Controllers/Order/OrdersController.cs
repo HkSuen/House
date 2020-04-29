@@ -200,6 +200,7 @@ namespace HouseManage.Controllers.Order
                 pay.STATUS_REMARK = content;
                 if (this._order.Update(pay) > 0)
                 {
+                    SendMsg(pay);
                     //返回信息
                     Task.Run(() => //异步操作，防止返回超时，被调用两次
                     {
@@ -481,14 +482,14 @@ namespace HouseManage.Controllers.Order
                 data = new
                 {
                     content = "您已经成功缴费。",
-                    type = "",
+                    type = order.REMARK,
                     orderid = order.ORDER_ID,
                     time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
                     totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00)
                 }
             };
+            await PayMsg.SendMsg(JsonConvert.SerializeObject(data));
         }
-
 
         //[AllowAnonymous]
         //[HttpGet]

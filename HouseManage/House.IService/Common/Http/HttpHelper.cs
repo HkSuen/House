@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace House.IService.Common.Http
 {
@@ -79,8 +80,10 @@ namespace House.IService.Common.Http
          *  url:POST请求地址
          *  postData:json格式的请求报文,例如：{"key1":"value1","key2":"value2"}
          */
-
-        public static string PostJson(string url, string postData = null,string Token = null)
+        public static string PostJson(string url, string postData = null, string Token = null) {
+            return PostJsonSync(url, postData, Token).Result;
+        }
+        public static async Task<string> PostJsonSync(string url, string postData = null,string Token = null)
         {
             string result = "";
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
@@ -101,8 +104,8 @@ namespace House.IService.Common.Http
                     reqStream.Close();
                 }
             }
-            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-            Stream stream = resp.GetResponseStream();
+            Task<WebResponse> resp = req.GetResponseAsync();
+            Stream stream = resp.GetAwaiter().GetResult().GetResponseStream();
             //获取响应内容
             using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
             {
