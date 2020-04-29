@@ -48,9 +48,10 @@
         mui("#list_ul").on('tap', 'li', function (event) {
             var resultId = this.firstChild.getAttribute("resultId");
             var rwbh = this.firstChild.getAttribute("rwbh");
+            var rwmc = this.firstChild.getAttribute("rwmc");
             var fwbh = this.firstChild.getAttribute("fwbh");
             var fwmc = this.firstChild.getAttribute("fwmc");
-            window.location.href = "ReviewCheckDetail?resultId=" + resultId + "&rwbh=" + rwbh+"&fwbh=" + fwbh+"&fwmc=" + fwmc;
+            window.location.href = "ReviewCheckDetail?resultId=" + resultId + "&rwbh=" + rwbh + "&fwbh=" + fwbh + "&fwmc=" + fwmc + "&rwmc=" + rwmc;
         });
     })(mui);
 
@@ -67,7 +68,7 @@
                 for (var i = 0; i < data.list.length; i++) {
                     var li = document.createElement('li');
                     li.className = 'mui-table-view-cell';
-                    var li_html = '<div jcr_openid="' + data.list[i].CJR + '" resultId="' + data.list[i].RESULT_ID + '" fwbh="' + data.list[i].FWBH + '" fwmc="' + data.list[i].FWMC + '" rwbh="' + data.list[i].RWBH+'" ><div class="mui-row" ><div class="mui-col-sm-3 mui-col-xs-3">任务编号</div> <div class="mui-col-sm-9 mui-col-xs-9 oFlow" >';
+                    var li_html = '<div rwmc="' + data.list[i].RWMC+'" jcr_openid="' + data.list[i].CJR + '" resultId="' + data.list[i].RESULT_ID + '" fwbh="' + data.list[i].FWBH + '" fwmc="' + data.list[i].FWMC + '" rwbh="' + data.list[i].RWBH+'" ><div class="mui-row" ><div class="mui-col-sm-3 mui-col-xs-3">任务编号</div> <div class="mui-col-sm-9 mui-col-xs-9 oFlow" >';
                     li_html = li_html + data.list[i].RWBH + '</div></div > <div class="mui-row"><div class="mui-col-sm-3 mui-col-xs-3">任务名称 </div><div class="mui-col-sm-9 mui-col-xs-9 oFlow">';
                     li_html = li_html + data.list[i].RWMC + ' </div></div ><div class="mui-row"><div class="mui-col-sm-3 mui-col-xs-3">检查时间</div><div class="mui-col-sm-9 mui-col-xs-9 oFlow">';
                     li_html = li_html + dateFormat(data.list[i].CJSJ) + ' </div></div ></div >';

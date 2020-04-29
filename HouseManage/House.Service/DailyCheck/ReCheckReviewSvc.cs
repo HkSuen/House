@@ -1,6 +1,8 @@
 ﻿using Data.MSSQL;
 using Data.MSSQL.Model.Data;
 using House.IService;
+using House.IService.Common.AppSetting;
+using House.IService.Common.Message;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -51,7 +53,7 @@ namespace House.Service.DailyCheck
             }
             return dic;
         }
-        public string ReviewCheckConfirm(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid) {
+        public  string ReviewCheckConfirm(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid, string rwmc) {
             string reslult = "";
             try
             {
@@ -63,6 +65,15 @@ namespace House.Service.DailyCheck
                 int res = _Db.Db().Updateable(wcr).UpdateColumns(a=>new { a.IS_REVIEW}).WhereColumns(it => it.RESULT_ID).ExecuteCommand();
                 if (res > 0)
                 {
+                    Dictionary<string, object> dic = new Dictionary<string, object>();
+                    dic.Add("first","您收到一个商户房屋整改反馈通知：");
+                    dic.Add("keyword1", rwbh);
+                    dic.Add("keyword2",rwmc);
+                    dic.Add("keyword3", fwbh);
+                    dic.Add("keyword4", fwmc);
+                    string msgTempId = AppSetting.GetSection("msgtemp:temp");
+                    string url = AppSetting.GetSection("msgUrl:url");
+                    MsgHelper.Msg.SendMsg(url, jcr_openid, dic,msgTempId);
                     return reslult;
                 }
                 else

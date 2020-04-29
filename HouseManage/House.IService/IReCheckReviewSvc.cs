@@ -11,7 +11,7 @@ namespace House.IService
 
         Dictionary<string, object> GetRecheckReviewData(string openId);
         Dictionary<string, object> GetRecheckReviewDataDetail(string resultid);
-        string ReviewCheckConfirm(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid);
+        string ReviewCheckConfirm(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid, string rwmc);
 
     }
 }

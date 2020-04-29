@@ -67,7 +67,7 @@
     })(mui);
     function ReviewCheckConfirm() {
 
-        $.get('ReviewCheckConfirm', { resultid: "@ViewBag.resultId", rwbh: "@ViewBag.rwbh", fwbh: "@ViewBag.fwbh", fwmc: "@ViewBag.fwmc", jcr_openid:"@ViewBag.jcr_openid"}, function (data) {
+        $.get('ReviewCheckConfirm', { resultid: "@ViewBag.resultId", rwbh: "@ViewBag.rwbh", rwmc: "@ViewBag.rwmc", fwbh: "@ViewBag.fwbh", fwmc: "@ViewBag.fwmc", jcr_openid:"@ViewBag.jcr_openid"}, function (data) {
             if (data == "") {//成功
                 mui.toast('反馈成功！');
                 window.location.href = "Index";
