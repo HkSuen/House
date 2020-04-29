@@ -481,7 +481,7 @@ namespace HouseManage.Controllers.Order
                 openId = OpenID,
                 data = new
                 {
-                    content = "您已经成功缴费。",
+                    content = " 您已经成功缴费。",
                     type = order.REMARK,
                     orderid = order.ORDER_ID,
                     time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
