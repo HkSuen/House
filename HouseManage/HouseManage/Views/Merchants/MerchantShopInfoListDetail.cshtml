@@ -43,7 +43,7 @@
                 <div id="YZ_EMAIL" class="div_text"></div>
                 <p class='mui-ellipsis'>是否转租</p>
                 <div id="YZ_ISSBLET" class="div_text"></div>
-                
+
                 <div id="zz_div" style="display:none">
                     <hr />
                     <div><img src="/wxstatic/img/house2.png" style="width:24px;height:20px;vertical-align:text-bottom" />转租商户信息</div>
@@ -64,16 +64,18 @@
             </li>
             <li class="mui-table-view-cell">
                 <div><img src="/wxstatic/img/money.png" style="width:24px;height:20px;vertical-align:text-bottom" />缴费记录</div>
-               
+
                 <div id="div_parent">
-                    <div class="mui-card padd_div" style="margin-left:0px">
-                        <p class='mui-ellipsis'>缴费类型</p>
-                        <div id="YZ_ZHXM" class="div_text">物业费</div>
-                        <p class='mui-ellipsis'>起始时间</p>
-                        <div id="YZ_ZHXB" class="div_text">2054-0650</div>
-                        <p class='mui-ellipsis'>缴费金额</p>
-                        <div id="YZ_TELL" class="div_text">20</div>
-                    </div>
+                    @*<div>
+                        <div class="mui-card padd_div" style="margin-left:0px">
+                            <p class='mui-ellipsis'>缴费类型</p>
+                            <div class="div_text">物业费</div>
+                            <p class='mui-ellipsis'>缴费金额</p>
+                            <div class="div_text">20</div>
+                            <p class='mui-ellipsis'>缴费时间</p>
+                            <div class="div_text">2054-0650</div>
+                        </div>
+                    </div>*@
                 </div>
             </li>
 
@@ -81,9 +83,9 @@
     </div>
 </div>
 <script type="text/javascript">
-        mui.init({ swipeBack: false });
-        jq = $;
-        var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
+    mui.init({ swipeBack: false });
+    jq = $;
+    var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
     jq(".mui-content").height(height - jq(".mui-content").offset().top - 8); //浏览器高度减sroll距离头部的高度
     var dataArea = [], dataCompany = [];
 
@@ -97,11 +99,15 @@
     function getHouseInfo() {
         var fwid = $("#fwid").text();
         var CZ_SHID = $("#CZ_SHID").text();
-        $.get('GetMerchantShopInfoListDetail', { FWID: fwid, CZ_SHID: CZ_SHID}, function (data) {
+        $.get('GetMerchantShopInfoListDetail', { FWID: fwid, CZ_SHID: CZ_SHID }, function (data) {
             if (data) {
                 if (data.list) {
                     setHouseInfo(data.list);
                     setShopInfo(data.list);
+                    
+                }
+                if (data.listOrder) {
+                    setShopInfoOrder(data.listOrder);
                 }
             }
         });
@@ -111,6 +117,42 @@
         $("#d_fwsx").text(data.FWSX);
         $("#d_fwmc").text(data.FWMC);
         $("#d_jynr").text(data.JYNR);
+    }
+    function setShopInfoOrder(data) {
+        console.log(data.length);
+        var table = document.body.querySelector('#div_parent');
+        var childs = table.childNodes;
+        for (var i = childs.length - 1; i >= 0; i--) {
+            table.removeChild(childs[i]);
+        }
+        for (var i = 0; i < data.length; i++) {
+            var div = document.createElement('div');
+            var div_val = ' <div class="mui-card padd_div" style="margin-left:0px"><p class="mui-ellipsis" > 缴费类型</p ><div class="div_text">';
+            if (data[i].JFLX == 0) {
+                div_val = div_val + '物业费';
+            }
+            else if (data[i].JFLX == 1) {
+                div_val = div_val + '水费';
+            }
+            else if (data[i].JFLX == 2) {
+                div_val = div_val + '电费';
+            }
+            div_val = div_val + '</div> <p class="mui-ellipsis" > 缴费金额</p ><div class="div_text">';
+            div_val = div_val + data[i].JFJE + '</div ><p class="mui-ellipsis">缴费时间</p><div class="div_text">';
+            div_val = div_val + dateFormat(data[i].JFRQ) + '</div></div>';
+            div.innerHTML = div_val;
+            console.log(div);
+            //下拉刷新，新纪录插到最前面；
+            table.appendChild(div);
+        }
+    }
+    function dateFormat(_data) {
+        if (_data) {
+            return _data.replace(/T/g, ' ');
+        }
+        else {
+            return '';
+        }
     }
     function setShopInfo(data) {
         $("#YZ_ZHXM").text(data.YZ_ZHXM);
@@ -172,7 +214,7 @@
     //                        _dhtml = _dhtml + '</div><p class="mui - ellipsis">缴费时间</p><div  class="div_text">';
     //                    }
     //                        _dhtml = _dhtml + 123 + '</div> <p class="mui - ellipsis">缴费金额</p> <div id="YZ_TELL" class="div_text">'+jine+'</div>';
-                     
+
     //                    div_card.innerHTML = _dhtml；
     //                    //下拉刷新，新纪录插到最前面
     //                    table.appendChild(div_card);
@@ -216,19 +258,22 @@
     }
 
     .div_text {
-        margin-top:5px;
+        margin-top: 5px;
         word-wrap: break-word;
     }
+
     .first {
         list-style: none;
         background: url("/img/house1.png");
         padding-left: 20px;
     }
+
     .oFlow {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
+
     .padd_div {
         padding-top: 5px;
         padding-left: 5px;

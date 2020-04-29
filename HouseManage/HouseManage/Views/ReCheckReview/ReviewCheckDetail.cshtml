@@ -1,0 +1,135 @@
+﻿
+@{
+    ViewData["Title"] = "确认反馈";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">确认反馈详情</h1>
+</header>
+<div id="pullrefresh" class="mui-content ">
+    <div id="scroll" class="mui-scroll-wrapper mui-scroll">
+        <ul id="list_ul" class="mui-table-view">
+            @*<li class="mui-table-view-cell">
+                    <div class="mui-input-row ">
+                        <label style="width:100%" class="oFlow">1 爱的色放蛤科的加法减法看得见啊看来阿斯顿发大水发大水大家</label>
+                    </div>
+                    <div class="mui-input-row mui-checkbox mui-left mui-disabled">
+                        <label>合格</label>
+                        <input name="checkbox" value="Item 1" type="checkbox" disabled="disabled">
+                    </div>
+                    <div class="mui-input-row mui-checkbox mui-left mui-disabled">
+                        <label>不合格</label>
+                        <input name="checkbox" value="Item 2" type="checkbox" checked disabled="disabled">
+                    </div>
+                </li>
+                <li class="mui-table-view-cell">
+                    <div class="mui-input-row ">
+                        <label style="width:100%" class="oFlow">问题描述</label>
+                    </div>
+                    <div class="mui-input-row" style="margin: 10px 5px;">
+                        <textarea id="textarea" rows="5" placeholder="多行文本框" disabled="disabled">士大夫但是</textarea>
+                    </div>
+                    <div class="mui-button-row">
+                        <button type="button" class="mui-btn mui-btn-primary">确认整改</button>
+                    </div>
+                </li>*@
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    jq = $;
+    var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
+    jq(".mui-content").height(height - jq(".mui-content").offset().top - 8); //浏览器高度减sroll距离头部的高度
+    var dataArea = [], dataCompany = [];
+
+    (function ($) {
+        $.init({});
+        $('#scroll').scroll({
+            indicators: true //是否显示滚动条
+        });
+        getData();
+        mui("#list_ul").on('tap', 'button', function (event) {
+            var btnArray = ['否', '是'];
+            mui.confirm('您确认不合格的检查项目都整改完了么？确认后检查人员会再次上门检查！', '确认反馈', btnArray, function (e) {
+                if (e.index == 1) {
+                    ReviewCheckConfirm();
+                } else {
+
+                }
+            })
+            //var resultId = this.firstChild.getAttribute("resultId");
+            //var rwbh = this.firstChild.getAttribute("rwbh");
+            //var fwbh = this.firstChild.getAttribute("fwbh");
+            //var fwmc = this.firstChild.getAttribute("fwmc");
+            //window.location.href = "ReviewCheckDetail?resultId=" + resultId + "&rwbh=" + rwbh + "&fwbh=" + fwbh + "&fwmc=" + fwmc;
+        });
+    })(mui);
+    function ReviewCheckConfirm() {
+
+        $.get('ReviewCheckConfirm', { resultid: "@ViewBag.resultId", rwbh: "@ViewBag.rwbh", fwbh: "@ViewBag.fwbh", fwmc: "@ViewBag.fwmc", jcr_openid:"@ViewBag.jcr_openid"}, function (data) {
+            if (data == "") {//成功
+                mui.toast('反馈成功！');
+                window.location.href = "Index";
+            }
+            else {//失败
+                mui.toast('反馈失败！');
+            }
+        });
+    }
+    function getData() {
+        /**/
+        $.get('GetRecheckReviewDataDetail', { resultid:"@ViewBag.resultId"}, function (data) {
+        /**/
+            if (data && data.list && data.list.length > 0) {
+                var table = document.body.querySelector('#list_ul');
+                var childs = table.childNodes;
+                for (var i = childs.length - 1; i >= 0; i--) {
+                    table.removeChild(childs[i]);
+                }
+                for (var i = 0; i < data.list.length; i++) {
+                    var li = document.createElement('li');
+                    li.className = 'mui-table-view-cell';
+                    var li_html = '<div class="mui-input-row " ><label style="width:100%" class="oFlow">';
+                    li_html = li_html + (i + 1) + ' ' + data.list[i].checkName + '</label></div >';
+                    if (data.list[i].CHECK_DETAIL_RESULT == 0) {
+                        li_html = li_html + '<div class="mui-input-row mui-checkbox mui-left mui-disabled"><label> 合格</label ><input name="checkbox" value="Item 1" type="checkbox" disabled="disabled"></div><div class="mui-input-row mui-checkbox mui-left mui-disabled"><label>不合格</label>';
+                        li_html = li_html + '<input name="checkbox" value="Item 2" type="checkbox" checked disabled="disabled"></div>';
+                    }
+                    else {
+                        li_html = li_html + '<div class="mui-input-row mui-checkbox mui-left mui-disabled"><label> 合格</label ><input name="checkbox" value="Item 1" type="checkbox" checked disabled="disabled"></div><div class="mui-input-row mui-checkbox mui-left mui-disabled"><label>不合格</label>';
+                        li_html = li_html + '<input name="checkbox" value="Item 2" type="checkbox"  disabled="disabled"></div>';
+                    }
+                    li.innerHTML = li_html;
+                    //下拉刷新，新纪录插到最前面；
+                    table.appendChild(li);
+
+                }
+                if (data.list.length > 0) {
+                    var li2 = document.createElement('li');
+                    li2.className = 'mui-table-view-cell';
+                    var li_html2 = '<div class="mui-input-row "><label style = "width:100%" class="oFlow" >' + (data.list.length + 1) + ' 问题描述</label ></div ><div class="mui-input-row mui-disabled" style="margin: 10px 5px;"><textarea id="textarea" rows="5" placeholder="多行文本框" disabled="disabled">';
+                    li_html2 = li_html2 += data.list[0].WTMS + '</textarea></div >';
+                    li_html2 = li_html2 + '<div class="mui-button-row"><button type = "button" class="mui-btn mui-btn-primary" >提交整改</button ></div >';
+                    li2.innerHTML = li_html2;
+                    table.appendChild(li2);
+                }
+            }
+    });
+}
+
+function dateFormat(_data) {
+    return _data.replace(/T/g, ' ');
+}
+</script>
+<style>
+    .oFlow {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .lbl {
+        width: 100%;
+    }
+</style>

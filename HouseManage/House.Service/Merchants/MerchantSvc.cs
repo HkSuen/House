@@ -415,6 +415,8 @@ namespace House.Service.Merchants
                     Z_JYNR = b.IS_SUBLET == 1 ? c.JYNR : c.JYNR
                 }).First();
                 dic.Add("list", obj);
+                var list = _Db.Db().Queryable<wy_pay_record>().Where(a => a.CZ_SHID == CZ_SHID&&a.JFZT==1).Select(a=>new { a.JFRQ, a.JFJE, a.JFLX }).ToList();
+                dic.Add("listOrder", list);
             }
             catch (Exception ex)
             {

@@ -4,5 +4,108 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>复查结果反馈</h1>
+<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+    <div class="mui-scroll">
+        <ul id="list_ul" class="mui-table-view">
+            <li class="mui-table-view-cell">
+                @*<div>
+                    <div class="mui-row">
+                        <div class="mui-col-sm-3 mui-col-xs-3">
+                            任务编号
+                        </div>
+                        <div class="mui-col-sm-9 mui-col-xs-9">
+                            adfadf
+                        </div>
+                    </div>
+                    <div class="mui-row">
+                        <div class="mui-col-sm-3 mui-col-xs-3">
+                            任务名称
+                        </div>
+                        <div class="mui-col-sm-9 mui-col-xs-9">
+                            adfadf
+                        </div>
+                    </div>
+                    <div class="mui-row">
+                        <div class="mui-col-sm-3 mui-col-xs-3">
+                            检查时间
+                        </div>
+                        <div class="mui-col-sm-9 mui-col-xs-9">
+                            任务名称
+                        </div>
+                    </div>
+                </div>*@
+            </li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    jq = $;
+    var dataArea = [], dataCompany = [];
 
+    (function ($) {
+        $.init({});
+        getData();
+        mui("#list_ul").on('tap', 'li', function (event) {
+            var resultId = this.firstChild.getAttribute("resultId");
+            var rwbh = this.firstChild.getAttribute("rwbh");
+            var fwbh = this.firstChild.getAttribute("fwbh");
+            var fwmc = this.firstChild.getAttribute("fwmc");
+            window.location.href = "ReviewCheckDetail?resultId=" + resultId + "&rwbh=" + rwbh+"&fwbh=" + fwbh+"&fwmc=" + fwmc;
+        });
+    })(mui);
+
+    function getData() {
+        $.get('GetRecheckReviewData', {}, function (data) {
+            if (data && data.list&&data.list.length>0) {
+                var table = document.body.querySelector('#list_ul');
+                var cells = document.body.querySelectorAll('.mui-table-view-cell');
+
+                var childs = table.childNodes;
+                for (var i = childs.length - 1; i >= 0; i--) {
+                    table.removeChild(childs[i]);
+                }
+                for (var i = 0; i < data.list.length; i++) {
+                    var li = document.createElement('li');
+                    li.className = 'mui-table-view-cell';
+                    var li_html = '<div jcr_openid="' + data.list[i].CJR + '" resultId="' + data.list[i].RESULT_ID + '" fwbh="' + data.list[i].FWBH + '" fwmc="' + data.list[i].FWMC + '" rwbh="' + data.list[i].RWBH+'" ><div class="mui-row" ><div class="mui-col-sm-3 mui-col-xs-3">任务编号</div> <div class="mui-col-sm-9 mui-col-xs-9 oFlow" >';
+                    li_html = li_html + data.list[i].RWBH + '</div></div > <div class="mui-row"><div class="mui-col-sm-3 mui-col-xs-3">任务名称 </div><div class="mui-col-sm-9 mui-col-xs-9 oFlow">';
+                    li_html = li_html + data.list[i].RWMC + ' </div></div ><div class="mui-row"><div class="mui-col-sm-3 mui-col-xs-3">检查时间</div><div class="mui-col-sm-9 mui-col-xs-9 oFlow">';
+                    li_html = li_html + dateFormat(data.list[i].CJSJ) + ' </div></div ></div >';
+                    li.innerHTML = li_html;
+                    console.log(li_html);
+                    //下拉刷新，新纪录插到最前面；
+                    table.appendChild(li);
+                }
+            }
+
+            else {
+                var table = document.body.querySelector('#list_ul');
+                var childs = table.childNodes;
+                for (var i = childs.length - 1; i >= 0; i--) {
+                    table.removeChild(childs[i]);
+                }
+                var li2 = document.createElement('li');
+                li2.className = 'mui-table-view-cell';
+                var li_html2 = '无记录！';
+                li2.innerHTML = li_html2;
+                table.appendChild(li2);
+            }
+        });
+    }
+
+    function dateFormat(_data) {
+        if (_data) {
+            return _data.replace(/T/g, ' ');
+        }
+        else {
+            return '';
+        }
+    }
+</script>
+<style>
+    .oFlow {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+</style>
