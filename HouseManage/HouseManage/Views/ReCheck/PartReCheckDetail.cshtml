@@ -1,6 +1,9 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
 @model List<Data.MSSQL.Model.BusinessModel.TaskListModel>;
 @foreach (var item in Model)
 {
@@ -32,27 +35,17 @@
                     <label style="padding-top:10px">检查结果</label>
                 </div>
                 @{
-                    var status = "";
-                    if (item.JCJG == 0)
+                    Dictionary<int, string> d = new Dictionary<int, string>()
                     {
-                        status = "不合格";
-                    }
-                    else if(item.JCJG == 1)
-                    {
-                        status = "合格";
-                    }
-                    else if(item.JCJG == 2)
-                    {
-                        status = "复查合格";
-                    }
-                    else
-                    {
-                        status = "复查不合格";
-                    }
+                        {0,"不合格" },
+                        {1,"合格" },
+                        {2,"复查合格" },
+                        {3,"复查不合格" }
+                    };
                 }
                 <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;">
                     <label style="padding-top:10px">
-                        @status
+                        @d[item.JCJG]
                     </label>
                 </div>
 
@@ -61,21 +54,7 @@
 
         <!--页脚，放置补充信息或支持的操作-->
         <div class="mui-card-footer" style="text-align:center;">
-            @{
-                if (item.JCJG == 0 || item.JCJG == 1)
-                {
-                    <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;" onclick="GetCheckResultDetail('@item.RESULT_ID')">修改</button>
-                }
-                else if (item.JCJG == 2)
-                {
-                    <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;">复查合格</button>
-                }
-                else
-                {
-                    <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;">复查不合格</button>
-                }
-            }
-
+            <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;" onclick="GetCheckResultDetail('@item.RESULT_ID')">复查</button>
             <div class="mui-row">
                 <div class="mui-col-sm-4 mui-col-xs-4"></div>
                 <div class="mui-col-sm-4 mui-col-xs-4">

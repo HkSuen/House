@@ -1,8 +1,194 @@
 ﻿
 @{
-    ViewData["Title"] = "复查";
+    ViewData["Title"] = "复查任务列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @model List<Data.MSSQL.Model.Data.wy_check_task>;
 }
+<div id="main-container" class="mui-content mui-scroll-wrapper" style="height:100%">
+    <div class="mui-scroll">
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell mui-collapse">
+                <a class="mui-navigate-right" href="#">任务列表</a>
+                @*<div class="mui-collapse-content" style="text-align:center">
+                    <div class="mui-row">
+                        <div class="mui-col-sm-2 mui-col-xs-2">
+                            <label style="font-size:13px;">商户状态:</label>
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5">
+                            <label>出租</label>
+                            <input name="radio1" id="radio1" value="1" type="radio">
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5">
+                            <label>出售</label>
+                            <input name="radio1" id="radio1" value="2" type="radio">
+                        </div>
+                    </div>
+                    <div class="mui-row">
+                        <div class="mui-col-sm-2 mui-col-xs-2">
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5" style="padding-right: 20px;">
+                            <input type="text" value="" class="mui-input-clear" placeholder="开始时间" id="startTime" onclick="SetStartTime()">
+                        </div>
+                        <div class="mui-col-sm-5 mui-col-xs-5">
+                            <input type="text" value="" class="mui-input-clear" placeholder="结束时间" id="endTime" onclick="SetEndTime()">
+                        </div>
+                    </div>
+                    <div class="mui-row">
+                        <button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search" onclick="getList()">查询</button>
+                    </div>
+                </div>*@
+            </li>
+        </ul>
+        <div id="content">
+            @Html.Partial("PartRecheckList", Model)
+        </div>
+    </div>
 
-<h1>复查</h1>
+</div>
+
+
+
+
+
+@*<div class="mui-row">
+        <div class="mui-col-sm-6 mui-col-xs-4">
+            <input type="text" value="" class="mui-input-clear" placeholder="商户状态" id="shopstatus" onclick="ChangeStaus()">
+            <a href="#popover" id="openPopover" class="mui-btn-block"></a>
+            <div id="popover" class="mui-popover">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" onclick="">出租</li>
+                    <li class="mui-table-view-cell" onclick="">出售</li>
+                </ul>
+            </div>
+        </div>
+        <div class="mui-col-sm-6 mui-col-xs-4">
+            <input type="text" value="" class="mui-input-clear" placeholder="开始时间" id="startTime" onclick="SetStartTime()">
+        </div>
+        <div class="mui-col-sm-6 mui-col-xs-4">
+            <input type="text" value="" class="mui-input-clear" placeholder="结束时间" id="endTime" onclick="SetEndTime()">
+        </div>
+    </div>*@
+
+
+<script type="text/javascript">
+    var temp = {
+        status: "",
+        starttime: "",
+        endtime: "",
+        limit: 10,
+        page: 1
+    }
+    var hasMore = true;
+    mui('.mui-content').scroll({
+        scrollY: true, //是否竖向滚动
+        scrollX: false, //是否横向滚动
+        startX: 0, //初始化时滚动至x
+        startY: 0, //初始化时滚动至y
+        indicators: true, //是否显示滚动条
+        deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+        bounce: true //是否启用回弹
+    });
+    window.onload = function () {
+        mui.init({
+            pullRefresh: {
+                container: ".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+                up: {
+                    style: 'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                    color: '#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+                    height: '50px',//可选,默认50px.下拉刷新控件的高度,
+                    range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+                    offset: '0px', //可选 默认0px,下拉刷新控件的起始位置
+                    auto: false,//可选,默认false.首次加载自动上拉刷新一次
+                    contentrefresh: "正在加载...",
+                    contentnomore: '没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+                    callback: function () {
+                        temp.page++;
+                        getList();
+                        this.endPullupToRefresh(!hasMore);
+                    }
+                },
+            }
+        });
+    }
+    function ChangeStaus() {
+        var picker = new mui.PopPicker();
+        //picker.setData([{ value: 'zz', text: '智子' }]);
+        //picker.show(function (selectItems) {
+        //    console.log(selectItems[0].text);//智子
+        //    console.log(selectItems[0].value);//zz
+        //})
+    };
+    function SetStartTime() {
+        var dtPicker = new mui.DtPicker();
+        dtPicker.show(function (selectItems) {
+            document.getElementById("startTime").value = selectItems.y.text + "/" + selectItems.m.text + "/" + selectItems.d.text;
+        });
+    };
+    function SetEndTime() {
+        var dtPicker = new mui.DtPicker();
+        dtPicker.show(function (selectItems) {
+            document.getElementById("endTime").value = selectItems.y.text + "/" + selectItems.m.text + "/" + selectItems.d.text;
+        });
+    };
+    function getList() {
+        var ele = document.getElementsByName("radio1");
+        let radiovalue = "";
+        for (var i = 0; i < ele.length; i++) {
+            if (ele[i].checked) {
+                radiovalue = ele[i].value;
+            };
+        };
+        temp.status = radiovalue;
+        temp.starttime = document.getElementById("startTime").value;
+        temp.endtime = document.getElementById("endTime").value;
+        //temp = {
+        //    status: radiovalue,
+        //    starttime: document.getElementById("startTime").value,
+        //    endtime: document.getElementById("endTime").value,
+        //    limit: 10,
+        //    page: 1
+        //};
+        mui.ajax('PartDailyCheckList', {
+            data: this.temp,
+            type: 'get',
+            //timeout: 50000,
+            //headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                var ele = document.getElementById("content").innerHTML;
+                if (data.trim() != "") {
+                    document.getElementById("content").innerHTML = ele + data;
+                }
+                else {
+                    hasMore = false;
+                }
+            },
+            error: function (xhr, type, errorThrown) {
+                console.log(type);
+            }
+        })
+    };
+    function GetTaskDetail(RWBH,TASK_ID) {
+        console.log(RWBH);
+        window.location.href = "ReCheckDetail?" + "TASK_ID=" + TASK_ID;
+    };
+    function GetIndex() {
+        this.temp.page = 1;
+        mui.ajax('Index', {
+            data: temp,
+            type: 'get',
+            //timeout: 50000,
+            //headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                var ele = document.getElementById("content").innerHTML;
+                document.getElementById("content").innerHTML = data;
+            },
+            error: function (xhr, type, errorThrown) {
+                console.log(type);
+            }
+        })
+    }
+
+
+
+</script>
 

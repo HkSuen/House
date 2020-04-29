@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HouseManage.Controllers
+namespace HouseManage.Controllers.Check
 {
     [AllowAnonymous]
-    public class ReCheckController : Controller
+    public class ReCheckReviewController : Controller
     {
         public IActionResult Index()
         {

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace House.IService
+namespace House.IService.Check
 {
     public interface IDailyCheckSvc
     {
@@ -39,7 +39,7 @@ namespace House.IService
         List<wy_task_detail_config> GetCreateTaskResultFormInfo(string FWID, string TASK_ID, string OPEN_ID);
         /// <summary>
         /// 获取任务可以检查的房屋列表
-        /// 查询逻辑：任务详情内的年度计划明细内的区域的房子∩区域负责人所负责的区域的房子
+        /// 查询逻辑：任务详情内的年度计划明细内的区域的房子∩区域负责人所负责的区域的房子∩负责人区域未检查过的房子
         /// </summary>
         /// <param name="RWBH"></param>
         /// <returns></returns>

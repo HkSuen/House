@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using House.IService;
+using House.IService.Check;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
-namespace HouseManage.Controllers
+namespace HouseManage.Controllers.Check
 {
     [AllowAnonymous]
     public class DailyCheckController : Controller

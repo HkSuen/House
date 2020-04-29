@@ -1,0 +1,143 @@
+﻿
+@{
+    ViewData["Title"] = "复查任务明细";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model List<Data.MSSQL.Model.BusinessModel.TaskListModel>;
+}
+
+<div id="main-container" class="mui-content mui-scroll-wrapper " style="height:100%">
+    <div class="mui-scroll">
+        <div class="mui-card" id="title">
+            <div class="mui-card-content">
+                <div class="mui-row">
+                    <div class="mui-col-sm-3 mui-col-xs-3">
+                        <label style="padding-top:10px;padding-left:5px;padding-left:20px">复查列表</label>
+                    </div>
+                    @*<div class="mui-col-sm-3 mui-col-xs-3">
+                        <label style="padding-top:10px;padding-left:5px;" id="RWBH"></label>
+                    </div>*@
+                    @*<div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;padding-left:5px;">
+                        <button type="button" class="mui-btn mui-btn-success">提交</button>
+                    </div>
+                    <div class="mui-col-sm-3 mui-col-xs-3" style="text-align:center;padding-top:5px;padding-left:5px;">
+                        <button type="button" class="mui-btn mui-btn-primary" onclick="CreateCheckResult()">新增</button>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+        <div class="content" id="content">
+            @Html.Partial("PartReCheckDetail", Model)
+        </div>
+
+    </div>
+</div>
+<script>
+    jq = $;
+    //var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
+    //jq(".mui-content").height(height - jq(".content").offset().top - 8); //浏览器高度减sroll距离头部的高度
+    var temp = {
+        page: 1,
+        limit: 10,
+        RWBH: "",
+    };
+    var hasMore = true;
+    mui('.mui-content').scroll({
+        scrollY: true, //是否竖向滚动
+        scrollX: false, //是否横向滚动
+        startX: 0, //初始化时滚动至x
+        startY: 0, //初始化时滚动至y
+        indicators: true, //是否显示滚动条
+        deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+        bounce: true //是否启用回弹
+    });
+    window.onload = function () {
+        //var idArray = window.location.search.split("=");
+        //var id = idArray[1].split("&")[0];
+        //this.document.getElementById("RWBH").innerHTML = id;
+        //this.temp.RWBH = id;
+         mui.init({
+            pullRefresh: {
+                container: ".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+                up: {
+                    style: 'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                    color: '#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+                    height: '50px',//可选,默认50px.下拉刷新控件的高度,
+                    range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+                    offset: '0px', //可选 默认0px,下拉刷新控件的起始位置
+                    auto: false,//可选,默认false.首次加载自动上拉刷新一次
+                    contentrefresh: "正在加载...",
+                    contentnomore: '没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+                    callback: function () {
+                        GetMoreCheckResult();
+                        this.endPullupToRefresh(!hasMore);
+                    }
+                 },
+                 down: {
+                    style: 'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                    color: '#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+                    height: '50px',//可选,默认50px.下拉刷新控件的高度,
+                    range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+                    offset: '0px', //可选 默认0px,下拉刷新控件的起始位置
+                    auto: false,//可选,默认false.首次加载自动上拉刷新一次
+                    contentrefresh: "正在加载...",
+                    contentnomore: '没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+                     callback: function () {
+                         console.log(1);
+                         GetIndex();
+                         mui('#mui-content').pullRefresh().endPulldown(false);
+                    }
+                 }
+            }
+         });
+
+        //mui.ajax('/DailyCheck/GetDailyCheckDetail', {
+        //    data: {
+        //        RWBH: id,
+        //    },
+        //    type: 'get',
+        //    //timeout: 50000,
+        //    //headers: { 'Content-Type': 'application/json' },
+        //    success: function (data) {
+        //        var ele = document.getElementById("main-container");
+        //        for (var i = 0; i < data.items.length; i++) {
+        //            var child = document.createElement("div").style("mui-card");
+
+        //        }
+        //    },
+        //    error: function (xhr, type, errorThrown) {
+        //        console.log(type);
+        //    }
+        //})
+    };
+    function GetCheckResultDetail(RESULT_ID) {
+        window.location.href = "ReCheckResult?RESULT_ID=" + RESULT_ID;
+    }
+    function GetMoreCheckResult() {
+        this.temp.page++;
+        mui.ajax('PartReCheckDetail', {
+            data: temp,
+            type: 'get',
+            //timeout: 50000,
+            //headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                var ele = document.getElementById("content").innerHTML;
+                if (data.trim()!="") {
+                    document.getElementById("content").innerHTML = ele + data;
+                }
+                else {
+                    hasMore = false;
+                }
+
+            },
+            error: function (xhr, type, errorThrown) {
+                console.log(type);
+            }
+        })
+    }
+    function CreateCheckResult() {
+        var idArray = window.location.search.split("?");
+        var id = idArray[1];
+        window.location.href = "CreateCheckResult?" + id;
+    }
+
+</script>

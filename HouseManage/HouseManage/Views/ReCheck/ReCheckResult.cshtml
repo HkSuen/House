@@ -1,9 +1,8 @@
 ﻿
 @{
-    ViewData["Title"] = "编辑检查结果";
+    ViewData["Title"] = "复查内容";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var FWINFO = ViewBag.FWINFO as List<Data.MSSQL.Model.BusinessModel.SimpleShopInfo>;
-    var CHECKINFO = ViewBag.CHECKINFO as List<Data.MSSQL.Model.BusinessModel.SimpleCheckResultDetail>;
+    @model List<Data.MSSQL.Model.BusinessModel.ReCheckResultModel>
 }
 
 <div id="popover" class="mui-popover">
@@ -17,20 +16,20 @@
 <div id="main-container" class="mui-content mui-scroll-wrapper" style="height:100%">
     <div class="mui-scroll">
         <div class="mui-card">
-            <div class="mui-card-header">商户信息</div>
+            <div class="mui-card-header">房屋信息</div>
             <!--内容区-->
             <div class="mui-card-content">
                 <div class="mui-row">
-                    <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                        商户编号:<label id="SHOPBH" >@FWINFO[0].SHOPBH</label>
+                    <div class="mui-col-sm-12 mui-col-xs-12" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                        房屋编号:<label id="SHOPBH">@Model[0].FWBH</label>
                     </div>
-                    <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                        租户姓名:<label id="ZHXM" >@FWINFO[0].ZHXM</label>
+                    <div class="mui-col-sm-12 mui-col-xs-12" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                        房屋名称:<label id="ZHXM">@Model[0].FWMC</label>
                     </div>
                 </div>
                 <div class="mui-row">
-                    <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                        商铺名称:<label id="SHOP_NAME">@FWINFO[0].SHOP_NAME</label>
+                    <div class="mui-col-sm-12 mui-col-xs-12" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                        坐落位置:<label id="SHOP_NAME">@Model[0].ZLWZ</label>
                     </div>
 
                 </div>
@@ -42,33 +41,33 @@
             <div class="mui-card-header">检查内容</div>
             <div class="mui-card-content">
                 <ul class="mui-table-view">
-                    @foreach (var item in @CHECKINFO)
+                    @foreach (var item in Model)
                     {
                         <li class="mui-table-view-cell">
                             <div class="mui-row" id="list">
-                                <div class="mui-col-sm-3 mui-col-xs-3">
-                                    <button type="button" class="mui-btn mui-btn-primary" onclick="pass('@item.CHECK_RESULT_ID','@item.Code')" value="1">合格</button>
+                                @*<div class="mui-col-sm-3 mui-col-xs-3">
+                                    <button type="button" class="mui-btn mui-btn-primary"  value="1">合格</button>
                                 </div>
                                 <div class="mui-col-sm-3 mui-col-xs-3">
-                                    <button type="button" class="mui-btn mui-btn-danger" onclick="unpass('@item.CHECK_RESULT_ID','@item.Code')" value="0">不合格</button>
-                                </div>
+                                    <button type="button" class="mui-btn mui-btn-danger"  value="0">不合格</button>
+                                </div>*@
                                 @{
                                     if (item.CHECK_DETAIL_RESULT == 0)
                                     {
-                                        <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
-                                            <button type="button" class="mui-btn mui-btn-danger" id="@item.CHECK_RESULT_ID"  value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
+                                        <div class="mui-col-sm-12 mui-col-xs-12" id="statusbutton">
+                                            <button type="button" class="mui-btn mui-btn-danger"  value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.NAME <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                     else if (item.CHECK_DETAIL_RESULT == 1)
                                     {
-                                        <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
-                                            <button type="button" class="mui-btn mui-btn-primary" id="@item.CHECK_RESULT_ID" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
+                                        <div class="mui-col-sm-12 mui-col-xs-12" id="statusbutton">
+                                            <button type="button" class="mui-btn mui-btn-primary"  value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.NAME <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                     else
                                     {
-                                        <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
-                                            <button type="button" class="mui-btn" id="@item.Code" name="@item.Code" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
+                                        <div class="mui-col-sm-12 mui-col-xs-12" id="statusbutton">
+                                            <button type="button" class="mui-btn"  value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.NAME <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                 }
@@ -80,45 +79,24 @@
             </div>
         </div>
         <div class="mui-card">
-            <div class="mui-card-header">检查结果</div>
+            <div class="mui-card-header">复查结果</div>
             <div class="mui-card-content">
                 <div class="mui-row">
                     <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
-                        <label>检查结果:</label>
+                        <label>复查结果:</label>
                     </div>
-                    @{
-                        
-                        if (@FWINFO[0].JCJG == 1)
-                        {
-                            <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                                <div class="mui-input-row mui-radio">
-                                    <label>合格</label>
-                                    <input name="radio1" value="1" id="pass" type="radio" checked="checked" onclick="passall()">
-                                </div>
-                            </div>
-                            <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                                <div class="mui-input-row mui-radio">
-                                    <label>不合格</label>
-                                    <input name="radio1" value="0" id="unpass" type="radio" onclick="unpassall()">
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                                <div class="mui-input-row mui-radio">
-                                    <label>合格</label>
-                                    <input name="radio1" value="1" id="pass" type="radio"  onclick="passall()">
-                                </div>
-                            </div>
-                            <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                                <div class="mui-input-row mui-radio">
-                                    <label>不合格</label>
-                                    <input name="radio1" value="0" id="unpass" type="radio" checked="checked" onclick="unpassall()">
-                                </div>
-                            </div>
-                        }
-                    }
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                        <div class="mui-input-row mui-radio">
+                            <label>合格</label>
+                            <input name="radio1" value="2" id="pass" type="radio" onclick="passall()">
+                        </div>
+                    </div>
+                    <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                        <div class="mui-input-row mui-radio">
+                            <label>不合格</label>
+                            <input name="radio1" value="3" id="unpass" type="radio" onclick="unpassall()">
+                        </div>
+                    </div>
 
                 </div>
                 <div class="mui-row">
@@ -126,7 +104,7 @@
                         <label>问题描述:</label>
                     </div>
                     <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                        <input type="text" class="mui-input-clear" placeholder="请输入问题描述" style="width:95%" id="describe" value="@FWINFO[0].WTMS">
+                        <input type="text" class="mui-input-clear" placeholder="请输入问题描述" style="width:95%" id="describe" value="@Model[0].WTMS">
                     </div>
                 </div>
                 <div class="mui-row">
@@ -134,7 +112,7 @@
                         <label>整改要求:</label>
                     </div>
                     <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                        <input type="text" class="mui-input-clear" placeholder="请输入整改要求" style="width:95%" id="Requirement" value="@FWINFO[0].ZGYQ">
+                        <input type="text" class="mui-input-clear" placeholder="请输入整改要求" style="width:95%" id="Requirement" value="@Model[0].ZGYQ">
                     </div>
                 </div>
             </div>
@@ -147,15 +125,10 @@
 </div>
 <script>
     var temp = {
-        RESULT_ID: '@ViewBag.FWINFO[0].RESULT_ID',
-            @*FWID: '@ViewBag.FWINFO[0].FWID',*@
-        JCJG: "",
-        WTMS: "",
-        ZGYQ: "",
-        CHECK_DETAIL_RESULT: [],
-        INSERTINFO: {},
-    };
-    
+            RESULT_ID:'@Model[0].RESULT_ID',
+            JCJG: ""
+        }
+    var temp;
     mui('.mui-scroll-wrapper').scroll({
         deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
     });
@@ -205,6 +178,7 @@
     }
     function CreateListForm() {
         var ele = document.getElementById("statusbutton").firstChild;
+        console.log(ele);
     };
     function pass(RESULT_ID,Code) {
         if (RESULT_ID == null || RESULT_ID == "") {
@@ -247,37 +221,18 @@
             };
         };
         temp.JCJG = radiovalue;
-        temp.WTMS = document.getElementById("describe").value;
-        temp.ZGYQ = document.getElementById("Requirement").value;
-        var CHECKINFO =@Html.Raw(Json.Serialize(ViewBag.CHECKINFO));
-        var qualified = true;//检查内容详情是否有不合格项
-        let RWBH = window.location.search.split("=")[1];
-        for (var i = 0; i < CHECKINFO.length; i++) {
-            var checkele = document.getElementById(CHECKINFO[i].CHECK_RESULT_ID);
-            if (checkele != null) {
-                let item = {
-                    CHECK_DETAIL_ID: CHECKINFO[i].CHECK_RESULT_ID,
-                    VALUE: checkele.value,
-                };
-                qualified = qualified&&(item.VALUE == 1)
-                temp.CHECK_DETAIL_RESULT.push(item);
-            }
-        }
-        if (temp.JCJG == null || temp.JCJG == "") {
-            window.alert("检查结果不能为空!");
-        }
-        else if (!qualified && temp.JCJG == 1) {
-            window.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!");
+        if (temp.JCJG == "" || temp.JCJG == null) {
+            mui.alter("检查结果不能为空！");
         }
         else {
-             mui.ajax('PostUpdateCheckResult', {
+             mui.ajax('PostUpdateReCheckResult', {
             type: 'post',
             data: temp,
             timeout: 50000,
             headers: { 'Content-Type': 'application/json' },
             success: function (data) {
-                if (data.trim().toString() == "success") {
-                    window.location.href = "DailyCheckDetail?RWBH=" + '@ViewBag.RWBH'+"&TASK_ID="+'@ViewBag.TASK_ID';
+                if (data) {
+                    window.location.href = "ReCheckDetail?TASK_ID="+'@Model[0].TASK_ID';
                 }
             },
             error: function (data) {

@@ -2,6 +2,7 @@
 using Data.MSSQL.Model.BusinessModel;
 using Data.MSSQL.Model.Data;
 using House.IService;
+using House.IService.Check;
 using Newtonsoft.Json.Linq;
 using SqlSugar;
 using System;
@@ -50,7 +51,6 @@ namespace House.Service
             )
                 .Select<TaskListModel>()
                 .Skip((page - 1) * limit).Take(limit).ToList();
-
             return list;
         }
 
@@ -164,10 +164,11 @@ namespace House.Service
             wcr.JCSJ = DateTime.Now;
             wcr.ZGYQ = d["ZGYQ"].ToString();
             wcr.WTMS = d["ZGYQ"].ToString();
-            wcr.FWID = ww["FWID"].ToString();
+            wcr.FWID = d["FWID"].ToString();
             wcr.IS_DELETE = 0;
+            wcr.JCCS = 0;
+            wcr.IS_REVIEW = 0;
             List<wy_check_result_detail> list = new List<wy_check_result_detail>();
-            ww.Remove("FWID");
             foreach(KeyValuePair<string,object> item in ww)
             {
                 wy_check_result_detail wcrd = new wy_check_result_detail();
@@ -176,6 +177,7 @@ namespace House.Service
                 wcrd.DETAIL_CODE = item.Key;
                 wcrd.CHECK_DETAIL_RESULT =Convert.ToInt32(item.Value);
                 wcrd.CHECK_DETAIL_TIME = DateTime.Now;
+                wcrd.JCR = OPEN_ID;
                 list.Add(wcrd);
             }
             try
@@ -261,6 +263,8 @@ namespace House.Service
                     JCJG = Convert.ToInt32(d["JCJG"]),
                     WTMS = d["WTMS"].ToString(),
                     ZGYQ = d["ZGYQ"].ToString(),
+                    BJR=OPEN_ID,
+                    BJSJ=DateTime.Now
                 };
                 List<Dictionary<string, object>> updatelist = JArray.FromObject(d["CHECK_DETAIL_RESULT"]).ToObject<List<Dictionary<string, object>>>();
                 List<wy_check_result_detail> list = new List<wy_check_result_detail>();
@@ -280,14 +284,15 @@ namespace House.Service
                         CHECK_DETAIL_ID = Guid.NewGuid().ToString(),
                         DETAIL_CODE = kp.Key,
                         CHECK_DETAIL_RESULT = Convert.ToInt32(kp.Value),
-                        CHECK_DETAIL_TIME=DateTime.Now,
-                        JCR=OPEN_ID
+                        CHECK_DETAIL_TIME = DateTime.Now,
+                        JCR = OPEN_ID,
+                        RESULT_ID = d["RESULT_ID"].ToString()     
                     };
                     list1.Add(item1);
                 }
                 DB.Db().BeginTran();
-                DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID }).ExecuteCommand();
-                DB.Db().Updateable(list).IgnoreColumns(it => new { it.DETAIL_CODE,it.RESULT_ID }).ExecuteCommand();
+                DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID,it.CJR,it.CJSJ,it.IS_DELETE,it.JCCS,it.IS_REVIEW }).ExecuteCommand();
+                DB.Db().Updateable(list).IgnoreColumns(it => new { it.DETAIL_CODE,it.JCR,it.RESULT_ID }).ExecuteCommand();
                 DB.Db().Insertable(list1).ExecuteCommand();
                 DB.Db().CommitTran();
             }
