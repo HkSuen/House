@@ -1,5 +1,6 @@
 ﻿using Data.MSSQL.Common;
 using House.IService.Common;
+using House.IService.Common.Message;
 using House.IService.Model.Enum;
 using HouseManage.Models.Enum;
 using HouseManage.Models.Request;
@@ -66,6 +67,6 @@ namespace HouseManage.Controllers
             throw new Exception(msg);
         }
 
-
+        protected MsgHelper PayMsg => MsgHelper.Msg.In(CommonFiled.MsgPayUrl);
     }
 }

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using House.IService.Model.Dto;
 using House.IService.Shop;
 using Newtonsoft.Json;
+using House.IService.Common.Message;
 
 namespace HouseManage.Controllers.Order
 {
@@ -472,5 +473,13 @@ namespace HouseManage.Controllers.Order
             }
         }
 
+        //[AllowAnonymous]
+        //[HttpGet]
+        //public async Task<string> Msg()
+        //{
+        //    string data = JsonConvert.SerializeObject(new { openId = "ocRWVwrIhqMHJhnkT1otzdy6DgPc", 
+        //        data = new { first = "123" }});
+        //    return await PayMsg.SendMsg(data);
+        //}
     }
 }
