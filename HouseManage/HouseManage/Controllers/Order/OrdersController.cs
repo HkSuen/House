@@ -485,7 +485,7 @@ namespace HouseManage.Controllers.Order
                     type = order.REMARK,
                     orderid = order.ORDER_ID,
                     time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-                    totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00)
+                    totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00)+"元"
                 }
             };
             await PayMsg.SendMsg(JsonConvert.SerializeObject(data));
@@ -495,10 +495,18 @@ namespace HouseManage.Controllers.Order
         //[HttpGet]
         //public async Task<string> Msg()
         //{
+        //    var order = this._order.GetWxPayById("Y645202004261734191483");
         //    string data = JsonConvert.SerializeObject(new
         //    {
         //        openId = "ocRWVwrIhqMHJhnkT1otzdy6DgPc",
-        //        data = new { first = "123" }
+        //        data = new
+        //        {
+        //            content = " 您已经成功缴费。",
+        //            type = order.REMARK,
+        //            orderid = order.ORDER_ID,
+        //            time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+        //            totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00)+"元"
+        //        }
         //    });
         //    return await PayMsg.SendMsg(data);
         //}
