@@ -40,11 +40,11 @@ namespace House.IService.Common.Message
         /// <param name="pagepath">所需跳转到小程序的具体页面路径，支持带参数,（示例index?foo=bar），要求该小程序已发布，暂不支持小游戏</param>
         /// <returns></returns>
         public async Task<string> SendMsg(string url, string openId, Dictionary<string, object> data
-            , string templaterId = null, string color = "#173177", string appurl = null,
+            , string templateId = null, string color = "#173177", string appurl = null,
             string appId = null, string pagepath = null)
         {
             string jsonData = JsonConvert.SerializeObject(new
-            { openId, data, templaterId, color, appurl, appId, pagepath });
+            { openId, data, templateId, color, appurl, appId, pagepath });
             return await this.SendMsg(url, jsonData);
         }
 
