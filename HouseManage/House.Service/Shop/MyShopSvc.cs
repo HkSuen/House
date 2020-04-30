@@ -34,6 +34,13 @@ namespace House.Service.Shop
             return List;
         }
 
+        public v_pay_record GetPayReminder(string openId)
+        {
+            var conditions = Expressionable.Create<v_pay_record>();
+            conditions = conditions.And(c => c.OPEN_ID == openId);
+            return _db.Db().Queryable<v_pay_record>().Where(conditions.ToExpression())
+                .OrderBy(c => c.CREATE_TIME).First();
+        }
 
         public List<v_pay_record> GetPayReminder(string OpenId, string Type, PageModel page)
         {

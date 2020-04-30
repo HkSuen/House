@@ -297,5 +297,21 @@ namespace House.Service.Order
                 && c.TOTAL_FEE == TotalFee).Any();
             });
         }
+
+        public wy_w_pay GetW_Pay(string OrderId)
+        {
+            return DBAble<wy_w_pay>((db) =>
+            {
+                return db.Queryable<wy_w_pay>().Single(c => c.GUID == OrderId);
+            });
+        }
+
+        public wy_ele_recharge GetElectricity(string OrderId)
+        {
+            return DBAble<wy_ele_recharge>((db) =>
+            {
+                return db.Queryable<wy_ele_recharge>().Single(c => c.id == OrderId);
+            });
+        }
     }
 }

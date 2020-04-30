@@ -84,6 +84,7 @@
                 this.getTypes();
                 this.getBeneficiaries();
                 this.getUnitPriceOfWater();
+                this.checkRecord();// 检查是否有提醒的订单，
             },
             Bind: function () {
                 var self = this;
@@ -271,6 +272,25 @@
                         mui.hideLoading();
                         mui.alert("当前订单未支付！", "提示");
                         return;
+                    }
+                });
+            },
+            checkRecord: function () { //检查是否有缴费提醒的订单
+                var self = this;
+                this.post("../MyShop/GetNewPayReminder", null, function (res) {
+                    if (res != null && res.code == 1000) {
+                        var data = res.data.Data || null;
+                        if (data != null) {
+                            var btnArray = ['否', '是'];
+                            mui.confirm('您当前有待缴费提醒单\n不能使用自助缴费\n是否跳转缴费界面？', '提醒', btnArray, function (e) {
+                                mui.showLoading("跳转中")
+                                if (e.index == 1) {
+                                    window.location.href = "order?r=" + data.RECORD_ID + "&f=" + data.FWID+"&u=" + data.CZ_SHID;
+                                } else {
+                                    window.location.href = "../MyShop/Payment"; // 取消跳转待商铺缴费
+                                }
+                            })
+                        }
                     }
                 });
             }

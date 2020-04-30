@@ -25,6 +25,13 @@ namespace House.IService.Shop
         List<v_pay_record> GetPayReminder(string OpenId, string Type, PageModel page);
 
         /// <summary>
+        /// 获取最新的一条未缴费提醒数据
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        v_pay_record GetPayReminder(string openId);
+
+        /// <summary>
         /// 获取缴费通知单
         /// </summary>
         /// <param name="OpenId"></param>

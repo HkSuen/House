@@ -133,6 +133,12 @@ namespace House.IService.Order
         /// <param name="OrderId"></param>
         /// <returns></returns>
         int W_PayCount(string OrderId);
+        /// <summary>
+        /// 根据订单ID获取水费信息
+        /// </summary>
+        /// <param name="OrderId"></param>
+        /// <returns></returns>
+        wy_w_pay GetW_Pay(string OrderId);
 
         /// <summary>
         /// 根据条件获取电费单是否已经支付
@@ -140,6 +146,12 @@ namespace House.IService.Order
         /// <param name="OrderId"></param>
         /// <returns></returns>
         int ElectricityCount(string OrderId);
+        /// <summary>
+        /// 根据订单ID获取电费信息
+        /// </summary>
+        /// <param name="OrderId"></param>
+        /// <returns></returns>
+        wy_ele_recharge GetElectricity(string OrderId);
 
         /// <summary>
         /// 插入记录表

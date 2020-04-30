@@ -46,6 +46,21 @@ namespace HouseManage.Controllers.MyShop
             });
         }
 
+        /// <summary>
+        /// 获取最新的一条未交费的提醒单
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetNewPayReminder()
+        {
+            var Data = _shop.GetPayReminder(OpenID);
+            return Json(new Paramter.Response()
+            {
+                code = ResultCode.SCCUESS,
+                data = new { Data }
+            });
+        }
+
+
         public JsonResult PayOrders(Paramter.Request request)
         {
             var feeType = request.Conditions["feeType"];

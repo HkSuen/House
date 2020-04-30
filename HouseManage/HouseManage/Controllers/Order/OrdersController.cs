@@ -491,6 +491,25 @@ namespace HouseManage.Controllers.Order
             await PayMsg.SendMsg(JsonConvert.SerializeObject(data));
         }
 
+
+        public JsonResult CheckRechargeStatus(string orderGuid, int type) {
+            if (type == 1) //水
+            {
+                var result = this._order.GetW_Pay(orderGuid);
+                if (result != null &&　result.PStatus.HasValue && result.PStatus.Value == 1) {
+                    return Data(ResultCode.SCCUESS, "success");
+                }
+            }else if (type == 2) {  //电
+                var result = this._order.GetElectricity(orderGuid);
+                if (result !=null && string.IsNullOrEmpty(result.Pstatus) && result.Pstatus == "1")
+                {
+                    return Data(ResultCode.SCCUESS, "success");
+                }
+            }
+            return Data(ResultCode.SCCUESS, "fail");
+        }
+
+
         //[AllowAnonymous]
         //[HttpGet]
         //public async Task<string> Msg()
@@ -505,7 +524,7 @@ namespace HouseManage.Controllers.Order
         //            type = order.REMARK,
         //            orderid = order.ORDER_ID,
         //            time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-        //            totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00)+"元"
+        //            totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元"
         //        }
         //    });
         //    return await PayMsg.SendMsg(data);

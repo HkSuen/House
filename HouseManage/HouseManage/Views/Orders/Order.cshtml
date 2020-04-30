@@ -55,7 +55,6 @@
                     </div>
                 }
             }
-
             <div class="mui-input-row">
                 <label>手机号码</label>
                 <input type="text" value="@d.MOBILE_PHONE" readonly>
@@ -92,6 +91,7 @@
             <input type="text" value="￥@d.JFJE.ToString("0.00")" style="color:orange;font-size:25px" readonly id="total_money">
         </div>
     </div>
+    <marquee><span style="font-weight: bolder;font-size: 18px;color: red;display:none" id="infonotice">由于数据存在1-12小时的延迟，您当前缴费记录暂未更新到设备,请您耐心等候,非常感谢！！</span></marquee>
     <p style="margin: 40px 10px;"></p>
     <div class="mui-col-sm-12 mui-col-xs-12" style="text-align:center;">
         @{
@@ -255,6 +255,28 @@
         }
         loadUnitPrice();
     })(mui)
-
+    window.onload = function () {
+        var postUrl = function (url, data, callback) {
+            mui.showLoading()
+            mui.post(url, data, function (res) {
+                mui.hideLoading();
+                if (res != null && res.code == 1000) {
+                    var data = res.data || null
+                    callback(data);
+                }
+            })
+        }
+        var checkOrderStatus = function () {
+            var orderId = "@Model.ID";
+            if (orderId != null && orderId != "" && orderId != undefined) {
+                postUrl("CheckRechargeStatus", { orderId, type:@Model.JFLX}, function (res) {
+                    if (res == "fail") {
+                        $("#infonotice").show();
+                    }
+                })
+            }
+        }
+        checkOrderStatus();
+    }
 
 </script>
