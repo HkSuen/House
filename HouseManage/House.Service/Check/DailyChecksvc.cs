@@ -165,6 +165,8 @@ namespace House.Service
             wcr.ZGYQ = d["ZGYQ"].ToString();
             wcr.WTMS = d["ZGYQ"].ToString();
             wcr.FWID = d["FWID"].ToString();
+            wcr.CJR = OPEN_ID;
+            wcr.CJSJ = DateTime.Now;
             wcr.IS_DELETE = 0;
             wcr.JCCS = 0;
             wcr.IS_REVIEW = 0;
@@ -291,7 +293,7 @@ namespace House.Service
                     list1.Add(item1);
                 }
                 DB.Db().BeginTran();
-                DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID,it.CJR,it.CJSJ,it.IS_DELETE,it.JCCS,it.IS_REVIEW }).ExecuteCommand();
+                DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID,it.JCR,it.JCSJ,it.CJR,it.CJSJ,it.IS_DELETE,it.JCCS,it.IS_REVIEW }).ExecuteCommand();
                 DB.Db().Updateable(list).IgnoreColumns(it => new { it.DETAIL_CODE,it.JCR,it.RESULT_ID }).ExecuteCommand();
                 DB.Db().Insertable(list1).ExecuteCommand();
                 DB.Db().CommitTran();
