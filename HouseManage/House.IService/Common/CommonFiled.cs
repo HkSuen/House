@@ -343,6 +343,10 @@ namespace House.IService.Common
         public static string MsgPayUrl => AppSetting.AppSetting.GetSection("msgUrl:pay");
         public static string MsgUrl => AppSetting.AppSetting.GetSection("msgUrl:url");
         public static string MsgTempId => AppSetting.AppSetting.GetSection("msgtemp:temp");
+        /// <summary>
+        /// 短信的地址
+        /// </summary>
+        public static string MsgSMSUrl => AppSetting.AppSetting.GetSection("msgUrl:sms");
 
     }
 }

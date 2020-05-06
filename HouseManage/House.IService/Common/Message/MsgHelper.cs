@@ -28,6 +28,51 @@ namespace House.IService.Common.Message
         }
 
         /// <summary>
+        /// 发送短信接口
+        /// </summary>
+        /// <param name="to">数据号码，多号码分隔："18877779999,17766663333"</param>
+        /// <param name="datas">对应模板的数组</param>
+        /// <param name="templateId">模板ID</param>
+        /// /// <param name="url">短信接口</param>
+        /// <param name="appId">可为空，非默认应用下的模板此项必填</param>
+        /// <returns></returns>
+        public async Task<string> SendSMS(string to, string[] datas,
+            string templateId = null, string url = null, string appId = null)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                url = CommonFiled.MsgSMSUrl;
+            }
+            string jsonData = JsonConvert.SerializeObject(new
+            {
+                to,
+                datas,
+                templateId,
+                appId
+            });
+            return await SendMsg(url, jsonData);
+        }
+
+        /// <summary>
+        /// 发送短信接口
+        /// </summary>
+        /// <param name="url">短信接口</param>
+        /// <param name="to">数据号码，多号码分隔："18877779999,17766663333"</param>
+        /// <param name="datas">对应模板的数组</param>
+        /// <param name="templateId">模板ID</param>
+        /// <param name="appId">可为空，非默认应用下的模板此项必填</param>
+        /// <returns></returns>
+        public async Task<string> SendSMS(string url,string to, string[] datas, 
+            string templateId = null, string appId = null)
+        {
+            string jsonData = JsonConvert.SerializeObject(new
+            {
+                to,datas,templateId,appId
+            });
+            return await SendMsg(url, jsonData);
+        }
+
+        /// <summary>
         /// 消息推送接口
         /// </summary>
         /// <param name="url">推送接口的url</param>
