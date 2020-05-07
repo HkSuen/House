@@ -347,6 +347,10 @@ namespace House.IService.Common
         /// 短信的地址
         /// </summary>
         public static string MsgSMSUrl => AppSetting.AppSetting.GetSection("msgUrl:sms");
+        /// <summary>
+        /// 短信模板ID：//短信模板ID：【港西新城】{1}您收到一个{2},详情请登陆微信公众号查看
+        /// </summary>
+        public static string MsgSMSTemp => AppSetting.AppSetting.GetSection("msgsmstemp:smstemp");
 
     }
 }
