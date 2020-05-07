@@ -47,7 +47,14 @@ namespace House.Service.Users
             dynamic UserInfo = Get(phone);
             if (null != UserInfo)
             {
-                UserInfo.WX_OPEN_ID = openId;
+                if(typeof(T).FullName.Contains("wy_shopinfo"))
+                {
+                    UserInfo.OPEN_ID = openId;
+                }
+                else
+                {
+                    UserInfo.WX_OPEN_ID = openId;
+                }
                 if (Update(UserInfo))
                 {
                     state = 1; //更新成功
@@ -66,8 +73,8 @@ namespace House.Service.Users
             {
                 return null;
             }
-            return this._db.CurrentDb<wy_shopinfo>()
-                .GetSingle(c => c.MOBILE_PHONE.Equals(phone));
+            return this._db.Db().Queryable<wy_shopinfo>()
+                .First(c => c.MOBILE_PHONE.Equals(phone));
         }
 
         public wy_region_director GetDirSingleByPhone(string phone)
@@ -76,8 +83,8 @@ namespace House.Service.Users
             {
                 return null;
             }
-            return this._db.CurrentDb<wy_region_director>()
-                .GetSingle(c => c.MOBILE.Equals(phone));
+            return this._db.Db().Queryable<wy_region_director>()
+                .First(c => c.MOBILE.Equals(phone));
         }
 
         public ts_uidp_userinfo GetUserSingleByPhone(string phone)
@@ -86,8 +93,7 @@ namespace House.Service.Users
             {
                 return null;
             }
-            return this._db.CurrentDb<ts_uidp_userinfo>()
-                .GetSingle(c => c.PHONE_MOBILE.Equals(phone));
+            return this._db.Db().Queryable<ts_uidp_userinfo>().First(c => c.PHONE_MOBILE.Equals(phone));
         }
 
         public bool UpdateShopInfo(wy_shopinfo shopinfo)

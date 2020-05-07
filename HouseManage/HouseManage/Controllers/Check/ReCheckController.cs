@@ -9,8 +9,8 @@ using Newtonsoft.Json.Linq;
 
 namespace HouseManage.Controllers.Check
 {
-    [AllowAnonymous]
-    public class ReCheckController : Controller
+    [Authorize(Roles = "Admin,Inspector")]
+    public class ReCheckController : ControllerBase
     {
         private IRecheckSvc recheckSvc;
         public ReCheckController(IRecheckSvc recheckSvc)
@@ -18,32 +18,25 @@ namespace HouseManage.Controllers.Check
             this.recheckSvc = recheckSvc;
         }
         public IActionResult Index()
-        {
-            string OPEN_ID = "123123123123";       
-            return View(recheckSvc.GetTaskInfo(OPEN_ID, 1, 10));
+        {   
+            return View(recheckSvc.GetTaskInfo(OpenID, 1, 10));
         }
 
         [HttpGet]
         public PartialViewResult PartRecheckList(int page, int limit)
         {
-            //string OPEN_ID = Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return PartialView("../ReCheck/PartRecheckList", recheckSvc.GetTaskInfo(OPEN_ID,page, limit));
+            return PartialView("../ReCheck/PartRecheckList", recheckSvc.GetTaskInfo(OpenID,page, limit));
         }
 
         [HttpGet]
         public IActionResult ReCheckDetail(string TASK_ID)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return View(recheckSvc.GetTaskDetailInfo("", TASK_ID, OPEN_ID));
+            return View(recheckSvc.GetTaskDetailInfo("", TASK_ID, OpenID));
         }
         [HttpGet]
         public PartialViewResult PartReCheckDetail(string RWBH, string TASK_ID, int page, int limit)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return PartialView(recheckSvc.GetTaskDetailInfo(RWBH, TASK_ID, OPEN_ID, page, limit));
+            return PartialView(recheckSvc.GetTaskDetailInfo(RWBH, TASK_ID, OpenID, page, limit));
         }
 
         public IActionResult ReCheckResult(string RESULT_ID)

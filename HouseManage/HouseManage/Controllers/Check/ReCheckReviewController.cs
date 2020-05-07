@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.Check
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin,Inspector")]
     public class ReCheckReviewController : Controller
     {
         public IActionResult Index()

@@ -35,7 +35,7 @@ namespace House.Service.Order
 
         public wy_wx_pay GetWxPayById(string OrderId)
         {
-            return this._db.CurrentDb<wy_wx_pay>().GetSingle(c => c.ORDER_ID == OrderId);
+            return this._db.Db().Queryable<wy_wx_pay>().First(c => c.ORDER_ID == OrderId);
         }
 
         public wy_wx_pay FindSingle(string recoredId, string HouseId, string UserId, string OpenId)
@@ -72,7 +72,7 @@ namespace House.Service.Order
             {
                 conditions = conditions.And(c => c.FWID == HouseId);
             }
-            return this._db.CurrentDb<v_pay_record>().GetSingle(conditions.ToExpression());
+            return this._db.Db().Queryable<v_pay_record>().First(conditions.ToExpression());
         }
 
 
@@ -205,7 +205,7 @@ namespace House.Service.Order
         {
             if (!string.IsNullOrEmpty(Id))
             {
-                return this._db.CurrentDb<wy_wx_pay>().GetSingle(pay => pay.ID == Id);
+                return this._db.Db().Queryable<wy_wx_pay>().First(pay => pay.ID == Id);
             }
             return null;
         }

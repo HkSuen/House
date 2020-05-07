@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.Merchants
 {
-    //[Authorize(Roles = "Admin,Inspector")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin,Inspector")]
+    //[AllowAnonymous]
     public class MerchantsController : ControllerBase
     {
         private IMerchantSvc _machantSvc = null;

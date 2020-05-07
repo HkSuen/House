@@ -10,8 +10,8 @@ using Newtonsoft.Json.Linq;
 
 namespace HouseManage.Controllers.Check
 {
-    [AllowAnonymous]
-    public class DailyCheckController : Controller
+    [Authorize(Roles = "Admin,Inspector")]
+    public class DailyCheckController : ControllerBase
     {
         private IDailyCheckSvc dailyCheckSvc;
         public DailyCheckController(IDailyCheckSvc dailyCheckSvc)
@@ -20,31 +20,23 @@ namespace HouseManage.Controllers.Check
         }
         public IActionResult Index()
         {
-            //string OPEN_ID = Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return View(dailyCheckSvc.GetTaskInfo("", "", "", OPEN_ID, 1, 10));
+            return View(dailyCheckSvc.GetTaskInfo("", "", "", OpenID, 1, 10));
         }
         [HttpGet]
         public PartialViewResult PartDailyCheckList(string status, string starttime, string endtime, int page, int limit)
         {
-            //string OPEN_ID = Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return PartialView("../DailyCheck/PartDailyCheckList", dailyCheckSvc.GetTaskInfo(status, starttime, OPEN_ID, endtime, page, limit));
+            return PartialView("../DailyCheck/PartDailyCheckList", dailyCheckSvc.GetTaskInfo(status, starttime, OpenID, endtime, page, limit));
             //return Ok(dailyCheckSvc.GetTaskInfo(status, starttime, endtime));
         }
         [HttpGet]
         public IActionResult DailyCheckDetail(string RWBH,string TASK_ID)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return View(dailyCheckSvc.GetTaskDetailInfo(RWBH,TASK_ID,OPEN_ID));
+            return View(dailyCheckSvc.GetTaskDetailInfo(RWBH,TASK_ID,OpenID));
         }
         [HttpGet]
         public PartialViewResult PartDailyCheckDetail(string RWBH,string TASK_ID,int page, int limit)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return PartialView(dailyCheckSvc.GetTaskDetailInfo(RWBH, TASK_ID,OPEN_ID, page, limit));
+            return PartialView(dailyCheckSvc.GetTaskDetailInfo(RWBH, TASK_ID,OpenID, page, limit));
         }
 
         public IActionResult CreateCheckResult(string RWBH,string TASK_ID)
@@ -57,23 +49,17 @@ namespace HouseManage.Controllers.Check
         [HttpGet]
         public IActionResult PartCreateCheckResult(string FWID,string TASK_ID)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return PartialView(dailyCheckSvc.GetCreateTaskResultFormInfo(FWID,TASK_ID,OPEN_ID));
+            return PartialView(dailyCheckSvc.GetCreateTaskResultFormInfo(FWID,TASK_ID,OpenID));
         }
         [HttpGet]
         public IActionResult GetShopInfo(string RWBH,string TASK_ID)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return Ok(dailyCheckSvc.GetShopInfo(RWBH,TASK_ID, OPEN_ID));
+            return Ok(dailyCheckSvc.GetShopInfo(RWBH,TASK_ID, OpenID));
         }
         [HttpPost]
         public IActionResult PostCheckResult([FromBody]JObject value)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return Ok(dailyCheckSvc.PostCheckResult(value.ToObject<Dictionary<string, object>>(), OPEN_ID));
+            return Ok(dailyCheckSvc.PostCheckResult(value.ToObject<Dictionary<string, object>>(), OpenID));
         }
 
         public IActionResult EditCheckResult(string RESULT_ID)
@@ -89,9 +75,7 @@ namespace HouseManage.Controllers.Check
         [HttpPost]
         public IActionResult PostUpdateCheckResult([FromBody]JObject value)
         {
-            //string OPEN_ID=Request.HttpContext.User.Identity.Name;
-            string OPEN_ID = "123123123123";
-            return Ok(dailyCheckSvc.PostUpdateCheckResult(value.ToObject<Dictionary<string, object>>(), OPEN_ID));
+            return Ok(dailyCheckSvc.PostUpdateCheckResult(value.ToObject<Dictionary<string, object>>(), OpenID));
         }
     }
 }
