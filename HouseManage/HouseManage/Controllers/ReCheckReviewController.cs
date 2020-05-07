@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers
 {
-    [AllowAnonymous]
+    [Authorize(Roles = "Merchant")]
     public class ReCheckReviewController : ControllerBase
     {
         private IReCheckReviewSvc _recheck = null;
