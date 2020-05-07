@@ -66,12 +66,15 @@ namespace House.Service.DailyCheck
                 if (res > 0)
                 {
                     Dictionary<string, object> dic = new Dictionary<string, object>();
-                   // dic.Add("first","您收到一个商户房屋整改反馈通知：");
-                    dic.Add("keyword1", rwbh);//检查任务标号
-                    dic.Add("keyword2",rwmc);//检查任务名称
-                    dic.Add("keyword3", fwbh);//检查房屋编号
-                    dic.Add("keyword4", fwmc);//检查房屋名称
-                   // dic.Add("remark", "请前去复查！");
+                    dic.Add("first","您收到一个商户房屋整改反馈通知：");
+                    dic.Add("keyword1", "整改通知");//信息类型
+                    dic.Add("keyword2", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));//提交日期
+                    //dic.Add("keyword1", rwbh);//检查任务标号
+                    //dic.Add("keyword2",rwmc);//检查任务名称
+                    //dic.Add("keyword3", fwbh);//检查房屋编号
+                    //dic.Add("keyword4", fwmc);//检查房屋名称
+                    string str = $"任务编号：{rwbh}，任务名称：{rwmc}，房屋编号：{fwbh}，房屋名称：{fwmc}，已经整改完成，请前去复查！";
+                    dic.Add("remark", str);
                     string msgTempId = AppSetting.GetSection("msgtemp:temp");
                     string url = AppSetting.GetSection("msgUrl:url");
                     MsgHelper.Msg.SendMsg(url, jcr_openid, dic,msgTempId);
