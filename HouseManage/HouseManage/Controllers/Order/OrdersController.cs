@@ -481,11 +481,11 @@ namespace HouseManage.Controllers.Order
                 openId = OpenID,
                 data = new
                 {
-                    content = " 您已经成功缴费。",
-                    type = order.REMARK,
-                    orderid = order.ORDER_ID,
-                    time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-                    totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00)+"元"
+                    first = $"尊敬的业主({order.SHOP_NAME}--{order.HOUSE_ADDRESS})您好，您已缴费成功。信息如下：",
+                    keyword1 = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                    keyword2 = order.REMARK,
+                    keyword3 = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元",
+                    remark = "如有疑问，请咨询物业管理处。"
                 }
             };
             await PayMsg.SendMsg(JsonConvert.SerializeObject(data));
@@ -510,24 +510,24 @@ namespace HouseManage.Controllers.Order
         }
 
 
-        //[AllowAnonymous]
-        //[HttpGet]
-        //public async Task<string> Msg()
-        //{
-        //    var order = this._order.GetWxPayById("Y645202004261734191483");
-        //    string data = JsonConvert.SerializeObject(new
-        //    {
-        //        openId = "ocRWVwrIhqMHJhnkT1otzdy6DgPc",
-        //        data = new
-        //        {
-        //            content = " 您已经成功缴费。",
-        //            type = order.REMARK,
-        //            orderid = order.ORDER_ID,
-        //            time = order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-        //            totalfee = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元"
-        //        }
-        //    });
-        //    return await PayMsg.SendMsg(data);
-        //}
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<string> Msg()
+        {
+            var order = this._order.GetWxPayById("O119202005071033598312");
+            string data = JsonConvert.SerializeObject(new
+            {
+                openId = "oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0",
+                data = new
+                {
+                    first = $"尊敬的业主({order.SHOP_NAME}--{order.HOUSE_ADDRESS})您好，您已缴费成功。信息如下：",
+                    keyword1 = order.PAY_TIME.HasValue ? order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss") : "",
+                    keyword2 = order.REMARK,
+                    keyword3 = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元",
+                    remark = "如有疑问，请咨询物业管理处。"
+                }
+            });
+            return await PayMsg.SendMsg(data);
+        }
     }
 }
