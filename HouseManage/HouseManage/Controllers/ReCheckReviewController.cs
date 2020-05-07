@@ -31,7 +31,7 @@ namespace HouseManage.Controllers
         [HttpGet]
         public IActionResult GetRecheckReviewData()
         {
-            string OpenIDs = "123123123123";
+            string OpenIDs = OpenID;
             return Json(_recheck.GetRecheckReviewData(OpenIDs));
         }
         /// <summary>
