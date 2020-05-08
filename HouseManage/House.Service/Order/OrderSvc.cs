@@ -194,7 +194,7 @@ namespace House.Service.Order
             pay.HOUSE_AREA = oder.Houseinfo.JZMJ;
             pay.USER_NAME = oder.Shopinfo.ZHXM;
             pay.SHOP_NAME = oder.Shopinfo.SHOP_NAME;
-            pay.TOTAL_FEE_CH = CommonFiled.CmycurD((pay.TOTAL_FEE / 100));
+            pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal((pay.TOTAL_FEE / 100.00)));
             pay.MECH_NAME = CommonFiled.MchName(pay.FEE_TYPES);
             pay.TYPES_ID = pay.FEE_TYPES == 0 ? "" : (pay.FEE_TYPES == 1 ? oder.Houseinfo.WATER_NUMBER : oder.Houseinfo.ELE_NUMBER);
             pay.TYPES_ID_ELE_COLL = oder.Houseinfo.CID;
