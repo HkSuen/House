@@ -37,7 +37,7 @@ namespace House.Service.Shop
         public v_pay_record GetPayReminder(string openId)
         {
             var conditions = Expressionable.Create<v_pay_record>();
-            conditions = conditions.And(c => c.OPEN_ID == openId);
+            conditions = conditions.And(c => c.OPEN_ID == openId && c.JFZT != 1);
             return _db.Db().Queryable<v_pay_record>().Where(conditions.ToExpression())
                 .OrderBy(c => c.CREATE_TIME).First();
         }

@@ -109,7 +109,7 @@ namespace HouseManage.Controllers.Order
                         pay.UNIT_PRICE = Convert.ToInt32(this._order.GetUnitPrice(CommonFiled.UnitPriceWaterKey) * 100);
                         pay.AMOUNT = WNum;
                         pay.TOTAL_FEE = Convert.ToInt32(pay.UNIT_PRICE * pay.AMOUNT);
-                        pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal(pay.UNIT_PRICE * pay.AMOUNT));
+                        pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal(pay.UNIT_PRICE * pay.AMOUNT) / 100);
                     }
                 }
                 if (pay.TOTAL_FEE <= 0) //如果订单生成为0元，直接视为无效订单，禁止生成。
