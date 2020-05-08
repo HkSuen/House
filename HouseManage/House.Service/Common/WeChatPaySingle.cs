@@ -49,6 +49,13 @@ namespace House.Service.Common
                 var MchSec = CommonFiled.MchSecret(payModel.FEE_TYPES);
                 return GetParamStrByPrePayId(payModel.APP_ID, ReprepayId, MchSec,payModel.ORDER_ID,payModel.ID);
             }
+            if(CheckPay(ResponseInfo) > 0)
+            {
+                var dic = new Dictionary<string, object>();
+                dic.Add("OrderErr",payModel.ORDER_ID);
+                dic.Add("OrderErrId", payModel.ID);
+                return dic;
+            }
             return null;
         }
 
@@ -115,24 +122,44 @@ namespace House.Service.Common
             return null;
         }
 
-        private string SUCCESS = "SUCCESS", FAIL = "FAIL";
+        private string SUCCESS = "SUCCESS", FAIL = "FAIL", ORDERPAID= "ORDERPAID";
 
         private Dictionary<string,object> PayReModel(string xmlStr,out bool State) {
             //1.解析xml为class
             Dictionary<string,object> wxPay = this._Xml.XmlStrToDic(xmlStr);
             State = false;
             //2.校验Sign
-            if (wxPay["return_code"].ToString() == SUCCESS && wxPay["result_code"].ToString() == SUCCESS)
+            if (wxPay["return_code"].ToString() == SUCCESS)
             {
-                string Sign = wxPay["sign"].ToString();
-                wxPay.Remove("sign");
-                var Secret = CommonFiled.MchSecret(wxPay["mch_id"].ToString());
-                if (Sign == this._Sign.WePaySign(wxPay, Secret)) {
-                    State = true;
-                    return wxPay;
-                };
+                if(wxPay["result_code"].ToString() == SUCCESS)
+                {
+                    string Sign = wxPay["sign"].ToString();
+                    wxPay.Remove("sign");
+                    var Secret = CommonFiled.MchSecret(wxPay["mch_id"].ToString());
+                    if (Sign == this._Sign.WePaySign(wxPay, Secret))
+                    {
+                        State = true;
+                        return wxPay;
+                    };
+                }
             }
             return wxPay; 
+        }
+
+
+        private int CheckPay(string xmlStr)
+        {
+            //1.解析xml为class
+            Dictionary<string, object> wxPay = this._Xml.XmlStrToDic(xmlStr);
+            //2.校验Sign
+            if (wxPay["return_code"].ToString() == SUCCESS)
+            {
+                if (wxPay.ContainsKey("err_code") && wxPay["err_code"].ToString() == ORDERPAID)
+                {
+                    return 1;
+                }
+            }
+            return 0;
         }
 
         public bool CheckWxSign(Dictionary<string, object> Dic)

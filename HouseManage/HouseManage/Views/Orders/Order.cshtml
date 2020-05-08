@@ -88,10 +88,15 @@
         }
         <div class="mui-input-row" style="padding-bottom:20px;padding-top:10px">
             <label>缴费金额</label>
-            <input type="text" value="￥@d.JFJE.ToString("0.00")" style="color:orange;font-size:25px" readonly id="total_money">
+            <input type="text" value="￥@d.JFJE?.ToString("0.00")" style="color:orange;font-size:25px" readonly id="total_money">
         </div>
     </div>
-    <marquee><span style="font-weight: bolder;font-size: 18px;color: red;display:none" id="infonotice">由于数据存在1-12小时的延迟，您当前缴费记录暂未更新到设备,请您耐心等候,非常感谢！！</span></marquee>
+    @{
+        if (d.JFZT == 1)
+        {
+            <marquee><span style="font-weight: bolder;font-size: 18px;color: red;display:none" id="infonotice">由于数据存在1-12小时的延迟，您当前缴费记录暂未更新到设备,请您耐心等候,非常感谢！！</span></marquee>
+        }
+    }
     <p style="margin: 40px 10px;"></p>
     <div class="mui-col-sm-12 mui-col-xs-12" style="text-align:center;">
         @{
@@ -136,6 +141,7 @@
             }
         }
         var payed = false;
+        var self = this;
         var onBridgeReady = function () {
             WeixinJSBridge.invoke(
                 'getBrandWCPayRequest', Sign,
@@ -145,7 +151,7 @@
                         console.log(res);
                         setTimeout(function () { // 延迟1秒，留给服务器时间。
                             checkOrder();
-                        }, 1000);
+                        }, 1100);
                     } else {
                         mui.alert("支付失败！", "提示");
                         mui.hideLoading();
@@ -153,7 +159,9 @@
                 });
         }
         var checkOrder = function () {
-            this.post("CheckOrderStatus", { orderId: self.orderId }, function (res) {
+            mui.showLoading("订单状态检查中");
+            $.post("CheckOrderStatus", { orderId: self.orderId }, function (res) {
+                mui.showLoading("订单状态检查完毕");
                 if (res == null || res.code != 1000) {
                     mui.hideLoading();
                     mui.alert("订单状态检查失败，订单号：" + self.orderId, "提示");
@@ -162,7 +170,9 @@
                 var data = res.data || null;
                 if (data) {
                     mui.showLoading("支付成功！");
-                    window.location.href = "Order/" + self.oId;
+                    setTimeout(function () { // 延迟1秒，留给服务器时间。
+                        window.location.reload()
+                    }, 1000);
                 } else {
                     mui.hideLoading();
                     mui.alert("当前订单未支付！", "提示");
@@ -206,8 +216,17 @@
                 }
             })
         }
-        var self = this;
         jq("button.pay").on("tap", function () {
+            var type = "@d.JFLX";
+            //if (type != 0) { // not service fee
+            //    if (type == 1) {
+
+            //        return;
+            //    }
+            //    if (type == 2) {
+            //        return;
+            //    }
+            //}
             mui.showLoading();
             $.post("CreateOrder", { houseId: "@d.FWID", recordId: "@d.RECORD_ID", UId: "@d.CZ_SHID", WNum: numbox("#wnumber"), EPrice: numbox("#emoney") }, function (res) {
                 if (res == null || res.code != 1000) {
@@ -218,17 +237,29 @@
                var data = res.data || null;
                 if (data != null) {
                     Sign = data.sign;
-                    self.orderId = data.sign.out_trade_no;
-                    self.oId = data.sign.Id;
                     if (Sign == null) {
                         mui.hideLoading();
                         mui.alert("预支付失败！", "提示");
+                        return;
                     }
-                    mui.showLoading("订单支付中");
-                    payInit();
+                    if (Sign.OrderErr != undefined && Sign.OrderErr != null) {
+                        mui.showLoading("重新检查订单支付状态");
+                        self.orderId = Sign.OrderErr;
+                        self.oId = Sign.OrderErrId;
+                        setTimeout(function () { // 延迟1秒，留给服务器时间。
+                            checkOrder();
+                        }, 1500);
+                        return;
+                    }
+                    self.orderId = data.sign.out_trade_no || null;
+                    self.oId = data.sign.Id || null;
+                    if (self.orderId != null && self.orderId != undefined && self.oId != null && self.oId != unitprice) {
+                        mui.showLoading("订单支付中");
+                        payInit();
+                    }
                 } else {
                     mui.hideLoading();
-                   mui.alert("数据错误！", "提示");
+                     mui.alert("数据错误！", "提示");
                    return;
                }
             });
@@ -269,6 +300,10 @@
         }
         var checkOrderStatus = function () {
             var orderId = "@Model.ID";
+            var type = "@Model.JFLX";
+            if (type == 0) {
+                return;
+            }
             if (orderId != null && orderId != "" && orderId != undefined) {
                 postUrl("CheckRechargeStatus", { orderId, type:@Model.JFLX}, function (res) {
                     if (res == "fail") {

@@ -212,12 +212,13 @@
                     var data = res.data || null;
                     if (data != null) {
                         self.Sign = data.sign;
-                        self.orderId = data.sign.out_trade_no;
-                        self.oId = data.sign.Id;
                         if (self.Sign == null) {
                             mui.hideLoading();
                             mui.alert("预支付失败！", "提示");
+                            return;
                         }
+                        self.orderId = data.sign.out_trade_no;
+                        self.oId = data.sign.Id;
                         mui.showLoading("订单支付中");
                         self.payInit();
                     } else {

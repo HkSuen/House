@@ -26,6 +26,7 @@ namespace HouseManage.Controllers.Order
         private IXMLHelperSingle _xml = null;
         private IWeChatPaySingle _pay = null;
         private IMyShopSvc _shop;
+        private string SelfPayOrder = "0";
         ILogger<OrdersController> _log;
         public OrdersController(IOrderSvc order, IXMLHelperSingle xml, IWeChatPaySingle pay,
             ILogger<OrdersController> log, IMyShopSvc shop)
@@ -91,7 +92,7 @@ namespace HouseManage.Controllers.Order
                         OPEN_ID = OpenID,
                         JFLX = Type,
                         JFJE = EPrice, //默认物业费
-                        RECORD_ID = "0" //默认0为自助订单，非缴费提醒
+                        RECORD_ID = SelfPayOrder //默认0为自助订单，非缴费提醒
                     };
                 }
                 pay = this._order.GetWxPay(PayRecord);
@@ -107,7 +108,7 @@ namespace HouseManage.Controllers.Order
                         // 为水的时候需要记录单价
                         pay.UNIT_PRICE = Convert.ToInt32(this._order.GetUnitPrice(CommonFiled.UnitPriceWaterKey) * 100);
                         pay.AMOUNT = WNum;
-                        pay.TOTAL_FEE = Convert.ToInt32(pay.UNIT_PRICE * 100 * pay.AMOUNT);
+                        pay.TOTAL_FEE = Convert.ToInt32(pay.UNIT_PRICE * pay.AMOUNT);
                         pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal(pay.UNIT_PRICE * pay.AMOUNT));
                     }
                 }
@@ -200,10 +201,10 @@ namespace HouseManage.Controllers.Order
                 pay.STATUS_REMARK = content;
                 if (this._order.Update(pay) > 0)
                 {
-                    SendMsg(pay);
                     //返回信息
                     Task.Run(() => //异步操作，防止返回超时，被调用两次
                     {
+                        SendMsg(pay);
                         WXPaidAfter(pay);
                     });
                     return true;
@@ -262,7 +263,7 @@ namespace HouseManage.Controllers.Order
                 _log.LogInformation($"支付成功，更新类型：{CommonFiled.FeeTypeName(Order.FEE_TYPES)}");
                 //更新缴费记录表，如果为自主缴费记录，支付成功后，重新生成新数据
                 //如果类型为物业费 // recoreId 不为空，证明为提醒订单，需要修改record表中的数据
-                if (Order != null && (string.IsNullOrEmpty(Order.RECORD_ID)))
+                if (Order != null && (!string.IsNullOrEmpty(Order.RECORD_ID)) && Order.RECORD_ID != SelfPayOrder)
                 {
                     return PropertyCost(Order);
                 }
@@ -501,7 +502,7 @@ namespace HouseManage.Controllers.Order
                 }
             }else if (type == 2) {  //电
                 var result = this._order.GetElectricity(orderGuid);
-                if (result !=null && string.IsNullOrEmpty(result.Pstatus) && result.Pstatus == "1")
+                if (result !=null && string.IsNullOrEmpty(result.Pstatus) && result.Pstatus == "SUCCESS")
                 {
                     return Data(ResultCode.SCCUESS, "success");
                 }
@@ -510,24 +511,25 @@ namespace HouseManage.Controllers.Order
         }
 
 
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<string> Msg()
-        {
-            var order = this._order.GetWxPayById("O119202005071033598312");
-            string data = JsonConvert.SerializeObject(new
-            {
-                openId = "oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0",
-                data = new
-                {
-                    first = $"尊敬的业主({order.SHOP_NAME}--{order.HOUSE_ADDRESS})您好，您已缴费成功。信息如下：",
-                    keyword1 = order.PAY_TIME.HasValue ? order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss") : "",
-                    keyword2 = order.REMARK,
-                    keyword3 = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元",
-                    remark = "如有疑问，请咨询物业管理处。"
-                }
-            });
-            return await PayMsg.SendMsg(data);
-        }
+        //[AllowAnonymous]
+        //[HttpGet]
+        //public async Task<string> Msg()
+        //{
+        //    var order = this._order.GetWxPayById("O119202005071033598312");
+        //    string data = JsonConvert.SerializeObject(new
+        //    {
+        //        openId = "oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0",
+        //        data = new
+        //        {
+        //            first = $"尊敬的业主({order.SHOP_NAME}--{order.HOUSE_ADDRESS})您好，您已缴费成功。信息如下：",
+        //            keyword1 = order.PAY_TIME.HasValue ? order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss") : "",
+        //            keyword2 = order.REMARK,
+        //            keyword3 = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元",
+        //            remark = "如有疑问，请咨询物业管理处。"
+        //        }
+        //    });
+        //    data = "{\"openId\":\"oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0\",\"data\":{\"first\":\"尊敬的用户：您收到一个用水余量不足通知：\",\"keyword1\":\"那奇男\",\"keyword2\":\"清真小厨\",\"keyword3\":\"0吨\",\"remark\":\"避免影响用水，请尽快缴费！\"},\"templateId\":\"P_QmAggBg0gDCt1VUrO9e_jXdfWhKFf98pSPnj5kMww\",\"color\":\"#173177\",\"appurl\":null,\"appId\":null,\"pagepath\":null}";
+        //    return await PayMsg.SendMsg(CommonFiled.MsgUrl, data);
+        //}
     }
 }

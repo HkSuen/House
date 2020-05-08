@@ -32,7 +32,7 @@ namespace HouseManage.Common.Middleware
             }
             catch (Exception ex)
             {
-                _loger.LogError(ex,"Server<br /> Error!!");
+                _loger.LogError(ex,"Server Error");
                 string html = $"<script>window.location.href='/WeChat/home/error?msg={ex.Message}'</script>";
                 await context.Response.WriteAsync(html);
             }
