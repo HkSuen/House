@@ -234,7 +234,13 @@ namespace House.Service.Order
         public int UpdateRecoredJFZT(wy_pay_record record)
         {
             return DBAble<int>((db)=> { 
-                return db.Updateable(record).UpdateColumns(s => new { s.RECORD_ID, s.JFZT,s.JFRQ })
+                if(record.JFLX == "0") //物业费不更新金额
+                {
+                    return db.Updateable(record).UpdateColumns(s => new { s.RECORD_ID, s.JFZT, s.JFRQ, s.PAY_WAY})
+                   .WhereColumns(it => new { it.RECORD_ID })
+                   .ExecuteCommand();
+                }
+                return db.Updateable(record).UpdateColumns(s => new { s.RECORD_ID, s.JFZT,s.JFRQ,s.PAY_WAY,s.JFJE })
                     .WhereColumns(it => new { it.RECORD_ID })
                     .ExecuteCommand();
             });

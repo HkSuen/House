@@ -289,11 +289,14 @@ namespace HouseManage.Controllers.Order
         private bool PropertyCost(wy_wx_pay Order)
         {
             _log.LogInformation($"【wy_pay_record】准备更新:{Order.RECORD_ID}");
+            FeeTypes type = CommonFiled.EnumFeeTypes(Order.FEE_TYPES);
             var Res = this._order.UpdateRecoredJFZT(new wy_pay_record()
             {
                 RECORD_ID = Order.RECORD_ID,
                 JFZT = 1,
-                JFRQ = DateTime.Now
+                JFRQ = DateTime.Now,
+                PAY_WAY = 1,
+                JFJE = (Order.TOTAL_FEE / 100.00)
             });
             if (Res > 0)
             {
@@ -516,14 +519,15 @@ namespace HouseManage.Controllers.Order
         /// <returns></returns>
         public ActionResult Receipt(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                Exception("没有查询到单据信息");
-            }
-            wy_wx_pay Model = this._order.GetWxOrderDetail(id);
-            ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
-            ViewBag.MoneyNum = Convert.ToDouble((Model.TOTAL_FEE / 100.00));
-            return View(Model);
+            //if (string.IsNullOrEmpty(id))
+            //{
+            //    Exception("没有查询到单据信息");
+            //}
+            //wy_wx_pay Model = this._order.GetWxOrderDetail(id);
+            //ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
+            //ViewBag.MoneyNum = Convert.ToDouble((Model.TOTAL_FEE / 100.00));
+            //return View(Model);
+            return View();
         }
 
 
