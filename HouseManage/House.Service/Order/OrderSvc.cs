@@ -77,41 +77,45 @@ namespace House.Service.Order
 
 
         public OrderDto GetWxPay(string HouseId) {
-            var conditions = Expressionable.Create<wy_houseinfo, wy_shopinfo>();
+            var conditions = Expressionable.Create<wy_houseinfo, wy_shopinfo,wy_ropertycosts>();
             if (!string.IsNullOrEmpty(HouseId))
             {
-                conditions = conditions.And((ho, sh) => ho.FWID == HouseId);
+                conditions = conditions.And((ho, sh,co) => ho.FWID == HouseId);
             }
-            OrderDto Data = this._db.Db().Queryable<wy_houseinfo, wy_shopinfo>((ho, sh) => new object[] {
-                JoinType.Left,ho.FWID == sh.FWID
+            OrderDto Data = this._db.Db().Queryable<wy_houseinfo, wy_shopinfo,wy_ropertycosts>((ho, sh,co) => new object[] {
+                JoinType.Left,ho.FWID == sh.FWID,
+                JoinType.Left,sh.FEE_ID == co.FEE_ID
             }).Where(conditions.ToExpression())
-            .Select((ho, sh) => new OrderDto
+            .Select((ho, sh,co) => new OrderDto
             {
                 Houseinfo = ho,
-                Shopinfo = sh
+                Shopinfo = sh,
+                Costs = co
             }).First();
             return Data;
         }
         public OrderDto GetWxPay(string recordId, string HouseId)
         {
-            var conditions = Expressionable.Create<v_pay_record, wy_houseinfo, wy_shopinfo>();
+            var conditions = Expressionable.Create<v_pay_record, wy_houseinfo, wy_shopinfo, wy_ropertycosts>();
             if (!string.IsNullOrEmpty(recordId))
             {
-                conditions = conditions.And((re, ho, sh) => re.RECORD_ID == recordId);
+                conditions = conditions.And((re, ho, sh,co) => re.RECORD_ID == recordId);
             }
             if (string.IsNullOrEmpty(HouseId))
             {
-                conditions = conditions.And((re, ho, sh) => re.FWID == HouseId);
+                conditions = conditions.And((re, ho, sh,co) => re.FWID == HouseId);
             }
-            OrderDto Data = this._db.Db().Queryable<v_pay_record, wy_houseinfo, wy_shopinfo>((re, ho, sh) => new object[] {
+            OrderDto Data = this._db.Db().Queryable<v_pay_record, wy_houseinfo, wy_shopinfo, wy_ropertycosts>((re, ho, sh, co) => new object[] {
                 JoinType.Left,re.FWID == ho.FWID,
-                JoinType.Left,re.CZ_SHID == sh.CZ_SHID
+                JoinType.Left,re.CZ_SHID == sh.CZ_SHID,
+                JoinType.Left,sh.FEE_ID == co.FEE_ID
             }).Where(conditions.ToExpression())
-            .Select((re, ho, sh) => new OrderDto
+            .Select((re, ho, sh, co) => new OrderDto
             {
                 Record = re,
                 Houseinfo = ho,
-                Shopinfo = sh
+                Shopinfo = sh,
+                Costs = co
             }).First();
             return Data;
         }
@@ -192,6 +196,10 @@ namespace House.Service.Order
             pay.HOUSE_NAME = oder.Houseinfo.FWMC;
             pay.HOUSE_ADDRESS = oder.Houseinfo.ZLWZ;
             pay.HOUSE_AREA = oder.Houseinfo.JZMJ;
+            pay.HOUSE_SERVICEEFFCTIVE = pay.FEE_TYPES != 0 ? "" : 
+                $"{toDate(oder.Record.YXQS,"yyyy/MM/dd")}-{toDate(oder.Record.YXQZ,"yyyy/MM/dd")}";
+            //物业费单价
+            pay.HOUSE_SERVICE_UNITPRICE = Convert.ToDecimal(oder.Costs.WYDJ);
             pay.USER_NAME = oder.Shopinfo.ZHXM;
             pay.SHOP_NAME = oder.Shopinfo.SHOP_NAME;
             pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal((pay.TOTAL_FEE / 100.00)));
@@ -199,6 +207,11 @@ namespace House.Service.Order
             pay.TYPES_ID = pay.FEE_TYPES == 0 ? "" : (pay.FEE_TYPES == 1 ? oder.Houseinfo.WATER_NUMBER : oder.Houseinfo.ELE_NUMBER);
             pay.TYPES_ID_ELE_COLL = oder.Houseinfo.CID;
             return pay;
+        }
+
+        private string toDate(DateTime? time, string type)
+        {
+            return time.HasValue ? time.Value.ToString(type) : "";
         }
 
         public wy_wx_pay GetWxOrderDetail(string Id)

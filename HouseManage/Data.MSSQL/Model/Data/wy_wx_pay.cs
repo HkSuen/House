@@ -28,7 +28,7 @@ namespace Data.MSSQL.Model.Data
            public string ORDER_ID {get;set;}
 
            /// <summary>
-           /// Desc:缴费记录的主键
+           /// Desc:缴费记录的主键,自助缴费默认为0
            /// Default:
            /// Nullable:True
            /// </summary>           
@@ -61,6 +61,20 @@ namespace Data.MSSQL.Model.Data
            /// Nullable:True
            /// </summary>           
            public double? HOUSE_AREA {get;set;}
+
+           /// <summary>
+           /// Desc:物业有效的起止时间
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string HOUSE_SERVICEEFFCTIVE {get;set;}
+
+           /// <summary>
+           /// Desc:物业费单价
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public decimal? HOUSE_SERVICE_UNITPRICE {get;set;}
 
            /// <summary>
            /// Desc:商户ID

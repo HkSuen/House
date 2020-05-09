@@ -10,5 +10,6 @@ namespace House.IService.Model.Dto
         public v_pay_record Record { get; set; }
         public wy_houseinfo Houseinfo { get; set; }
         public wy_shopinfo Shopinfo { get; set; }
+        public wy_ropertycosts Costs { get; set; }
     }
 }

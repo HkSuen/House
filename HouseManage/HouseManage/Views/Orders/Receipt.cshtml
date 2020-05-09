@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewData["Title"] = "单据详情";
+    Layout = null;
+    string ReceiptTitlle = Model.FEE_TYPES == 2 ? "普丰房地产":"普丰物业";
+    string TypeTitle = Model.FEE_TYPES == 0 ? "底商面积" : (Model.FEE_TYPES == 1 ? "数量（方）" : "数量（度）");
+    string TypeTitleNum = Model.FEE_TYPES == 0 ? Model.HOUSE_AREA.ToString() : (Model.FEE_TYPES == 1 ? Model.AMOUNT.ToString() : "");
+    string unitPrice = Model.FEE_TYPES == 0 ? Model.HOUSE_SERVICE_UNITPRICE?.ToString() : (Model.FEE_TYPES == 1 ? Model.UNIT_PRICE.ToString() : "");
+    string Remark = Model.FEE_TYPES == 0 ? Model.HOUSE_SERVICEEFFCTIVE : "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    @*<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=0" />*@
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <div class="topboder">
+        @{
+                <!--水电单-->
+                <table border="1" cellspacing="0">
+                    <tr class="receipttitle">
+                        <th colspan="7">@ReceiptTitlle<span>(收款收据)</span></th>
+                    </tr>
+                    <tr>
+                        <td class="lefttext">商户姓名：</td>
+                        <td class="lefttext">@Model.USER_NAME</td>
+                        <td class="lefttext">商户位置：</td>
+                        <td class="lefttext" colspan="3">@Model.HOUSE_ADDRESS</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">费用项目</th>
+                        <th colspan="2">@TypeTitle</th>
+                        <th>单价</th>
+                        <th>金额</th>
+                        <th>备注</th>
+                    </tr>
+                    <tr>
+                        <td class="lefttext" colspan="2">@ViewBag.Type</td>
+                        <td colspan="2">@TypeTitleNum</td>
+                        <td>@unitPrice</td>
+                        <td>@ViewBag.MoneyNum</td>
+                        <td>@Remark</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">合计大写</td>
+                        <td colspan="2" class="lefttext">@Model.TOTAL_FEE_CH</td>
+                        <td>合计小写</td>
+                        <td>@ViewBag.MoneyNum</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="lefttext" colspan="2">收款人：</td>
+                        <td class="lefttext" colspan="3">交款人：@Model.USER_NAME</td>
+                        <td class="lefttext" colspan="2">打印日期：@ViewBag.PayTime</td>
+                    </tr>
+                </table>
+        }
+    </div>
+</body>
+</html>
+
+
+<style>
+    body {
+        width: 1200rem;
+        height: 1200rem;
+    }
+
+    .receipttitle {
+        height: 5.3rem;
+        font-size: 2.1rem;
+    }
+
+        .receipttitle span {
+            font-size: 1.5rem;
+            padding-left: 6.0rem;
+        }
+
+    tr {
+        font-size: 1.5rem;
+    }
+
+        tr th {
+            height: 3.5rem;
+            text-align: center;
+        }
+
+        tr td {
+            height: 3.2rem;
+            text-align: center;
+            width: 21rem;
+        }
+
+    .topboder {
+        padding: 10px;
+        width: 80rem;
+        display: block;
+        margin: 1% 1% ;
+        overflow-y: scroll;
+        overflow-x: scroll;
+    }
+
+    .lefttext {
+        text-align: left;
+        padding-left: .8rem;
+    }
+    /*隐藏google touch事件错误*/
+    * {
+        touch-action: none;
+    }
+</style>

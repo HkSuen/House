@@ -204,10 +204,10 @@ namespace HouseManage.Controllers.Order
                 pay.STATUS_REMARK = content;
                 if (this._order.Update(pay) > 0)
                 {
+                    SendMsg(pay);
                     //返回信息
                     Task.Run(() => //异步操作，防止返回超时，被调用两次
                     {
-                        SendMsg(pay);
                         WXPaidAfter(pay);
                     });
                     return true;
@@ -522,15 +522,16 @@ namespace HouseManage.Controllers.Order
         /// <returns></returns>
         public ActionResult Receipt(string id)
         {
-            //if (string.IsNullOrEmpty(id))
-            //{
-            //    Exception("没有查询到单据信息");
-            //}
-            //wy_wx_pay Model = this._order.GetWxOrderDetail(id);
-            //ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
-            //ViewBag.MoneyNum = Convert.ToDouble((Model.TOTAL_FEE / 100.00));
-            //return View(Model);
-            return View();
+            if (string.IsNullOrEmpty(id))
+            {
+                Exception("没有查询到单据信息");
+            }
+            wy_wx_pay Model = this._order.GetWxOrderDetail(id);
+            ViewBag.Type = CommonFiled.FeeTypeName(Model.FEE_TYPES);
+            ViewBag.MoneyNum = Convert.ToDouble((Model.TOTAL_FEE / 100.00)).ToString("0.00");
+            ViewBag.PayTime = Model.PAY_TIME.HasValue ? Model.PAY_TIME.Value.ToString("yyyy/MM/dd") : "xxxx/xx/xx";
+            //ViewBag.EffectiveTime = Model.
+            return View(Model);
         }
 
 
