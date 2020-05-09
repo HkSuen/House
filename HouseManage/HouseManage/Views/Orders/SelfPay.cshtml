@@ -131,7 +131,12 @@
                         this.value = "";
                         return;
                     }
-                    jq("#total_money").val("￥" + money);
+                    if (self.model.Type == 1) {
+                        var mo = (money * (self.waterUnitPrice * 10000)) / 10000
+                        jq("#total_money").val("￥" + mo);
+                    } else {
+                        jq("#total_money").val("￥" + money);
+                    }
                     self.model.WNum = money;
                     self.model.EPrice = money;
                 });
@@ -268,7 +273,7 @@
                     var data = res.data || null;
                     if (data) {
                         mui.showLoading("支付成功！");
-                        window.location.href = "Order/" + self.oId;
+                        window.location.href = "../MyShop/payment";
                     } else {
                         mui.hideLoading();
                         mui.alert("当前订单未支付！", "提示");

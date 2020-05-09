@@ -78,7 +78,7 @@ namespace House.Service.Order
 
         public OrderDto GetWxPay(string HouseId) {
             var conditions = Expressionable.Create<wy_houseinfo, wy_shopinfo>();
-            if (string.IsNullOrEmpty(HouseId))
+            if (!string.IsNullOrEmpty(HouseId))
             {
                 conditions = conditions.And((ho, sh) => ho.FWID == HouseId);
             }

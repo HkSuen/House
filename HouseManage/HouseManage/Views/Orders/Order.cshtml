@@ -270,7 +270,7 @@
         jq("#wnumber input").on("change", function () {
             var number = jq(this).val();
             if (unitprice != null) {
-                jq("#total_money").val("￥" + (number * unitprice));
+                jq("#total_money").val("￥" + ((number * (unitprice * 10000) / 10000)));
             } else {
                 loadUnitPrice();
             }

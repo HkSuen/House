@@ -61,7 +61,10 @@ namespace HouseManage.Controllers.Order
                 return Data(ResultCode.PARAMS_IS_NULL, null, ResultCode.PARAMS_IS_NULL.GetEnumDescription());
             }
             //1.订单查询有无此数据,无数据默认创建新数据
-            wy_wx_pay pay = this._order.FindSingle(recordId, houseId, UId, OpenID); //自助缴费订单，每次都是新订单
+            wy_wx_pay pay = null;
+            if (!string.IsNullOrEmpty(recordId)) {
+                pay = this._order.FindSingle(recordId, houseId, UId, OpenID); //自助缴费订单，每次都是新订单
+            }
             //原订单失效，异步更改状态
             bool UpdateTime = pay != null && DateTime.Now > pay.PREPAY_ENDTIME;
             if (pay == null || UpdateTime)

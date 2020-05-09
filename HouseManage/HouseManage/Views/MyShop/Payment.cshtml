@@ -310,7 +310,7 @@
                 Html += `                </div>
                                                         </div>
                                             </li>`;
-                Html = Html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: getDate(data.YXQS), RECORD_ID: data.RECORD_ID, CZ_SHID: data.CZ_SHID, FWID: data.FWID });
+                Html = Html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: (data.JFLX == 0 ? getDate(data.YXQZ) : getDate(data.YXQS)), RECORD_ID: data.RECORD_ID, CZ_SHID: data.CZ_SHID, FWID: data.FWID });
                 return Html;
             }
             var getHtmlOrder = function (data) {
