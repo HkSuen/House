@@ -310,8 +310,14 @@
                 Html += `                </div>
                                                         </div>
                                             </li>`;
-                Html = Html.format({ JFJE: data.JFJE, JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: (data.JFLX == 0 ? getDate(data.YXQZ) : getDate(data.YXQS)), RECORD_ID: data.RECORD_ID, CZ_SHID: data.CZ_SHID, FWID: data.FWID });
+                Html = Html.format({ JFJE: toFixed(data.JFJE), JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: (data.JFLX == 0 ? getDate(data.YXQZ) : getDate(data.YXQS)), RECORD_ID: data.RECORD_ID, CZ_SHID: data.CZ_SHID, FWID: data.FWID });
                 return Html;
+            }
+            var toFixed = function (num) {
+                if (num != null && num != undefined) {
+                    return num.toFixed(2);
+                }
+                return num;
             }
             var getHtmlOrder = function (data) {
                 var html = `<li class="mui-table-view-cell flleft detail" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">
@@ -327,7 +333,7 @@
                                                             {STATE}
                                                         </div>
                                                     </li>`;
-                html = html.format({ FWID: data.FWID, CZ_SHID: data.CZ_SHID, RECORD_ID: data.RECORD_ID, JFJE: data.JFJE, JFLX: getType(data.JFLX), CREATE_TIME: new Date(data.CREATE_TIME).formatDate("yyyy-MM-dd hh:mm:ss"), STATE: "缴费成功" });
+                html = html.format({ FWID: data.FWID, CZ_SHID: data.CZ_SHID, RECORD_ID: data.RECORD_ID, JFJE: toFixed(data.JFJE), JFLX: getType(data.JFLX), CREATE_TIME: new Date(data.CREATE_TIME).formatDate("yyyy-MM-dd hh:mm:ss"), STATE: "缴费成功" });
                 return html;
             }
             var getPayReminder = function (setVal, callback) {

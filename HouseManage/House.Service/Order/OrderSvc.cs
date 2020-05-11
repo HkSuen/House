@@ -167,7 +167,8 @@ namespace House.Service.Order
                 record.YXQS,
                 record.YXQZ,
                 record.JFZT,
-                wxpay.ID
+                wxpay.ID,
+                record.CONFIRM_RECIVEMONEY
             }).ToList();
             return List;
         }
