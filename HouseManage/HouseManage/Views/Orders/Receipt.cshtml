@@ -75,7 +75,7 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="lefttext" colspan="2">收款人：</td>
+                        <td class="lefttext" colspan="2">收款人：@ViewBag.Payee</td>
                         <td class="lefttext" colspan="3">交款人：@Model.USER_NAME</td>
                         <td class="lefttext" colspan="2">打印日期：@ViewBag.PayTime</td>
                     </tr>
@@ -87,10 +87,6 @@
 
 
 <style>
-    body {
-        width: 1200rem;
-        height: 1200rem;
-    }
 
     .receipttitle {
         height: 5.3rem;
@@ -119,7 +115,7 @@
 
     .topboder {
         padding: 10px;
-        width: 80rem;
+        /*width: 80rem;*/
         display: block;
         margin: 1% 1% ;
         overflow-y: scroll;

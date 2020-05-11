@@ -339,6 +339,8 @@ namespace House.IService.Common
         }
 
         public static string UnitPriceWaterKey = "PER_WATER_PRICE";
+        public static string WX_SMS_STATUS = "SMS_STATUS";
+        public static string WX_MSG_STATUS = "WX_MSG_STATUS";
 
         public static string MsgPayUrl => AppSetting.AppSetting.GetSection("msgUrl:pay");
         public static string MsgUrl => AppSetting.AppSetting.GetSection("msgUrl:url");

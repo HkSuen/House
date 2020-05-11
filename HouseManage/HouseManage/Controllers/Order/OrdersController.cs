@@ -531,6 +531,7 @@ namespace HouseManage.Controllers.Order
             ViewBag.MoneyNum = Convert.ToDouble((Model.TOTAL_FEE / 100.00)).ToString("0.00");
             ViewBag.PayTime = Model.PAY_TIME.HasValue ? Model.PAY_TIME.Value.ToString("yyyy/MM/dd") : "xxxx/xx/xx";
             //ViewBag.EffectiveTime = Model.
+            ViewBag.Payee = CommonFiled.MchName(Model.FEE_TYPES);
             return View(Model);
         }
 
