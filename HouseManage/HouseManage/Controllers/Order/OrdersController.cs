@@ -44,6 +44,10 @@ namespace HouseManage.Controllers.Order
             {
                 return Error("请求参数错误！");
             }
+            if (PropertyCosts())
+            {
+                return Redirect("../MyShop/Payment?back=0");
+            }
             dynamic DetailInfo = this._order.GetPayDetails(u, f, r).FirstOrDefault();
             if (null == DetailInfo)
             {
@@ -52,6 +56,11 @@ namespace HouseManage.Controllers.Order
             DetailInfo.JFLXName = Fee.GetKey(Convert.ToInt32(DetailInfo.JFLX));
             ViewBag.Payee = CommonFiled.MchName(Convert.ToInt32(DetailInfo.JFLX));
             return View(DetailInfo);
+        }
+
+        private bool PropertyCosts()
+        {
+            return _shop.GetPayReminder(OpenID, ((int)FeeTypes.Property).ToString(),DateTime.Now) > 0;
         }
 
         public JsonResult CreateOrder(string recordId, string houseId, string UId, int WNum, double EPrice, string Type)

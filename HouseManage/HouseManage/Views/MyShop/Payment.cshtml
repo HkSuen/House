@@ -210,6 +210,7 @@
     <script src="~/wxstatic/js/mui.pullToRefresh.js"></script>
     <script src="~/wxstatic/js/mui.pullToRefresh.material.js"></script>
     <script src="~/wxstatic/js/mui.loading.js"></script>
+    <script src="~/wxstatic/js/getPatamters.js"></script>
     <script>
         jq = $;
         var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
@@ -230,6 +231,9 @@
             $('#scroll').scroll({
                 indicators: true //是否显示滚动条，
             });
+            if (getParamter("back")) {
+                mui.alert("您还有未结清的物业费");
+            }
             // picker
             picker = new mui.PopPicker();
             jq("#inputNum").on("tap", function () {
@@ -284,32 +288,32 @@
             }
             var getHtml = function (data) {
                 var Html = `<li class="mui-table-view-cell flleft">
-                                                        <div class="mui-col-sm-6 mui-col-xs-6">
-                                                            <div class="mui-col-sm-12 mui-col-xs-12">
-                                                                {DATE}应缴（元）
-                                                            </div>
-                                                         <div class="mui-col-sm-12 mui-col-xs-12">`;
-                if (data.JFLX==0) {
-                                                        Html += `{JFJE}`;
+                                                            <div class="mui-col-sm-6 mui-col-xs-6">
+                                                                <div class="mui-col-sm-12 mui-col-xs-12">
+                                                                    {DATE}应缴（元）
+                                                                </div>
+                                                             <div class="mui-col-sm-12 mui-col-xs-12">`;
+                if (data.JFLX == 0) {
+                    Html += `{JFJE}`;
                 }
-                Html += `                                </div> 
-                                                      </div>
-                                                        <div class="mui-col-sm-2 mui-col-xs-2 font12">
-                                                            {JFLX}
-                                                        </div>
-                                                        <div class="mui-col-sm-4 mui-col-xs-4">
-                                                            <div class="mui-col-sm-12 mui-col-xs-12">
-                                                                还剩{YXQS}天缴费
+                Html += `                                </div>
+                                                          </div>
+                                                            <div class="mui-col-sm-2 mui-col-xs-2 font12">
+                                                                {JFLX}
                                                             </div>
-                                                            <div class="mui-col-sm-12 mui-col-xs-12">`;
+                                                            <div class="mui-col-sm-4 mui-col-xs-4">
+                                                                <div class="mui-col-sm-12 mui-col-xs-12">
+                                                                    还剩{YXQS}天缴费
+                                                                </div>
+                                                                <div class="mui-col-sm-12 mui-col-xs-12">`;
                 if (data.JFZT == 0) {
                     Html += '<button type="button" class="mui-btn mui-btn-primary gopay" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">去支付</button>';
                 } else {
                     Html += '<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined gopay" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">详 情</button>'
                 }
                 Html += `                </div>
-                                                        </div>
-                                            </li>`;
+                                                            </div>
+                                                </li>`;
                 Html = Html.format({ JFJE: toFixed(data.JFJE), JFLX: getType(data.JFLX), YXQS: getDay(data.YXQS), DATE: (data.JFLX == 0 ? getDate(data.YXQZ) : getDate(data.YXQS)), RECORD_ID: data.RECORD_ID, CZ_SHID: data.CZ_SHID, FWID: data.FWID });
                 return Html;
             }
@@ -321,18 +325,18 @@
             }
             var getHtmlOrder = function (data) {
                 var html = `<li class="mui-table-view-cell flleft detail" url="r={RECORD_ID}&u={CZ_SHID}&f={FWID}">
-                                                        <div class="mui-col-sm-9 mui-col-xs-9 detail">
-                                                            <div class="mui-col-sm-12 mui-col-xs-12">
-                                                                {JFLX}{JFJE}元
+                                                            <div class="mui-col-sm-9 mui-col-xs-9 detail">
+                                                                <div class="mui-col-sm-12 mui-col-xs-12">
+                                                                    {JFLX}{JFJE}元
+                                                                </div>
+                                                                <div class="mui-col-sm-12 mui-col-xs-12 font12">
+                                                                    {CREATE_TIME}
+                                                                </div>
                                                             </div>
-                                                            <div class="mui-col-sm-12 mui-col-xs-12 font12">
-                                                                {CREATE_TIME}
+                                                            <div class="mui-col-sm-3 mui-col-xs-3">
+                                                                {STATE}
                                                             </div>
-                                                        </div>
-                                                        <div class="mui-col-sm-3 mui-col-xs-3">
-                                                            {STATE}
-                                                        </div>
-                                                    </li>`;
+                                                        </li>`;
                 html = html.format({ FWID: data.FWID, CZ_SHID: data.CZ_SHID, RECORD_ID: data.RECORD_ID, JFJE: toFixed(data.JFJE), JFLX: getType(data.JFLX), CREATE_TIME: new Date(data.CREATE_TIME).formatDate("yyyy-MM-dd hh:mm:ss"), STATE: "缴费成功" });
                 return html;
             }
