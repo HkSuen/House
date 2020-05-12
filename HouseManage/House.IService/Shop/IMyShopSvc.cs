@@ -30,7 +30,7 @@ namespace House.IService.Shop
         /// <param name="openId"></param>
         /// <returns></returns>
         v_pay_record GetPayReminder(string openId);
-
+        int GetPayReminder(string openId, string type, DateTime? time ,int? JFZT = 0);
         /// <summary>
         /// 获取缴费通知单
         /// </summary>

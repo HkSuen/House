@@ -42,6 +42,29 @@ namespace House.Service.Shop
                 .OrderBy(c => c.CREATE_TIME).First();
         }
 
+        public int GetPayReminder(string openId,string type, DateTime? time,int? JFZT = 0)
+        {
+            var conditions = Expressionable.Create<v_pay_record>();
+            if (!string.IsNullOrEmpty(openId))
+            {
+                conditions = conditions.And(c=>c.OPEN_ID == openId);
+            }
+            if (!string.IsNullOrEmpty(type))
+            {
+                conditions = conditions.And(c=>c.JFLX == type);
+            }
+            if (time.HasValue) //物业费预期
+            {
+                conditions = conditions.And(c => c.YXQS <= DateTime.Now);
+            }
+            if (JFZT.HasValue)
+            {
+                conditions = conditions.And(c=>c.JFZT == JFZT);
+            }
+            return _db.Db().Queryable<v_pay_record>()
+                .Where(conditions.ToExpression()).Count();
+        }
+
         public List<v_pay_record> GetPayReminder(string OpenId, string Type, PageModel page)
         {
             var conditions = Expressionable.Create<v_pay_record>();
