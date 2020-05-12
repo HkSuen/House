@@ -67,7 +67,7 @@
             {
                 <div class="mui-input-row">
                     <label>缴纳水量(立方)</label>
-                    <div class="mui-numbox" id="wnumber" data-numbox-step='5' data-numbox-min='0' data-numbox-max='1000' style="width:170px">
+                    <div class="mui-numbox" id="wnumber" data-numbox-step='1' data-numbox-min='1' data-numbox-max='10000' style="width:170px">
                         <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
                         <input class="mui-numbox-input" type="number" />
                         <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
@@ -77,8 +77,8 @@
             else if (d.JFLX == "2" && d.JFZT != 1)
             {
                 <div class="mui-input-row">
-                    <label>缴纳金额(元)</label>
-                    <div class="mui-numbox" id="emoney" data-numbox-step='50' data-numbox-min='0' data-numbox-max='10000' style="width:170px">
+                    <label>缴纳电量(度)</label>
+                    <div class="mui-numbox" id="emoney" data-numbox-step='1' data-numbox-min='1' data-numbox-max='10000' style="width:170px">
                         <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
                         <input class="mui-numbox-input" type="number" />
                         <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
@@ -220,7 +220,6 @@
             var type = "@d.JFLX";
             //if (type != 0) { // not service fee
             //    if (type == 1) {
-
             //        return;
             //    }
             //    if (type == 2) {
@@ -277,7 +276,11 @@
         });
         jq("#emoney input").on("change", function () {
             var number = jq(this).val();
-            jq("#total_money").val("￥" + number);
+            if (unitprice != null) {
+                jq("#total_money").val("￥" + ((number * (unitelecprice * 10000) / 10000)));
+            } else {
+                loadElecUnitPrice();
+            }
         });
         var unitprice = null;
         var loadUnitPrice = function () {
@@ -286,6 +289,13 @@
             });
         }
         loadUnitPrice();
+        var unitelecprice = null;
+        var loadElecUnitPrice = function () {
+            postUrl("GetUnitPriceOfElectricSET", null, function (data) {
+                unitelecprice = data;
+            });
+        }
+        loadElecUnitPrice();
     })(mui)
     window.onload = function () {
         var postUrl = function (url, data, callback) {

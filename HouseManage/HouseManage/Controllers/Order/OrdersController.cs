@@ -113,8 +113,10 @@ namespace HouseManage.Controllers.Order
                 if (pay.FEE_TYPES != 0) //非物业费
                 {
                     //非物业默认记录电的价格
-                    pay.TOTAL_FEE = Convert.ToInt32(EPrice * 100); //从元转变为分
-                    pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal(EPrice));
+                    pay.UNIT_PRICE = Convert.ToInt32(this._order.GetUnitPrice(CommonFiled.UnitPriceElectricSetKey) * 100);
+                    pay.AMOUNT = Convert.ToInt32(EPrice);
+                    pay.TOTAL_FEE = Convert.ToInt32(pay.UNIT_PRICE * pay.AMOUNT);
+                    pay.TOTAL_FEE_CH = CommonFiled.CmycurD(Convert.ToDecimal((pay.UNIT_PRICE * pay.AMOUNT) / 100.00));
                     if (pay.FEE_TYPES == 1)
                     {
                         // 为水的时候需要记录单价
@@ -248,6 +250,23 @@ namespace HouseManage.Controllers.Order
             return OK(this._order.GetUnitPrice(CommonFiled.UnitPriceWaterKey));
         }
 
+        /// <summary>
+        /// 电标价
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetUnitPriceOfElectricSET()
+        {
+            return OK(this._order.GetUnitPrice(CommonFiled.UnitPriceElectricSetKey));
+        }
+        /// <summary>
+        /// 电价
+        /// </summary>
+        /// <returns></returns>
+        public double GetUnitPriceOfElectric()
+        {
+            return this._order.GetUnitPrice(CommonFiled.UnitPriceElectricKey);
+        }
+
 
         #region 支付成功后，后续处理逻辑
 
@@ -357,13 +376,16 @@ namespace HouseManage.Controllers.Order
             var Pay = this._order.ElectricityCount(Order.ID);
             if (Pay <= 0)
             {
+                double unitPrice = GetUnitPriceOfElectric();
                 var Res = this._order.InsertElectricity(new wy_ele_recharge()
                 {
                     id = Order.ID,
                     CreateDate = DateTime.Now,
                     address = Order.TYPES_ID,
                     cid = Order.TYPES_ID_ELE_COLL,
-                    Cost = Convert.ToDouble(Order.TOTAL_FEE / 100.00),
+                    EleAmount = Order.AMOUNT,
+                    Cost = Order.AMOUNT * unitPrice,
+                    WYCost = Convert.ToDecimal(Order.TOTAL_FEE / 100.00),
                 });
                 if (Res > 0)
                 {

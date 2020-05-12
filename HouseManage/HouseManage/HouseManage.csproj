@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Remove="Common\WeiXinHelp.cs" />
     <Compile Remove="Common\WxHelper.cs" />
+    <Compile Remove="Controllers\Check\ReCheckReviewController.cs" />
   </ItemGroup>
 
 
@@ -34,9 +35,15 @@
 
 
   <ItemGroup>
+    <Content Update="log4net - 复制.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="http://json.schemastore.org/bozr" /></VisualStudio></ProjectExtensions>
 
 </Project>

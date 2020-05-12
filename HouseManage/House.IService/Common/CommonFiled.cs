@@ -338,7 +338,9 @@ namespace House.IService.Common
             return str5;
         }
 
-        public static string UnitPriceWaterKey = "PER_WATER_PRICE";
+        public static string UnitPriceWaterKey = "PER_WATER_PRICE"; //水的定价
+        public static string UnitPriceElectricSetKey = "PER_ELECTRIC_SET_PRICE"; //电量定价
+        public static string UnitPriceElectricKey = "PER_ELECTRIC_PRICE"; //电量标价
         public static string WX_SMS_STATUS = "SMS_STATUS";
         public static string WX_MSG_STATUS = "WX_MSG_STATUS";
 

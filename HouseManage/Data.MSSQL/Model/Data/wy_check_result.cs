@@ -35,7 +35,7 @@ namespace Data.MSSQL.Model.Data
            public string LXDH {get;set;}
 
            /// <summary>
-           /// Desc:
+           /// Desc:检查结果 0不合格 1合格 2复查合格 3复查不合格
            /// Default:
            /// Nullable:True
            /// </summary>           
@@ -127,14 +127,14 @@ namespace Data.MSSQL.Model.Data
 
            /// <summary>
            /// Desc:复查次数
-           /// Default:
+           /// Default:0
            /// Nullable:True
            /// </summary>           
            public int? JCCS {get;set;}
 
            /// <summary>
-           /// Desc:是否复查
-           /// Default:
+           /// Desc:是否反馈,0未反馈，1反馈
+           /// Default:0
            /// Nullable:True
            /// </summary>           
            public int? IS_REVIEW {get;set;}

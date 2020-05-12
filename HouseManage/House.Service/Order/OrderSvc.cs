@@ -241,7 +241,7 @@ namespace House.Service.Order
         {
             using (var db = this._db.Db()) {
                 var price = db.Queryable<ts_uidp_config>().First(c => c.CONF_CODE == WaterKey);
-                return Convert.ToDouble(price.CONF_VALUE);
+                return Convert.ToDouble(price?.CONF_VALUE);
             }
         }
 
