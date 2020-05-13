@@ -44,14 +44,15 @@ namespace HouseManage.Controllers.Order
             {
                 return Error("请求参数错误！");
             }
-            if (PropertyCosts())
-            {
-                return Redirect("../MyShop/Payment?back=0");
-            }
             dynamic DetailInfo = this._order.GetPayDetails(u, f, r).FirstOrDefault();
             if (null == DetailInfo)
             {
                 return Error("未找到订单信息！");
+            }
+            int type = Convert.ToInt32(DetailInfo.JFLX);
+            if (PropertyCosts() && CommonFiled.EnumFeeTypes(type) != FeeTypes.Property)
+            {
+                return Redirect("../MyShop/Payment?back=0");
             }
             DetailInfo.JFLXName = Fee.GetKey(Convert.ToInt32(DetailInfo.JFLX));
             ViewBag.Payee = CommonFiled.MchName(Convert.ToInt32(DetailInfo.JFLX));
@@ -568,25 +569,26 @@ namespace HouseManage.Controllers.Order
 
 
 
-        //[AllowAnonymous]
-        //[HttpGet]
-        //public async Task<string> Msg()
-        //{
-        //    var order = this._order.GetWxPayById("O119202005071033598312");
-        //    string data = JsonConvert.SerializeObject(new
-        //    {
-        //        openId = "oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0",
-        //        data = new
-        //        {
-        //            first = $"尊敬的业主({order.SHOP_NAME}--{order.HOUSE_ADDRESS})您好，您已缴费成功。信息如下：",
-        //            keyword1 = order.PAY_TIME.HasValue ? order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss") : "",
-        //            keyword2 = order.REMARK,
-        //            keyword3 = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元",
-        //            remark = "如有疑问，请咨询物业管理处。"
-        //        }
-        //    });
-        //    data = "{\"openId\":\"oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0\",\"data\":{\"first\":\"尊敬的用户：您收到一个用水余量不足通知：\",\"keyword1\":\"那奇男\",\"keyword2\":\"清真小厨\",\"keyword3\":\"0吨\",\"remark\":\"避免影响用水，请尽快缴费！\"},\"templateId\":\"P_QmAggBg0gDCt1VUrO9e_jXdfWhKFf98pSPnj5kMww\",\"color\":\"#173177\",\"appurl\":null,\"appId\":null,\"pagepath\":null}";
-        //    return await PayMsg.SendMsg(CommonFiled.MsgUrl, data);
-        //}
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<string> Msg()
+        {
+            var order = this._order.GetWxPayById("O119202005071033598312");
+            //string data = JsonConvert.SerializeObject(new
+            //{
+            //    openId = "oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0",
+            //    data = new
+            //    {
+            //        first = $"尊敬的业主({order.SHOP_NAME}--{order.HOUSE_ADDRESS})您好，您已缴费成功。信息如下：",
+            //        keyword1 = order.PAY_TIME.HasValue ? order.PAY_TIME.Value.ToString("yyyy-MM-dd HH:mm:ss") : "",
+            //        keyword2 = order.REMARK,
+            //        keyword3 = Convert.ToDouble(order.TOTAL_FEE / 100.00) + "元",
+            //        remark = "如有疑问，请咨询物业管理处。"
+            //    }
+            //});
+            //data = "{\"openId\":\"oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0\",\"data\":{\"first\":\"尊敬的用户：您收到一个用水余量不足通知：\",\"keyword1\":\"那奇男\",\"keyword2\":\"清真小厨\",\"keyword3\":\"0吨\",\"remark\":\"避免影响用水，请尽快缴费！\"},\"templateId\":\"P_QmAggBg0gDCt1VUrO9e_jXdfWhKFf98pSPnj5kMww\",\"color\":\"#173177\",\"appurl\":null,\"appId\":null,\"pagepath\":null}";
+            SendMsg(order);
+            return null;
+        }
     }
 }
