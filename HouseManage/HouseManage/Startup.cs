@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using HouseManage.Common;
 using HouseManage.Common.Filter;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.WebEncoders;
 
 namespace HouseManage
 {
@@ -34,7 +37,9 @@ namespace HouseManage
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.Configure<WebEncoderOptions>(options =>
+                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.BasicLatin,
+        UnicodeRanges.CjkUnifiedIdeographs));
             services.AddSession(config=> {
                 config.IdleTimeout = TimeSpan.FromMinutes(30);
             });

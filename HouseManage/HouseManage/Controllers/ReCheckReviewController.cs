@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers
 {
-    [Authorize(Roles = "Merchant")]
+    //[Authorize(Roles = "Merchant")]
+    [AllowAnonymous]
     public class ReCheckReviewController : ControllerBase
     {
         private IReCheckReviewSvc _recheck = null;
@@ -31,7 +32,8 @@ namespace HouseManage.Controllers
         [HttpGet]
         public IActionResult GetRecheckReviewData()
         {
-            string OpenIDs = OpenID;
+            //string OpenIDs = OpenID;
+            string OpenIDs = "oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0";
             return Json(_recheck.GetRecheckReviewData(OpenIDs));
         }
         /// <summary>
@@ -41,9 +43,10 @@ namespace HouseManage.Controllers
         /// <param name="rwbh"></param>
         /// <param name="fwbh"></param>
         /// <param name="fwmc"></param>
-        /// <param name="jcr_openid"></param>
+        /// <param name="jcr_openid">string resultId, string rwbh, string fwbh, string fwmc,string jcr_openid,string rwmc</param>
         /// <returns></returns>
-        public IActionResult ReviewCheckDetail(string resultId, string rwbh, string fwbh, string fwmc,string jcr_openid,string rwmc)
+        [HttpPost]
+        public IActionResult ReviewCheckDetail(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid, string rwmc)
         {
             ViewBag.resultId = resultId;
             ViewBag.rwbh = rwbh;
@@ -58,10 +61,12 @@ namespace HouseManage.Controllers
         /// </summary>
         /// <param name="resultid"></param>
         /// <returns></returns>
+        [HttpGet]
         public IActionResult GetRecheckReviewDataDetail(string resultid)
         {
             return Json(_recheck.GetRecheckReviewDataDetail(resultid));
         }
+        [HttpGet]
         public IActionResult ReviewCheckConfirm(string resultId, string rwbh, string fwbh, string fwmc, string jcr_openid,string rwmc) {
 
             return Content(_recheck.ReviewCheckConfirm(resultId,  rwbh,  fwbh,  fwmc,  jcr_openid,rwmc));

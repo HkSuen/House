@@ -62,8 +62,9 @@ namespace House.Service.DailyCheck
                     RESULT_ID = resultId,
                     IS_REVIEW = 1
                 };
-                int res = _Db.Db().Updateable(wcr).UpdateColumns(a => new { a.IS_REVIEW }).WhereColumns(it => it.RESULT_ID).ExecuteCommand();
-                if (res > 0)
+                //int res = _Db.Db().Updateable(wcr).UpdateColumns(a => new { a.IS_REVIEW }).WhereColumns(it => it.RESULT_ID).ExecuteCommand();
+                //if (res > 0)
+                if(true)
                 {
                     Dictionary<string, object> dic = new Dictionary<string, object>();
                     dic.Add("first", "您收到一个商户房屋整改反馈通知：");
@@ -98,13 +99,13 @@ namespace House.Service.DailyCheck
             {
                 string msgTempId = AppSetting.GetSection("msgtemp:temp");
                 string url = AppSetting.GetSection("msgUrl:url");
-                MsgHelper.Msg.SendMsg(url, checkoOpenid, dic, msgTempId);
+                string ss=await  MsgHelper.Msg.SendMsg(url, checkoOpenid, dic, msgTempId);
                 wy_region_director obj = _Db.Db().Queryable<wy_region_director>().Where(a => a.WX_OPEN_ID == checkoOpenid&&a.MOBILE!=null).First();
                 if (obj!=null) {
                     string mssTempId = AppSetting.GetSection("msgsmstemp:smstemp");
                     string[] arry = new string[] {
                     "","商户整改反馈复查通知"};
-                    MsgHelper.Msg.SendSMS(obj.MOBILE?.ToString(), arry, mssTempId);
+                   string aaa=await MsgHelper.Msg.SendSMS(obj.MOBILE?.ToString(), arry, mssTempId);
                 }
             }
             catch (Exception ex)
