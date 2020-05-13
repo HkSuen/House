@@ -62,9 +62,8 @@ namespace House.Service.DailyCheck
                     RESULT_ID = resultId,
                     IS_REVIEW = 1
                 };
-                //int res = _Db.Db().Updateable(wcr).UpdateColumns(a => new { a.IS_REVIEW }).WhereColumns(it => it.RESULT_ID).ExecuteCommand();
-                //if (res > 0)
-                if(true)
+                int res = _Db.Db().Updateable(wcr).UpdateColumns(a => new { a.IS_REVIEW }).WhereColumns(it => it.RESULT_ID).ExecuteCommand();
+                if (res > 0)
                 {
                     Dictionary<string, object> dic = new Dictionary<string, object>();
                     dic.Add("first", "您收到一个商户房屋整改反馈通知：");
