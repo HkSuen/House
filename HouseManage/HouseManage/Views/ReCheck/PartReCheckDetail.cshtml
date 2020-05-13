@@ -54,11 +54,16 @@
 
         <!--页脚，放置补充信息或支持的操作-->
         <div class="mui-card-footer" style="text-align:center;">
-            <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;" onclick="GetCheckResultDetail('@item.RESULT_ID')">复查</button>
+            @{
+                if (item.JCJG == 0 || item.JCJG == 3)
+                {
+                    <button type="button" class="mui-btn mui-btn-royal" style="text-align:center;" onclick="GetCheckResultDetail('@item.RESULT_ID')">复查</button>
+                }
+            }
             <div class="mui-row">
                 <div class="mui-col-sm-4 mui-col-xs-4"></div>
                 <div class="mui-col-sm-4 mui-col-xs-4">
-                </div>
+            </div>
             </div>
         </div>
     </div>

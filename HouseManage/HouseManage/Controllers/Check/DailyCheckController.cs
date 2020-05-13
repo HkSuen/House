@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 namespace HouseManage.Controllers.Check
 {
     [Authorize(Roles = "Admin,Inspector")]
+    //[AllowAnonymous]
     public class DailyCheckController : ControllerBase
     {
         private IDailyCheckSvc dailyCheckSvc;
@@ -20,22 +21,30 @@ namespace HouseManage.Controllers.Check
         }
         public IActionResult Index()
         {
+            //string openid = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
+            //return View(dailyCheckSvc.GetTaskInfo("", "", "", openid, 1, 10));
             return View(dailyCheckSvc.GetTaskInfo("", "", "", OpenID, 1, 10));
         }
         [HttpGet]
         public PartialViewResult PartDailyCheckList(string status, string starttime, string endtime, int page, int limit)
         {
+            //string openid = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
+            //return PartialView("../DailyCheck/PartDailyCheckList", dailyCheckSvc.GetTaskInfo(status, starttime, openid, endtime, page, limit));
             return PartialView("../DailyCheck/PartDailyCheckList", dailyCheckSvc.GetTaskInfo(status, starttime, OpenID, endtime, page, limit));
-            //return Ok(dailyCheckSvc.GetTaskInfo(status, starttime, endtime));
+            
         }
         [HttpGet]
         public IActionResult DailyCheckDetail(string RWBH,string TASK_ID)
         {
+            //string openid = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
+            //return View(dailyCheckSvc.GetTaskDetailInfo(RWBH, TASK_ID, openid));
             return View(dailyCheckSvc.GetTaskDetailInfo(RWBH,TASK_ID,OpenID));
         }
         [HttpGet]
         public PartialViewResult PartDailyCheckDetail(string RWBH,string TASK_ID,int page, int limit)
         {
+            //string openid = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
+            //return PartialView(dailyCheckSvc.GetTaskDetailInfo(RWBH, TASK_ID, openid, page, limit));
             return PartialView(dailyCheckSvc.GetTaskDetailInfo(RWBH, TASK_ID,OpenID, page, limit));
         }
 
@@ -49,11 +58,15 @@ namespace HouseManage.Controllers.Check
         [HttpGet]
         public IActionResult PartCreateCheckResult(string FWID,string TASK_ID)
         {
+            //string openid = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
+            //return PartialView(dailyCheckSvc.GetCreateTaskResultFormInfo(FWID, TASK_ID, openid));
             return PartialView(dailyCheckSvc.GetCreateTaskResultFormInfo(FWID,TASK_ID,OpenID));
         }
         [HttpGet]
         public IActionResult GetShopInfo(string RWBH,string TASK_ID)
         {
+            //string openid = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
+            //return Ok(dailyCheckSvc.GetShopInfo(RWBH, TASK_ID, openid));
             return Ok(dailyCheckSvc.GetShopInfo(RWBH,TASK_ID, OpenID));
         }
         [HttpPost]

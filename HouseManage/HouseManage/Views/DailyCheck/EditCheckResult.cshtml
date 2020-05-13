@@ -267,7 +267,7 @@
             window.alert("检查结果不能为空!");
         }
         else if (!qualified && temp.JCJG == 1) {
-            window.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!");
+            mui.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!","警告","确定")
         }
         else {
              mui.ajax('PostUpdateCheckResult', {

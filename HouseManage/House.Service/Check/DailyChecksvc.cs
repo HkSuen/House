@@ -163,7 +163,7 @@ namespace House.Service
             wcr.JCR = OPEN_ID;
             wcr.JCSJ = DateTime.Now;
             wcr.ZGYQ = d["ZGYQ"].ToString();
-            wcr.WTMS = d["ZGYQ"].ToString();
+            wcr.WTMS = d["WTMS"].ToString();
             wcr.FWID = d["FWID"].ToString();
             wcr.CJR = OPEN_ID;
             wcr.CJSJ = DateTime.Now;
