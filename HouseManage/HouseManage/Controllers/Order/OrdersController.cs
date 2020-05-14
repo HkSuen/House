@@ -573,7 +573,7 @@ namespace HouseManage.Controllers.Order
         [HttpGet]
         public async Task<string> Msg()
         {
-            var order = this._order.GetWxPayById("O119202005071033598312");
+            var order = this._order.GetWxPayById("O360202005130955208684");
             //string data = JsonConvert.SerializeObject(new
             //{
             //    openId = "oAY4Pv8qLZLMySKDoKrv-Zz1xBZ0",

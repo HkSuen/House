@@ -67,7 +67,7 @@
             {
                 <div class="mui-input-row">
                     <label>缴纳水量(立方)</label>
-                    <div class="mui-numbox" id="wnumber" data-numbox-step='1' data-numbox-min='1' data-numbox-max='10000' style="width:170px">
+                    <div class="mui-numbox" id="wnumber" data-numbox-step='1' data-numbox-min='0' data-numbox-max='10000' style="width:170px">
                         <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
                         <input class="mui-numbox-input" type="number" />
                         <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
@@ -78,7 +78,7 @@
             {
                 <div class="mui-input-row">
                     <label>缴纳电量(度)</label>
-                    <div class="mui-numbox" id="emoney" data-numbox-step='1' data-numbox-min='1' data-numbox-max='10000' style="width:170px">
+                    <div class="mui-numbox" id="emoney" data-numbox-step='1' data-numbox-min='0' data-numbox-max='10000' style="width:170px">
                         <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
                         <input class="mui-numbox-input" type="number" />
                         <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
@@ -268,6 +268,7 @@
         });
         jq("#wnumber input").on("change", function () {
             var number = jq(this).val();
+            number = parseInt(number);
             if (unitprice != null) {
                 jq("#total_money").val("￥" + ((number * (unitprice * 10000) / 10000)));
             } else {
@@ -276,6 +277,7 @@
         });
         jq("#emoney input").on("change", function () {
             var number = jq(this).val();
+            number = parseInt(number);
             if (unitprice != null) {
                 jq("#total_money").val("￥" + ((number * (unitelecprice * 10000) / 10000)));
             } else {
