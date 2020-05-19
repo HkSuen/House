@@ -19,11 +19,11 @@ namespace HouseManage
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+            .UseUrls("http://*:5011")
             .ConfigureLogging((hostingContext,logging)=> {
                 logging.AddFilter("System",LogLevel.Warning);
                 logging.AddFilter("Microsoft", LogLevel.Warning);
                 logging.AddLog4Net();
-            })
-                .UseStartup<Startup>();
+            }).UseStartup<Startup>();
     }
 }

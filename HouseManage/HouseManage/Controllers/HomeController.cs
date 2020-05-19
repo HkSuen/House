@@ -33,6 +33,7 @@ namespace HouseManage.Controllers
         public ActionResult Error(string msg)
         {
             ViewBag.Error = msg;
+            ViewBag.Title = string.IsNullOrEmpty(msg) ? "权限不足" : "资源未找到";
             return View();
         }
 
@@ -42,7 +43,5 @@ namespace HouseManage.Controllers
         {
             return _wx.GetOpenId();
         }
-
-
     }
 }
