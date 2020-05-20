@@ -92,9 +92,9 @@
         </div>
     </div>
     @{
-        if (d.JFZT == 1)
+        if (d.JFZT == 1 && d.JFLX == "1")
         {
-            <marquee><span style="font-weight: bolder;font-size: 18px;color: red;display:none" id="infonotice">由于数据存在1-12小时的延迟，您当前缴费记录暂未更新到设备,请您耐心等候,非常感谢！！</span></marquee>
+            <marquee><span style="font-weight: bolder;font-size: 18px;color: red;display:none" id="infonotice">由于数据存在12小时的延迟,您当前缴费记录暂未更新到设备,请您耐心等候,非常感谢！！</span></marquee>
         }
     }
     <p style="margin: 40px 10px;"></p>

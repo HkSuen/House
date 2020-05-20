@@ -112,6 +112,7 @@
                             jq("div[class='mui-input-row num']").hide();
                             jq("#elec").show();
                         }
+                        self.checkIsPay();
                     })
                 });
                 jq("#house").on("tap", function () {
@@ -122,6 +123,7 @@
                             return val.FWID == SelectItem[0].value;
                         });
                         self.model.UId = houseinfo[0].CZ_SHID;
+                        self.checkIsPay();
                     });
                 });
                 jq("div.num input").on('change', function () {
@@ -216,6 +218,12 @@
                     }
                 })
             },
+            IsNull: function (value) {
+                if (value == undefined || value == null || value.toString().length == 0) {
+                    return true;
+                }
+                return false;
+            },
             createOrder: function () {
                 var self = this;
                 this.post("CreateOrder", self.model,function (res) {
@@ -309,6 +317,35 @@
                         }
                     }
                 });
+            },
+            checkIsPay: function () {
+                var self = this;
+                if (this.IsNull(this.model.houseId) || this.IsNull(this.model.Type)) {
+                    return;
+                }
+                var house = this.houseinfos.filter(function (item) {
+                    if (item.FWID == self.model.houseId) {
+                        return item;
+                    }
+                })
+                if (house.length <= 0) {
+                    return;
+                }
+                if (this.model.Type == 1) { //water
+                    if (this.IsNull(house[0].WATER_NUMBER)) {
+                        mui.alert("您是免水费用户!\n 请勿使用自助缴费");
+                        window.close();
+                        return;
+                    }
+                }
+                if (this.model.Type == 2) { // elec
+                    if (this.IsNull(house[0].ELE_NUMBER)) {
+                        mui.alert("您是免电费用户!\n 请勿使用自助缴费");
+                        window.close();
+                        return;
+                    }
+                    return;
+                }
             }
         }
         pageModel.Init();

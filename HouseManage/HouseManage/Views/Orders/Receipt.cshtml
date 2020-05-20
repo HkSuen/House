@@ -2,11 +2,14 @@
 @{
     ViewData["Title"] = "单据详情";
     Layout = null;
+    bool IsServer = Model.FEE_TYPES == 0;
     string ReceiptTitlle = Model.FEE_TYPES == 2 ? "普丰房地产":"普丰物业";
-    string TypeTitle = Model.FEE_TYPES == 0 ? "底商面积" : (Model.FEE_TYPES == 1 ? "数量（方）" : "数量（度）");
-    string TypeTitleNum = Model.FEE_TYPES == 0 ? Model.HOUSE_AREA.ToString() : (Model.FEE_TYPES == 1 ? Model.AMOUNT.ToString() : "");
-    string unitPrice = Model.FEE_TYPES == 0 ? Model.HOUSE_SERVICE_UNITPRICE?.ToString() : (Model.FEE_TYPES == 1 ? Model.UNIT_PRICE.ToString() : "");
-    string Remark = Model.FEE_TYPES == 0 ? Model.HOUSE_SERVICEEFFCTIVE : "";
+    string TypeTitle = IsServer ? "底商面积" : (Model.FEE_TYPES == 1 ? "数量（方）" : "数量（度）");
+    //string TypeTitleNum = IsServer ? Model.HOUSE_AREA.ToString() : (Model.FEE_TYPES == 1 ? Model.AMOUNT.ToString() : "");
+    //string unitPrice = IsServer ? Model.HOUSE_SERVICE_UNITPRICE?.ToString() : (Model.FEE_TYPES == 1 ? Model.UNIT_PRICE.ToString() : "");
+    string TypeTitleNum = IsServer ? Model.HOUSE_AREA.ToString() : Model.AMOUNT.ToString();
+    string unitPrice = IsServer ? Model.HOUSE_SERVICE_UNITPRICE?.ToString() : (Model.UNIT_PRICE / 100.00).ToString();
+    string Remark = IsServer ? Model.HOUSE_SERVICEEFFCTIVE : "";
 }
 <!DOCTYPE html>
 <html>
@@ -20,7 +23,8 @@
 <body>
     <div class="topboder">
         @{
-                <!--水电单-->
+            if (!IsServer)
+            {<!--水电单-->
                 <table border="1" cellspacing="0">
                     <tr class="receipttitle">
                         <th colspan="7">@ReceiptTitlle<span>(收款收据)</span></th>
@@ -80,6 +84,71 @@
                         <td class="lefttext" colspan="2">打印日期：@ViewBag.PayTime</td>
                     </tr>
                 </table>
+            }
+            else
+            {
+                <table border="1" cellspacing="0">
+                    <tr class="receipttitle">
+                        <th colspan="8">@ReceiptTitlle<span>(收款收据)</span></th>
+                    </tr>
+                    <tr>
+                        <td class="lefttext">商户姓名：</td>
+                        <td class="lefttext">@Model.USER_NAME</td>
+                        <td class="lefttext">商户位置：</td>
+                        <td class="lefttext" colspan="3">@Model.HOUSE_ADDRESS</td>
+                        <td class="lefttext">面积：</td>
+                        <td>@TypeTitleNum m²</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">费用项目</th>
+                        <th colspan="2">@TypeTitle</th>
+                        <th>单价</th>
+                        <th>金额</th>
+                        <th colspan="2">备注</th>
+                    </tr>
+                    <tr>
+                        <td class="lefttext" colspan="2">@ViewBag.Type</td>
+                        <td colspan="2">@TypeTitleNum </td>
+                        <td>@unitPrice</td>
+                        <td>@ViewBag.MoneyNum</td>
+                        <td colspan="2">@Remark</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2"></td>
+                        <td></td>
+                        <td></td>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2"></td>
+                        <td></td>
+                        <td></td>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2"></td>
+                        <td></td>
+                        <td></td>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">合计大写</td>
+                        <td colspan="2" class="lefttext">@Model.TOTAL_FEE_CH</td>
+                        <td>合计小写</td>
+                        <td>@ViewBag.MoneyNum</td>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td class="lefttext" colspan="2">收款人：@ViewBag.Payee</td>
+                        <td class="lefttext" colspan="3">交款人：@Model.USER_NAME</td>
+                        <td class="lefttext" colspan="3">打印日期：@ViewBag.PayTime</td>
+                    </tr>
+                </table>
+            }
+
         }
     </div>
 </body>
