@@ -4,202 +4,260 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     @model List<Data.MSSQL.Model.Data.wy_task_detail_config>
 }
+<style type="text/css">
+    a:link {
+        text-decoration: none; /* 指正常的未被访问过的链接*/
+    }
+
+    a:visited {
+        text-decoration: none; /*指已经访问过的链接*/
+    }
+
+    a:hover {
+        text-decoration: none; /*指鼠标在链接*/
+    }
+
+    a:active {
+        text-decoration: none; /* 指正在点的链接*/
+</style>
     <div id="popover" class="mui-popover">
+        <div class="mui-popover-arrow"></div>
         <div class="mui-scroll-wrapper" id="scroll">
             <div class="mui-scroll">
                 <ul class="mui-table-view" id="menu">
+                    <li class="mui-table-view-cell">
+                        <input type="search" id="search" class="mui-input-clear" placeholder="请输入商户编号或名称" style="margin-bottom:0px">
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
-    <div id="main-container" class="mui-content mui-scroll-wrapper" style="height:100%">
-        <div class="mui-scroll">
-            <div class="mui-card">
-                <div class="mui-card-header">商户信息</div>
-                <!--内容区-->
-                <div class="mui-card-content">
-                    <div class="mui-row">
-                        <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                            商户编号:<label id="SHOPBH"></label>
-                        </div>
-                        <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                            租户姓名:<label id="ZHXM"></label>
-                        </div>
+<div id="main-container" class="mui-content mui-scroll-wrapper" style="height:100%">
+    <div class="mui-scroll">
+        <div class="mui-card">
+            <div class="mui-card-header">商户信息</div>
+            <!--内容区-->
+            <div class="mui-card-content">
+                <div class="mui-row">
+                    <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                        商户编号:<label id="SHOPBH"></label>
                     </div>
-                    <div class="mui-row">
-                        <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                            商铺名称:<label id="SHOP_NAME"></label>
-                        </div>
-                    </div>
-                    <a href="#popover" id="bottomPopover" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined" style="padding: 5px 20px;">选择商户</a>
-                </div>
-                <!--页脚，放置补充信息或支持的操作-->
-            </div>
-            <div class="mui-card">
-                <div class="mui-card-header">检查内容</div>
-                <div class="mui-card-content">
-
-                    <div id="checkdetail">
-                        @*@Html.Partial("PartCreateCheckResult",Model)*@
-                    </div>
-
-                </div>
-            </div>
-            <div class="mui-card">
-                <div class="mui-card-header">检查结果</div>
-                <div class="mui-card-content">
-                    <div class="mui-row">
-                        <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
-                            <label>检查结果:</label>
-                        </div>
-                        <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                            <div class="mui-input-row mui-radio">
-                                <label>合格</label>
-                                <input name="radio1" value="1" type="radio">
-                            </div>
-                        </div>
-                        <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                            <div class="mui-input-row mui-radio">
-                                <label>不合格</label>
-                                <input name="radio1" value="0" type="radio">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mui-row">
-                        <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
-                            <label>问题描述:</label>
-                        </div>
-                        <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                            <input type="text" class="mui-input-clear" placeholder="请输入问题描述" style="width:95%" id="describe" value="">
-                        </div>
-                    </div>
-                    <div class="mui-row">
-                        <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
-                            <label>整改要求:</label>
-                        </div>
-                        <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
-                            <input type="text" class="mui-input-clear" placeholder="请输入整改要求" style="width:95%" id="Requirement" value="">
-                        </div>
+                    <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                        租户姓名:<label id="ZHXM"></label>
                     </div>
                 </div>
+                <div class="mui-row">
+                    <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
+                        商铺名称:<label id="SHOP_NAME"></label>
+                    </div>
+                </div>
+                <a href="#popover" id="bottomPopover" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined" style="padding: 5px 20px;">选择商户</a>
             </div>
-            <button type="button" class="mui-btn mui-btn-primary" style="width:100%" onclick="submit()">提交</button>
-
-            
+            <!--页脚，放置补充信息或支持的操作-->
         </div>
-            
-        </div>
+        <div class="mui-card">
+            <div class="mui-card-header">检查内容</div>
+            <div class="mui-card-content">
 
-        <script>
-            var FWID;
-            var temp = {};
-            
-            mui('.mui-scroll-wrapper').scroll({
-                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+                <div id="checkdetail">
+                    @*@Html.Partial("PartCreateCheckResult",Model)*@
+                </div>
+
+            </div>
+        </div>
+        <div class="mui-card">
+            <div class="mui-card-header">检查结果</div>
+            <div class="mui-card-content">
+                <div class="mui-row">
+                    <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
+                        <label>检查结果:</label>
+                    </div>
+                    <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                        <div class="mui-input-row mui-radio">
+                            <label>合格</label>
+                            <input name="radio1" value="1" type="radio">
+                        </div>
+                    </div>
+                    <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                        <div class="mui-input-row mui-radio">
+                            <label>不合格</label>
+                            <input name="radio1" value="0" type="radio">
+                        </div>
+                    </div>
+                </div>
+                <div class="mui-row">
+                    <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
+                        <label>问题描述:</label>
+                    </div>
+                    <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                        <input type="text" class="mui-input-clear" placeholder="请输入问题描述" style="width:95%" id="describe" value="">
+                    </div>
+                </div>
+                <div class="mui-row">
+                    <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
+                        <label>整改要求:</label>
+                    </div>
+                    <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
+                        <input type="text" class="mui-input-clear" placeholder="请输入整改要求" style="width:95%" id="Requirement" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="mui-btn mui-btn-primary" style="width:100%" onclick="submit()">提交</button>
+
+
+    </div>
+
+</div>
+
+<script>
+    var FWID;
+    var temp = {};
+    jq = $;
+    (function ($) {
+        $.init({
+            swipeBack: true
+        });
+        //阻尼系数
+        var deceleration = mui.os.ios ? 0.003 : 0.0009;
+        mui('.mui-scroll-wrapper').scroll({
+            deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+        });
+        jq("#search").on("input", function () {
+            reloadStore(this.value);
+        });
+
+    })(mui);
+    var storeInfo = [];
+    var id = null;
+    //mui('.bottomPopover').popover('toggle');
+    window.onload = function () {
+        var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
+        var idArray = window.location.search.split("?");
+        id = idArray[1];
+        var scroll = this.document.getElementById("scroll");
+        scroll.style.height = 0.8 * height + "px";
+        this.mui.ajax('GetShopInfo?' + id, {
+            type: 'get',
+            //timeout: 50000,
+            //headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                storeInfo = data;
+                reloadStore(null)
+            },
+            error: function (xhr, type, errorThrown) {
+                console.log(type);
+            }
+        })
+
+    }
+
+    function dataFilter(storeN,data) {
+        if (data.length > 0) {
+            data = data.filter(function (item) {
+                if (item.SHOP_NAME.indexOf(storeN) != -1 || item.SHOPBH.indexOf(storeN) != -1) {
+                    return item;
+                }
             });
-            mui('.bottomPopover').popover('toggle');
-            window.onload = function () {
-                var height = document.documentElement.clientWidth;
-                var idArray = window.location.search.split("?");
-                var id = idArray[1];
-                var scroll = this.document.getElementById("scroll");
-                scroll.style.height = 0.6 * height + "px";
-                this.mui.ajax('GetShopInfo?' + id, {
-                    type: 'get',
-                    //timeout: 50000,
-                    //headers: { 'Content-Type': 'application/json' },
-                    success: function (data) {
-                        mui = this.mui;
-                        var ele = document.getElementById("menu");
-                        for (var i = 0; i < data.length; i++) {
-                            let copydata = data[i];
-                            var li = document.createElement("li");
-                            li.className = "mui-table-view-cell";
-                            var a = document.createElement("a");
-                            a.href = "#";
-                            a.innerHTML = data[i].SHOPBH + ":" + data[i].SHOP_NAME;
-                            a.id = data[i].FWID;
-                            a.addEventListener("click", function (e) {
-                                document.getElementById("SHOPBH").innerHTML = copydata.SHOPBH;
-                                document.getElementById("SHOPBH").value = copydata.SHOPBH;
-                                document.getElementById("ZHXM").innerHTML = copydata.ZHXM;
-                                document.getElementById("ZHXM").value = copydata.ZHXM;
-                                document.getElementById("SHOP_NAME").innerHTML = copydata.SHOP_NAME;
-                                document.getElementById("SHOP_NAME").value = copydata.SHOP_NAME;
-                                FWID = copydata.FWID;                             
-                                mui.ajax("PartCreateCheckResult?FWID=" + FWID + "&TASK_ID=" + id.split("=")[2], {
-                                    type: "get",
-                                    success(data) {
-                                        if (data.trim() != "") {
-                                             document.getElementById("checkdetail").innerHTML = data;
-                                            
-                                            
-                                        }
-                                    },
-                                    error: function (xhr, type, errorThrown) {
-                                        console.log(type);
-                                    }
-                                });
-                            });
-                            li.appendChild(a);
-                            ele.appendChild(li);
+        }
+        return data;
+    }
+
+    function reloadStore(storeN) {
+        data = storeInfo;
+        if (storeN != null && storeInfo != undefined) {
+            data = dataFilter(storeN, storeInfo);
+        }
+        $("#menu li:first").siblings().remove();
+        if (data == null || data == undefined || data.length <= 0) {
+            return;
+        }
+        mui = this.mui;
+        var ele = document.getElementById("menu");
+        for (var i = 0; i < data.length; i++) {
+            let copydata = data[i];
+            var li = document.createElement("li");
+            li.className = "mui-table-view-cell";
+            var a = document.createElement("a");
+            a.href = "#";
+            a.innerHTML = data[i].SHOPBH + ":" + data[i].SHOP_NAME;
+            a.id = data[i].FWID;
+            a.addEventListener("click", function (e) {
+                document.getElementById("SHOPBH").innerHTML = copydata.SHOPBH;
+                document.getElementById("SHOPBH").value = copydata.SHOPBH;
+                document.getElementById("ZHXM").innerHTML = copydata.ZHXM;
+                document.getElementById("ZHXM").value = copydata.ZHXM;
+                document.getElementById("SHOP_NAME").innerHTML = copydata.SHOP_NAME;
+                document.getElementById("SHOP_NAME").value = copydata.SHOP_NAME;
+                FWID = copydata.FWID;
+                mui.ajax("PartCreateCheckResult?FWID=" + FWID + "&TASK_ID=" + id.split("=")[2], {
+                    type: "get",
+                    success(data) {
+                        if (data.trim() != "") {
+                            document.getElementById("checkdetail").innerHTML = data;
+
+
                         }
                     },
                     error: function (xhr, type, errorThrown) {
                         console.log(type);
                     }
-                })
+                });
+            });
+            li.appendChild(a);
+            ele.appendChild(li);
+        }
+    }
 
-            }
-            function CreateListForm() {
-                var ele = document.getElementById("statusbutton").firstChild;
+    function CreateListForm() {
+        var ele = document.getElementById("statusbutton").firstChild;
+    };
+    function pass(id) {
+        var ele = document.getElementById(id);
+        ele.className = "mui-btn mui-btn-primary";
+        temp[id] = 1;
+    }
+    function unpass(id) {
+        var ele = document.getElementById(id);
+        ele.className = "mui-btn mui-btn-danger";
+        temp[id] = 0;
+        qualified = true;
+
+    }
+    function submit() {
+        var ele = document.getElementsByName("radio1");
+        let radiovalue = "";
+        for (var i = 0; i < ele.length; i++) {
+            if (ele[i].checked) {
+                radiovalue = ele[i].value;
             };
-            function pass(id) {
-                var ele = document.getElementById(id);
-                ele.className = "mui-btn mui-btn-primary";
-                temp[id] = 1;
+        };
+        var qualified = true;//检查内容详情是否有不合格项
+        for (var a in temp) {
+            qualified = qualified && (temp[a] == 1);
+        };
+        if (radiovalue == null || radiovalue == "") {
+            window.alert("检查结果不能为空！");
+        }
+        else if (!qualified && radiovalue == 1) {
+            //window.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!");
+            mui.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!", "警告", "确定")
+        }
+        else {
+            let RWBH = window.location.search.split("?")[1];
+            let Alltemp = {
+                TASK_ID: window.location.search.split("?")[1].split("=")[2],
+                JCJG: radiovalue,
+                ZGYQ: document.getElementById("describe").value,
+                WTMS: document.getElementById("Requirement").value,
+                FWID: FWID
+            };
+            Alltemp.RESULT_DETAIL = temp;
+            if (qualified && temp.JCJG == 1) {
+                window.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!")
             }
-            function unpass(id) {
-                var ele = document.getElementById(id);
-                ele.className = "mui-btn mui-btn-danger";
-                temp[id] = 0;
-                qualified = true;
-                
-            }
-            function submit() {
-                var ele = document.getElementsByName("radio1");
-                let radiovalue = "";
-                for (var i = 0; i < ele.length; i++) {
-                    if (ele[i].checked) {
-                    radiovalue = ele[i].value;
-                    };
-                };
-                var qualified = true;//检查内容详情是否有不合格项
-                for (var a in temp) {
-                    qualified = qualified && (temp[a]==1);
-                };
-                if (radiovalue == null || radiovalue == "") {
-                    window.alert("检查结果不能为空！");
-                }
-                else if (!qualified && radiovalue == 1) {
-                    //window.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!");
-                    mui.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!","警告","确定")
-                }
-                else {
-                    let RWBH = window.location.search.split("?")[1];
-                let Alltemp = {
-                    TASK_ID: window.location.search.split("?")[1].split("=")[2],
-                    JCJG: radiovalue,
-                    ZGYQ: document.getElementById("describe").value,
-                    WTMS: document.getElementById("Requirement").value,
-                    FWID: FWID
-                };   
-                Alltemp.RESULT_DETAIL = temp;
-                if (qualified && temp.JCJG == 1) {
-                    window.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!")
-                }
-                else {
-                     mui.ajax('PostCheckResult', {
+            else {
+                mui.ajax('PostCheckResult', {
                     type: 'post',
                     data: Alltemp,
                     timeout: 50000,
@@ -213,8 +271,8 @@
 
                     },
                 })
-                }
-               
-                }
             }
-        </script>
+
+        }
+    }
+</script>

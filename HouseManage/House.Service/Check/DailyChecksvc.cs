@@ -72,7 +72,10 @@ namespace House.Service
             //})
             //    .ToList();
             //return list;
-            var list = DB.Db().Queryable
+            List<wy_task_detail_config> list;
+            using (var db = DB.Db())
+            {
+                list = db.Queryable
                 <wy_check_task, wy_map_checkplandetail, wy_checkplan_detail, wy_map_region, wy_houseinfo, wy_task_detail_config, wy_task_detail_config, wy_region_director>
                 ((a, b, c, d, e, f, g, h) => new object[] {
                     JoinType.Inner,a.TASK_ID==b.TASK_ID,
@@ -84,7 +87,7 @@ namespace House.Service
                     JoinType.Inner,e.SSQY==h.SSQY&&h.IS_DELETE==0
                 })
                 .Where((a, b, c, d, e, f, g, h) => a.TASK_ID == TASK_ID && e.FWID == FWID && h.WX_OPEN_ID == OPEN_ID)
-                .GroupBy((a, b, c, d, e, f, g, h)=>new { g.ID,g.ParentID,g.Name,g.Code})
+                .GroupBy((a, b, c, d, e, f, g, h) => new { g.ID, g.ParentID, g.Name, g.Code })
                 .Select((a, b, c, d, e, f, g, h) => new wy_task_detail_config()
                 {
                     ID = g.ID,
@@ -92,6 +95,7 @@ namespace House.Service
                     Name = g.Name,
                     Code = g.Code
                 }).ToList();
+            }
             return list;
         }
 
