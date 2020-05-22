@@ -14,6 +14,7 @@ namespace HouseManage.Controllers
 {
     public class ControllerBase : Controller
     {
+        protected string RequestSource => HttpContext.Request.Headers["Referer"];
         #region infomation of user.
         protected string OpenID => Request.HttpContext.User.Identity.Name;
         protected string UserID => Request.HttpContext.User.FindFirst("Uid")?.Value;

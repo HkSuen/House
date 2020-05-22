@@ -9,15 +9,19 @@ using House.IService;
 using House.IService.Common;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
+using House.IService.Common.Sign;
+using Microsoft.Extensions.Logging;
 
 namespace HouseManage.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
         private IWeiXinSingle _wx = null;
-        public HomeController(IWeiXinSingle wx) // wx里面有获取sesion的方法
+        ILogger<HomeController> _log;
+        public HomeController(IWeiXinSingle wx, ILogger<HomeController> log) // wx里面有获取sesion的方法
         {
             this._wx = wx;
+            this._log = log;
         }
 
         /// <summary>
@@ -42,6 +46,16 @@ namespace HouseManage.Controllers
         public string Register()
         {
             return _wx.GetOpenId();
+        }
+
+        [HttpPost]
+        public JsonResult SDKCON(string url)
+        {
+            this._log.LogInformation($"请求来源地址：{RequestSource}");
+            bool valid = System.Web.HttpUtility.UrlDecode(url, System.Text.Encoding.UTF8) == RequestSource;
+            object data = _wx.JsApiSignature(RequestSource);
+            this._log.LogInformation($"微信配置参数：{JsonConvert.SerializeObject(data)}");
+            return OK(data);
         }
     }
 }

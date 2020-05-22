@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     @model List<Data.MSSQL.Model.Data.wy_task_detail_config>
 }
+<script src="~/wxstatic/js/wx.confg.js"></script>
 <style type="text/css">
     a:link {
         text-decoration: none; /* 指正常的未被访问过的链接*/
@@ -20,18 +21,18 @@
     a:active {
         text-decoration: none; /* 指正在点的链接*/
 </style>
-    <div id="popover" class="mui-popover">
-        <div class="mui-popover-arrow"></div>
-        <div class="mui-scroll-wrapper" id="scroll">
-            <div class="mui-scroll">
-                <ul class="mui-table-view" id="menu">
-                    <li class="mui-table-view-cell">
-                        <input type="search" id="search" class="mui-input-clear" placeholder="请输入商户编号或名称" style="margin-bottom:0px">
-                    </li>
-                </ul>
-            </div>
+<div id="popover" class="mui-popover">
+    <div class="mui-popover-arrow"></div>
+    <div class="mui-scroll-wrapper" id="scroll">
+        <div class="mui-scroll">
+            <ul class="mui-table-view" id="menu">
+                <li class="mui-table-view-cell">
+                    <input type="search" id="search" class="mui-input-clear" placeholder="请输入商户编号或名称" style="margin-bottom:0px">
+                </li>
+            </ul>
         </div>
     </div>
+</div>
 <div id="main-container" class="mui-content mui-scroll-wrapper" style="height:100%">
     <div class="mui-scroll">
         <div class="mui-card">
@@ -101,11 +102,28 @@
                         <input type="text" class="mui-input-clear" placeholder="请输入整改要求" style="width:95%" id="Requirement" value="">
                     </div>
                 </div>
+                <div class="mui-row">
+                    <div class="mui-col-sm-3 mui-col-xs-3" style="padding-left:10px;padding-bottom:5px;padding-top:14px;">
+                        <label>问题图片:</label>
+                    </div>
+                    <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;" id="imgcontent">
+                    </div>
+                    <style type="text/css">
+                        img {
+                            width: 29%;
+                            height: 29%;
+                            margin:0 3px;
+                        }
+                    </style>
+                </div>
+                <div class="mui-row">
+                    <a href="javascript:void(0);" id="uploadFile" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined" style="padding: 5px 20px;">上传图片</a>
+                </div>
             </div>
         </div>
         <button type="button" class="mui-btn mui-btn-primary" style="width:100%" onclick="submit()">提交</button>
 
-
+        <img id="img1" />
     </div>
 
 </div>
@@ -114,6 +132,7 @@
     var FWID;
     var temp = {};
     jq = $;
+    var imgs = [];
     (function ($) {
         $.init({
             swipeBack: true
@@ -126,12 +145,37 @@
         jq("#search").on("input", function () {
             reloadStore(this.value);
         });
-
+        var InnerImg = function (idx, url, img) {
+            return "<img src='"+url+"' url='" + url + "' idx='" + idx + "'>";
+            //return "<img src='data:image/jpeg;base64," + img + "' url='" + url + "' idx='" + idx + "'>";
+        }
+        var b = new wxCon();
+        jq("#uploadFile").on("tap", function () {
+            jq(this).text("重新上传");
+            b.taskLocalPicData(function (idx, url, img) {
+                imgs.push(img);
+                jq("#imgcontent").append(InnerImg(idx, url, img));
+                loadListen();
+            }, function (picUrls) {
+                imgs = [];
+                jq("#imgcontent").empty();
+            })
+        });
+        var loadListen = function () {
+            jq("#imgcontent img").on("tap", function () {
+                b.previewImage(imgs,jq(this).attr("url"));
+            })
+        }
+        loadListen();
     })(mui);
+
+
+
     var storeInfo = [];
     var id = null;
     //mui('.bottomPopover').popover('toggle');
     window.onload = function () {
+        
         var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
         var idArray = window.location.search.split("?");
         id = idArray[1];
@@ -152,7 +196,7 @@
 
     }
 
-    function dataFilter(storeN,data) {
+    function dataFilter(storeN, data) {
         if (data.length > 0) {
             data = data.filter(function (item) {
                 if (item.SHOP_NAME.indexOf(storeN) != -1 || item.SHOPBH.indexOf(storeN) != -1) {
@@ -250,7 +294,8 @@
                 JCJG: radiovalue,
                 ZGYQ: document.getElementById("describe").value,
                 WTMS: document.getElementById("Requirement").value,
-                FWID: FWID
+                FWID: FWID,
+                IMGS: JSON.stringify(imgs)
             };
             Alltemp.RESULT_DETAIL = temp;
             if (qualified && temp.JCJG == 1) {

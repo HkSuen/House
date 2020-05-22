@@ -139,5 +139,12 @@ namespace Data.MSSQL.Model.Data
            /// </summary>           
            public int? IS_REVIEW {get;set;}
 
+           /// <summary>
+           /// Desc:问题图片
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public string IMGS {get;set;}
+
     }
 }

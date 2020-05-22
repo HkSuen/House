@@ -108,5 +108,7 @@ namespace House.IService.Common
         /// <param name="remark"></param>
         /// <param name="url"></param>
         void MusicMessage(string touserName, string formUserName, string title, string remark, string url);
+
+        object JsApiSignature(string requestUrl);
     }
 }

@@ -84,7 +84,7 @@ namespace Data.MSSQL.Model.Data
            public DateTime? YXQZ {get;set;}
 
            /// <summary>
-           /// Desc:
+           /// Desc:缴费方式 备注：0：现场缴费 1：网上缴费
            /// Default:
            /// Nullable:True
            /// </summary>           

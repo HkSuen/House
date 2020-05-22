@@ -326,7 +326,7 @@ namespace HouseManage.Controllers.Order
             {
                 RECORD_ID = Order.RECORD_ID,
                 JFZT = 1,
-                JFRQ = DateTime.Now,
+                JFRQ = Order.PAY_TIME,
                 PAY_WAY = 1,
                 JFJE = (Order.TOTAL_FEE / 100.00)
             });

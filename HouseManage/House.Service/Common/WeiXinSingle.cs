@@ -23,8 +23,8 @@ namespace House.Service.Common
     {
         private IHttpContextAccessor _httpContext = null;
         private ISignSingle _sign = null;
-        private string AppId => Config.JsonReader.Get("WxInfo:AppId");
-        private string AppSecret => Config.JsonReader.Get("WxInfo:AppSecret");
+        private string AppId => CommonFiled.appID;
+        private string AppSecret => CommonFiled.appSecret;
 
         public WinXinSingle(IHttpContextAccessor http, ISignSingle sign)
         {
@@ -105,11 +105,16 @@ namespace House.Service.Common
         /// <returns></returns>
         public AccessToken GetAccessToken()
         {
-            //请求微信服务器得到accessToken
-            string url = string.Format(@"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={0}&secret={1}",
-                AppId, AppSecret);
-            string access_token = SendGet(url);
-            return JsonConvert.DeserializeObject<AccessToken>(access_token);
+            AccessToken token = new AccessToken();
+            if (token.access_token == null)
+            {
+                //请求微信服务器得到accessToken
+                string url = string.Format(@"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={0}&secret={1}",
+                    AppId, AppSecret);
+                string access_token = SendGet(url);
+                return JsonConvert.DeserializeObject<AccessToken>(access_token);
+            }
+            return token;
         }
 
         public string GetCodeUrl(string url)
@@ -299,9 +304,32 @@ namespace House.Service.Common
 
         public JsApiTicket GetHsJsApiTicket(string accessToken)
         {
-            var url = string.Format("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type=jsapi", accessToken);
-            string ticketjson = SendGet(url);
-            return JsonConvert.DeserializeObject<JsApiTicket>(ticketjson);
+            JsApiTicket ticket = new JsApiTicket();
+            if (ticket.ticket == null)
+            {
+                var url = string.Format("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type=jsapi", accessToken);
+                string ticketjson = SendGet(url);
+                return JsonConvert.DeserializeObject<JsApiTicket>(ticketjson);
+            }
+            return ticket;
         }
+
+        public object JsApiSignature(string requestUrl) {
+            AccessToken accessToken = GetAccessToken();
+            JsApiTicket ticket = GetHsJsApiTicket(accessToken.access_token);
+            string nonceStr = CommonFiled.guid;
+            string timestamp = CommonFiled.unixTime10;
+            var WxConfig = new
+            {
+                debug = false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId = CommonFiled.appID, // 必填，公众号的唯一标识
+                timestamp, // 必填，生成签名的时间戳
+                nonceStr, // 必填，生成签名的随机串
+                jsApiList = new string[] { "chooseImage", "previewImage", "getLocation" }, // 必填，需要使用的JS接口列表
+                signature = GetJsApiSign(nonceStr, ticket.ticket, timestamp, requestUrl)
+            };
+            return WxConfig;
+        }
+
     }
 }
