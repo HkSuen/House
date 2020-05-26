@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using House.IService;
+using HouseManage.Common.Filter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers
 {
-    [Authorize(Roles = "Merchant")]
+    [RolesAuthorize(Roles = new string[] { "Merchant" })]
    // [AllowAnonymous]
     public class ReCheckReviewController : ControllerBase
     {

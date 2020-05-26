@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using Data.MSSQL.Model.Data;
 using House.IService.Merchants;
 using House.IService.Model;
+using HouseManage.Common.Filter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers.Merchants
 {
-    [Authorize(Roles = "Admin,Inspector")]
+    [RolesAuthorize(Roles = new string[] { "Admin", "Inspector" })]
     //[AllowAnonymous]
     public class MerchantsController : ControllerBase
     {

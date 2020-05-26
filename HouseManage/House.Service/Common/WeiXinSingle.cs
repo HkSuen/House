@@ -132,7 +132,7 @@ namespace House.Service.Common
         {
             string openid = "";
             var host1 = _httpContext.HttpContext.Request.Host.Value;
-            var host = CommonFiled.DomainURL; 
+            var host = CommonFiled.DomainURL;
             string url = host + _httpContext.HttpContext.Request.Path.Value;
             //先要判断是否是获取code后跳转过来的
             string code = ParamsQuery("code");
@@ -141,6 +141,30 @@ namespace House.Service.Common
                 //Code为空时，先获取Code
                 string GetCodeUrls = GetCodeUrl(url);
                 _httpContext.HttpContext.Response.Redirect(GetCodeUrls);//先跳转到微信的服务器，取得code后会跳回来这页面的
+            }
+            else
+            {
+                string Code = ParamsQuery("code");
+                openid = GetOauthAccessOpenId(Code)?.openid;//重新取得用户的openid
+                                                            //SetSession("OpenId", Code);
+            }
+            return openid;
+        }
+
+        public string GetOpenId(out string redUrl)
+        {
+            redUrl = "";
+            string openid = "";
+            var host1 = _httpContext.HttpContext.Request.Host.Value;
+            var host = CommonFiled.DomainURL; 
+            string url = host + _httpContext.HttpContext.Request.Path.Value;
+            //先要判断是否是获取code后跳转过来的
+            string code = ParamsQuery("code");
+            if (string.IsNullOrEmpty(code))
+            {
+                //Code为空时，先获取Code
+                redUrl = GetCodeUrl(url);
+                //_httpContext.HttpContext.Response.Redirect(GetCodeUrls);//先跳转到微信的服务器，取得code后会跳回来这页面的
             }
             else
             {

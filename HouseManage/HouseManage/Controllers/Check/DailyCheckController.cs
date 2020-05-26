@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using House.IService;
 using House.IService.Check;
+using HouseManage.Common.Filter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
 namespace HouseManage.Controllers.Check
 {
-    [Authorize(Roles = "Admin,Inspector")]
+    [RolesAuthorize(Roles = new string[] { "Admin", "Inspector" })]
     //[AllowAnonymous]
     public class DailyCheckController : ControllerBase
     {

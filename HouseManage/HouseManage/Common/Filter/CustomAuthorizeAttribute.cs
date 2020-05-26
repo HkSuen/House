@@ -44,7 +44,7 @@ namespace HouseManage.Common.Filter
                     var path = context.HttpContext.Request.Path;
                     var querString = context.HttpContext.Request.QueryString;
                     //2.如果未授权尝试获取openid。
-                    var openId = _wx.GetOpenId();
+                    var openId = _wx.GetOpenId(out string RedirectUrls);
                     //var openId = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
                     if (!string.IsNullOrEmpty(openId)) //opneId参数为空，
                     {
@@ -68,6 +68,10 @@ namespace HouseManage.Common.Filter
                     else
                     {
                         //context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Forbidden); //OPENID为空直接拒绝访问
+                        if (!string.IsNullOrEmpty(RedirectUrls))
+                        {
+                            context.HttpContext.Response.Redirect(RedirectUrls); //增加回调地址
+                        }
                         return;
                     }
                 }

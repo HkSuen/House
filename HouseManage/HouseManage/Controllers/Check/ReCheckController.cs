@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using House.IService.Check;
+using HouseManage.Common.Filter;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
 namespace HouseManage.Controllers.Check
 {
-    [Authorize(Roles = "Admin,Inspector")]
+    [RolesAuthorize(Roles = new string[] { "Admin", "Inspector" })]
     public class ReCheckController : ControllerBase
     {
         private IRecheckSvc recheckSvc;

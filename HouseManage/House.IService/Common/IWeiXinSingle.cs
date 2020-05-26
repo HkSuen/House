@@ -33,6 +33,7 @@ namespace House.IService.Common
         /// </summary>
         /// <returns></returns>
         string GetOpenId();
+        string GetOpenId(out string redUrl);
 
         /// <summary>
         /// 获取Code的地址(地址回调使用的)
