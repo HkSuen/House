@@ -264,15 +264,15 @@
     function CreateListForm() {
         var ele = document.getElementById("statusbutton").firstChild;
     };
-    function pass(id) {
+    function pass(id,name) {
         var ele = document.getElementById(id);
         ele.className = "mui-btn mui-btn-primary";
-        temp[id] = 1;
+        temp[id] = {NAME:name,VALUE:1};
     }
-    function unpass(id) {
+    function unpass(id,name) {
         var ele = document.getElementById(id);
         ele.className = "mui-btn mui-btn-danger";
-        temp[id] = 0;
+        temp[id] = { NAME: name, VALUE: 0 };
         qualified = true;
 
     }
@@ -317,7 +317,7 @@
                 mui.ajax('PostCheckResult', {
                     type: 'post',
                     data: Alltemp,
-                    timeout: 50000,
+                    timeout: 500000,
                     headers: { 'Content-Type': 'application/json' },
                     success: function (data) {
                         if (data.trim().toString() == "success") {

@@ -347,6 +347,7 @@ namespace House.IService.Common
         public static string MsgPayUrl => AppSetting.AppSetting.GetSection("msgUrl:pay");
         public static string MsgUrl => AppSetting.AppSetting.GetSection("msgUrl:url");
         public static string MsgTempId => AppSetting.AppSetting.GetSection("msgtemp:temp");
+        public static string MsgCheckTempId => AppSetting.AppSetting.GetSection("msgtemp:checktemp");
         /// <summary>
         /// 短信的地址
         /// </summary>

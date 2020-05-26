@@ -8,10 +8,10 @@
         <li class="mui-table-view-cell">
             <div class="mui-row" id="list">
                 <div class="mui-col-sm-3 mui-col-xs-3">
-                    <button type="button" class="mui-btn mui-btn-primary" onclick="pass('@item.Code')" value="1">合格</button>
+                    <button type="button" class="mui-btn mui-btn-primary" onclick="pass('@item.Code','@item.Name')" value="1">合格</button>
                 </div>
                 <div class="mui-col-sm-3 mui-col-xs-3">
-                    <button type="button" class="mui-btn mui-btn-danger" onclick="unpass('@item.Code')" value="0">不合格</button>
+                    <button type="button" class="mui-btn mui-btn-danger" onclick="unpass('@item.Code','@item.Name')" value="0">不合格</button>
                 </div>
                 <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
                     <button type="button" class="mui-btn" id="@item.Code" value="0" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>

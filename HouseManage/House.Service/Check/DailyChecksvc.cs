@@ -188,21 +188,22 @@ namespace House.Service
             string detailStr = string.Empty;
             foreach (KeyValuePair<string,object> item in ww)
             {
+                dynamic Result = item.Value;
                 wy_check_result_detail wcrd = new wy_check_result_detail();
                 wcrd.CHECK_DETAIL_ID = Guid.NewGuid().ToString();
                 wcrd.RESULT_ID = RESULT_ID;
                 wcrd.DETAIL_CODE = item.Key;
-                wcrd.CHECK_DETAIL_RESULT =Convert.ToInt32(item.Value);
+                wcrd.CHECK_DETAIL_RESULT =Convert.ToInt32(Result.VALUE);
                 wcrd.CHECK_DETAIL_TIME = DateTime.Now;
                 wcrd.JCR = OPEN_ID;
                 list.Add(wcrd);
                 #region 拼接消息推送
                 if (wcrd.CHECK_DETAIL_RESULT == 0)
                 {
-                    detailStr += item.Key.ToString() + "(不合格);";
+                    detailStr += Result.NAME.ToString() + "(不合格);";
                     continue;
                 }
-                detailStr += item.Key + "(合格);";
+                detailStr += Result.NAME + "(合格);";
                 #endregion
             }
             #region 消息推送
@@ -239,7 +240,7 @@ namespace House.Service
                 sendKey.Add("keyword1", $"{FWBH}-{FWMC}");
                 sendKey.Add("keyword2", $"{JCSJ}");
                 sendKey.Add("keyword3", $"总体检查不合格,检查明细如下:{DetailStr}");
-                MsgHelper.Msg.SendMsg(CommonFiled.MsgUrl, OPENID, sendKey, "tf5SpFDOHhAsCgdfYi-NycpKqB00hypxtx_hdRPP4Kw");
+                MsgHelper.Msg.SendMsg(CommonFiled.MsgUrl, OPENID, sendKey, CommonFiled.MsgCheckTempId);
             }
         }
        
