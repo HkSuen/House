@@ -112,7 +112,7 @@
                         img {
                             width: 29%;
                             height: 29%;
-                            margin:0 3px;
+                            margin: 0 3px;
                         }
                     </style>
                 </div>
@@ -130,9 +130,11 @@
 
 <script>
     var FWID;
+    var UINFO = {};
     var temp = {};
     jq = $;
     var imgs = [];
+    var imgsbase = [];
     (function ($) {
         $.init({
             swipeBack: true
@@ -146,7 +148,7 @@
             reloadStore(this.value);
         });
         var InnerImg = function (idx, url, img) {
-            return "<img src='"+url+"' url='" + url + "' idx='" + idx + "'>";
+            return "<img src='" + img + "' url='" + url + "' idx='" + idx + "' />";
             //return "<img src='data:image/jpeg;base64," + img + "' url='" + url + "' idx='" + idx + "'>";
         }
         var b = new wxCon();
@@ -154,16 +156,18 @@
             jq(this).text("重新上传");
             b.taskLocalPicData(function (idx, url, img) {
                 imgs.push(img);
+                imgsbase.push(url);
                 jq("#imgcontent").append(InnerImg(idx, url, img));
                 loadListen();
             }, function (picUrls) {
                 imgs = [];
+                imgsbase = [];
                 jq("#imgcontent").empty();
             })
         });
         var loadListen = function () {
             jq("#imgcontent img").on("tap", function () {
-                b.previewImage(imgs,jq(this).attr("url"));
+                b.previewImage(imgsbase, jq(this).attr("url"));
             })
         }
         loadListen();
@@ -175,7 +179,7 @@
     var id = null;
     //mui('.bottomPopover').popover('toggle');
     window.onload = function () {
-        
+
         var height = (window.innerHeight > 0) ? window.innerHeight : screen.height; //当前加载的浏览器的高度
         var idArray = window.location.search.split("?");
         id = idArray[1];
@@ -234,6 +238,10 @@
                 document.getElementById("SHOP_NAME").innerHTML = copydata.SHOP_NAME;
                 document.getElementById("SHOP_NAME").value = copydata.SHOP_NAME;
                 FWID = copydata.FWID;
+                UINFO.OPID = copydata.SENDID;
+                UINFO.ZHXM = copydata.ZHXM;
+                UINFO.FWBH = copydata.FWBH;
+                UINFO.FWMC = copydata.FWMC;
                 mui.ajax("PartCreateCheckResult?FWID=" + FWID + "&TASK_ID=" + id.split("=")[2], {
                     type: "get",
                     success(data) {
@@ -302,6 +310,10 @@
                 window.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!")
             }
             else {
+                Alltemp.OPID = UINFO.OPID;
+                Alltemp.ZHXM = UINFO.ZHXM;
+                Alltemp.FWBH = UINFO.FWBH;
+                Alltemp.FWMC = UINFO.FWMC;
                 mui.ajax('PostCheckResult', {
                     type: 'post',
                     data: Alltemp,

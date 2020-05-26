@@ -5,7 +5,7 @@
     var FWINFO = ViewBag.FWINFO as List<Data.MSSQL.Model.BusinessModel.SimpleShopInfo>;
     var CHECKINFO = ViewBag.CHECKINFO as List<Data.MSSQL.Model.BusinessModel.SimpleCheckResultDetail>;
 }
-    <script src="~/wxstatic/js/wx.confg.js"></script>
+<script src="~/wxstatic/js/wx.confg.js"></script>
 <div id="popover" class="mui-popover">
     <div class="mui-scroll-wrapper" id="scroll">
         <div class="mui-scroll">
@@ -22,10 +22,10 @@
             <div class="mui-card-content">
                 <div class="mui-row">
                     <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                        商户编号:<label id="SHOPBH" >@FWINFO[0].SHOPBH</label>
+                        商户编号:<label id="SHOPBH">@FWINFO[0].SHOPBH</label>
                     </div>
                     <div class="mui-col-sm-6 mui-col-xs-6" style="padding-left:10px;padding-bottom:5px;padding-top:10px;">
-                        租户姓名:<label id="ZHXM" >@FWINFO[0].ZHXM</label>
+                        租户姓名:<label id="ZHXM">@FWINFO[0].ZHXM</label>
                     </div>
                 </div>
                 <div class="mui-row">
@@ -56,7 +56,7 @@
                                     if (item.CHECK_DETAIL_RESULT == 0)
                                     {
                                         <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
-                                            <button type="button" class="mui-btn mui-btn-danger" id="@item.CHECK_RESULT_ID"  value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
+                                            <button type="button" class="mui-btn mui-btn-danger" id="@item.CHECK_RESULT_ID" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                     else if (item.CHECK_DETAIL_RESULT == 1)
@@ -142,6 +142,13 @@
                         <label>问题图片:</label>
                     </div>
                     <div class="mui-col-sm-9 mui-col-xs-9" style="padding-left:10px;padding-bottom:5px;padding-top:5px;" id="imgcontent">
+                        @{
+                            var imgs = ViewBag.IMGS;
+                            for (var i = 0; i < imgs.Length; i++)
+                            {
+                                <img src="@imgs[i]" />
+                            }
+                        }
                     </div>
                     <style type="text/css">
                         img {
@@ -163,41 +170,45 @@
 
 </div>
 <script>
-    (function ($) {
+    var imgs = [];
+    var imgsBase = [];
+    (function ($,jq) {
         $.init({
-            swipeBack: true
+                                swipeBack: true
         });
         //阻尼系数
         var deceleration = mui.os.ios ? 0.003 : 0.0009;
-        mui('.mui-scroll-wrapper').scroll({
+            mui('.mui-scroll-wrapper').scroll({
             deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
-        });
+            });
         jq("#search").on("input", function () {
-            reloadStore(this.value);
-        });
+                                    reloadStore(this.value);
+                                });
         var InnerImg = function (idx, url, img) {
-            return "<img src='" + url + "' url='" + url + "' idx='" + idx + "'>";
+            return "<img src='" + img + "' url='" + url + "' idx='" + idx + "'>";
             //return "<img src='data:image/jpeg;base64," + img + "' url='" + url + "' idx='" + idx + "'>";
         }
-        var b = new wxCon();
-        jq("#uploadFile").on("tap", function () {
-            jq(this).text("重新上传");
-            b.taskLocalPicData(function (idx, url, img) {
-                imgs.push(img);
-                jq("#imgcontent").append(InnerImg(idx, url, img));
-                loadListen();
-            }, function (picUrls) {
-                imgs = [];
-                jq("#imgcontent").empty();
-            })
+                            var b = new wxCon();
+                            jq("#uploadFile").on("tap", function () {
+                                jq(this).text("重新上传");
+                                b.taskLocalPicData(function (idx, url, img) {
+                                    imgs.push(img);
+                                    imgsBase.push(url);
+                                    jq("#imgcontent").append(InnerImg(idx, url, img));
+                                    loadListen();
+                                }, function (picUrls) {
+                                        imgs = [];
+                                        imgsBase = [];
+                                    jq("#imgcontent").empty();
+                                })
         });
         var loadListen = function () {
             jq("#imgcontent img").on("tap", function () {
-                b.previewImage(imgs, jq(this).attr("url"));
+                b.previewImage(imgsBase, jq(this).attr("url"));
             })
         }
         loadListen();
-    })(mui);
+    })(mui,$);
 
     var temp = {
         RESULT_ID: '@ViewBag.FWINFO[0].RESULT_ID',
@@ -208,7 +219,7 @@
         CHECK_DETAIL_RESULT: [],
         INSERTINFO: {},
     };
-   
+
     mui('.bottomPopover').popover('toggle');
     window.onload = function () {
         var height = document.documentElement.clientWidth;
@@ -320,6 +331,9 @@
             mui.alert("检查详情中有不合格的项，总体检查结果不能为合格！请确认!","警告","确定")
         }
         else {
+            if (imgs.length > 0) {
+                temp.IMGS = JSON.stringify(imgs);
+            }
             mui.ajax('PostUpdateCheckResult', {
             type: 'post',
             data: temp,
@@ -335,7 +349,7 @@
             },
         })
         }
-       
+
     }
 </script>
 

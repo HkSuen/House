@@ -3,6 +3,8 @@ using Data.MSSQL.Model.BusinessModel;
 using Data.MSSQL.Model.Data;
 using House.IService;
 using House.IService.Check;
+using House.IService.Common;
+using House.IService.Common.Message;
 using Newtonsoft.Json.Linq;
 using SqlSugar;
 using System;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace House.Service
 {
@@ -29,12 +32,13 @@ namespace House.Service
                     JoinType.Inner,a.TASK_ID==b.TASK_ID,
                     JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID&&c.IS_DELETE==0,
                     JoinType.Inner,c.PLAN_DETAIL_ID==d.PLAN_DETAIL_ID,
-                    JoinType.Inner,d.REGION_CODE==e.SSQY&&e.WX_OPEN_ID==OPEN_ID
+                    JoinType.Inner,d.REGION_CODE==e.SSQY && e.WX_OPEN_ID==OPEN_ID
                 })
                 .WhereIF(!string.IsNullOrEmpty(statrtime), a => a.RWKSSJ >= DateTime.Parse(statrtime))
                 .WhereIF(!string.IsNullOrEmpty(endtime), a => a.RWJSSJ <= DateTime.Parse(endtime))
                 .Where(a=>a.IS_DELETE==0)
                 .GroupBy(a => new { a.TASK_ID })
+                .OrderBy(a => new { a.CJSJ },OrderByType.Desc)
                 .Skip((page-1)*limit).Take(limit).ToList();
             return list;
         }
@@ -49,6 +53,7 @@ namespace House.Service
             //    a.TASK_ID ==SqlFunc.Subqueryable<wy_check_task>().Where(s=>s.RWBH==RWBH).Select(s=>s.TASK_ID)
             //&&a.IS_DELETE==0&&a.JCR==OPEN_ID
             )
+                .OrderBy((a,b,c) => new { a.CJSJ},OrderByType.Desc)
                 .Select<TaskListModel>()
                 .Skip((page - 1) * limit).Take(limit).ToList();
             return list;
@@ -121,13 +126,16 @@ namespace House.Service
                 JoinType.Inner,f.CZ_SHID==g.CZ_SHID&&g.IS_DELETE==0
             }).Where((a, b, c, d, e, f, g) => a.TASK_ID == TASK_ID
             && SqlFunc.Subqueryable<wy_check_result>().Where(t => t.TASK_ID == TASK_ID&&f.FWID==t.FWID).NotAny())
-            .GroupBy((a, b, c, d, e, f, g) => new { f.FWID,g.ZHXM,g.SHOP_NAME,g.SHOPBH})
+            .GroupBy((a, b, c, d, e, f, g) => new { f.FWID,g.ZHXM,g.SHOP_NAME,g.SHOPBH,g.OPEN_ID,f.FWBH,f.FWMC})
             .Select((a, b, c, d, e, f, g) => new SimpleShopInfo()
             {
                 FWID = f.FWID,
                 ZHXM = g.ZHXM,
                 SHOP_NAME = g.SHOP_NAME,
-                SHOPBH = g.SHOPBH
+                SHOPBH = g.SHOPBH,
+                SENDID = g.OPEN_ID,
+                FWBH = f.FWBH,
+                FWMC = f.FWMC
             }).ToList();
 
             //var sql = DB.Db().Queryable<wy_check_task, wy_map_checkplandetail, wy_checkplan_detail, wy_map_region, wy_region_director, wy_houseinfo, wy_shopinfo>
@@ -152,7 +160,8 @@ namespace House.Service
 
         }
 
-        public string PostCheckResult(Dictionary<string,object> d,string OPEN_ID)
+        public string PostCheckResult(Dictionary<string,object> d,string OPEN_ID,
+            Action<bool,string,string,string, string, string, DateTime?> sendMsg = null)
         {
             wy_check_result wcr = new wy_check_result();
             Dictionary<string, object> ww = JObject.FromObject(d["RESULT_DETAIL"]).ToObject<Dictionary<string, object>>();
@@ -176,7 +185,8 @@ namespace House.Service
             wcr.JCCS = 0;
             wcr.IS_REVIEW = 0;
             List<wy_check_result_detail> list = new List<wy_check_result_detail>();
-            foreach(KeyValuePair<string,object> item in ww)
+            string detailStr = string.Empty;
+            foreach (KeyValuePair<string,object> item in ww)
             {
                 wy_check_result_detail wcrd = new wy_check_result_detail();
                 wcrd.CHECK_DETAIL_ID = Guid.NewGuid().ToString();
@@ -186,7 +196,24 @@ namespace House.Service
                 wcrd.CHECK_DETAIL_TIME = DateTime.Now;
                 wcrd.JCR = OPEN_ID;
                 list.Add(wcrd);
+                #region 拼接消息推送
+                if (wcrd.CHECK_DETAIL_RESULT == 0)
+                {
+                    detailStr += item.Key.ToString() + "(不合格);";
+                    continue;
+                }
+                detailStr += item.Key + "(合格);";
+                #endregion
             }
+            #region 消息推送
+            if (sendMsg == null)
+            {
+                sendMsg = SendMsg;
+            }
+            bool IsSend = d.TryGetValue("OPID", out object OPID);
+            sendMsg(wcr.JCJG == 0 && IsSend && !string.IsNullOrEmpty(OPID?.ToString()), OPID?.ToString(), d["ZHXM"].ToString(),d["FWBH"].ToString()
+                ,d["FWMC"].ToString(),detailStr, wcr.JCSJ);
+            #endregion
             try
             {
                 DB.Db().BeginTran();
@@ -203,6 +230,18 @@ namespace House.Service
             
         }
 
+        public void SendMsg(bool Send,string OPENID,string ZHXM,string FWBH,string FWMC, string DetailStr, DateTime? JCSJ)
+        {
+            if (Send)
+            {
+                Dictionary<string, object> sendKey = new Dictionary<string, object>();
+                sendKey.Add("first", $"尊敬的用户{ZHXM}您好,您的房屋整改情况如下:");
+                sendKey.Add("keyword1", $"{FWBH}-{FWMC}");
+                sendKey.Add("keyword2", $"{JCSJ}");
+                sendKey.Add("keyword3", $"总体检查不合格,检查明细如下:{DetailStr}");
+                MsgHelper.Msg.SendMsg(CommonFiled.MsgUrl, OPENID, sendKey, "tf5SpFDOHhAsCgdfYi-NycpKqB00hypxtx_hdRPP4Kw");
+            }
+        }
        
 
         public List<SimpleShopInfo> GetEditShopInfo(string RESULT_ID)
@@ -297,8 +336,17 @@ namespace House.Service
                     };
                     list1.Add(item1);
                 }
+                bool imgSte = d.TryGetValue("IMGS", out object IMGS);
                 DB.Db().BeginTran();
-                DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID,it.JCR,it.JCSJ,it.CJR,it.CJSJ,it.IS_DELETE,it.JCCS,it.IS_REVIEW }).ExecuteCommand();
+                if (imgSte)
+                {
+                    wcr.IMGS = IMGS.ToString();
+                    DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID, it.JCR, it.JCSJ, it.CJR, it.CJSJ, it.IS_DELETE, it.JCCS, it.IS_REVIEW}).ExecuteCommand();
+                }
+                else
+                {
+                    DB.Db().Updateable(wcr).IgnoreColumns(it => new { it.TASK_ID, it.FWID, it.JCR, it.JCSJ, it.CJR, it.CJSJ, it.IS_DELETE, it.JCCS, it.IS_REVIEW, it.IMGS }).ExecuteCommand();
+                }
                 DB.Db().Updateable(list).IgnoreColumns(it => new { it.DETAIL_CODE,it.JCR,it.RESULT_ID }).ExecuteCommand();
                 DB.Db().Insertable(list1).ExecuteCommand();
                 DB.Db().CommitTran();
@@ -318,12 +366,16 @@ namespace House.Service
               }).Where((a, b) => a.RESULT_ID == RESULT_ID).Select((a, b) => new
               {
                   TASK_ID = b.TASK_ID,
-                  RWBH = b.RWBH
+                  RWBH = b.RWBH,
+                  a.IMGS
               }).First();
+            if (null == item)
+                return null;
             Dictionary<string, string> d = new Dictionary<string, string>()
             {
                 {"TASK_ID",item.TASK_ID },
-                {"RWBH",item.RWBH }
+                {"RWBH",item.RWBH },
+                {"IMGS",item.IMGS }
             };
             return d;
         }

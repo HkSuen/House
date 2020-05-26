@@ -78,8 +78,20 @@ namespace HouseManage.Controllers.Check
         public IActionResult EditCheckResult(string RESULT_ID)
         {
             Dictionary<string, string> d = dailyCheckSvc.RWHBANDTask_ID(RESULT_ID);
+            if (d == null)
+                return View();
             ViewBag.RWBH = d["RWBH"];
             ViewBag.TASK_ID = d["TASK_ID"];
+            ViewBag.IMGStr = d["IMGS"];
+            bool ImgSte = d.TryGetValue("IMGS",out string IMGS);
+            if (ImgSte && !string.IsNullOrEmpty(IMGS))
+            {
+                ViewBag.IMGS = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(IMGS);
+            }
+            else
+            {
+                ViewBag.IMGS = new string[0];
+            }
             ViewBag.FWINFO= dailyCheckSvc.GetEditShopInfo(RESULT_ID);
             ViewBag.CHECKINFO = dailyCheckSvc.GetEditTaskResultFormInfo(RESULT_ID);
             return View();

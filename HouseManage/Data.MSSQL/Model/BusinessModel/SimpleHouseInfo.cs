@@ -11,6 +11,9 @@ namespace Data.MSSQL.Model.BusinessModel
         public string ZHXM { get; set; }
         public string SHOP_NAME { get; set; }
         public string SHOPBH { get; set; }
+        public string SENDID { get; set; }
+        public string FWBH { get; set; }
+        public string FWMC { get; set; }
 
         public int JCJG { get; set; }
         public string ZGYQ { get; set; }

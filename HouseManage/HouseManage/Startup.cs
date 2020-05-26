@@ -40,21 +40,23 @@ namespace HouseManage
             services.Configure<WebEncoderOptions>(options =>
                  options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.BasicLatin,
         UnicodeRanges.CjkUnifiedIdeographs));
-            services.AddSession(config=> {
+            services.AddSession(config =>
+            {
                 config.IdleTimeout = TimeSpan.FromMinutes(30);
             });
 
-            services.AddMvc(config=> 
+            services.AddMvc(config =>
             {  // register authorizefilter .
                 config.Filters.Add(typeof(CustomAuthorizeAttribute));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(opt =>
                     {
                         opt.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();//json字符串大小写原样输出
-                    }); ;
+                    });
             //添加认证Cookie信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
              .AddCookie(options =>
              {
+                 options.LoginPath = new PathString("/WeChat/home/error");
                  options.AccessDeniedPath = new PathString("/WeChat/home/error");
              });
             return AutofacConfig.Register(services);

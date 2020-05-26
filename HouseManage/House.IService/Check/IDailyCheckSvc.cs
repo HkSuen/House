@@ -50,7 +50,7 @@ namespace House.IService.Check
         /// <param name="d"></param>
         /// <param name="OPEN_ID"></param>
         /// <returns></returns>
-        string PostCheckResult(Dictionary<string, object> d,string OPEN_ID);
+        string PostCheckResult(Dictionary<string, object> d,string OPEN_ID, Action<bool, string, string, string, string, string, DateTime?> sendMsg = null);
         /// <summary>
         /// 获取修改页面的商户信息
         /// </summary>

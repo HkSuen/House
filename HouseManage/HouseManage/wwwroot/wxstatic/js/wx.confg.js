@@ -68,7 +68,7 @@ wxCon.prototype = {
                 }
             }.bind(this),
             fail: function (res) {
-                alert("take pictrue of fail");
+                alert("take pictrue of fail" + JSON.stringify(res));
                 //alterShowMessage("操作提示", JSON.stringify(res), "1", "确定", "", "", "");
             }
         });
@@ -84,8 +84,14 @@ wxCon.prototype = {
             localId: localId, // 图片的localID
             success: function (res) {
                 if (this.IsFunc(callback)) {
-                    if (res.localData != "" && res.localData != undefined) {
-                        callback(res.localData);
+                    var localData = res.localData;
+                    if (localData != "" && localData != undefined) {
+                        if (localData.indexOf('data:image') != 0) {
+                            //判断是否有这样的头部                                               
+                            localData = 'data:image/jpeg;base64,' + localData
+                        }
+                        localData = localData.replace(/\r|\n/g, '').replace('data:image/jgp', 'data:image/jpeg')
+                        callback(localData);
                     }
                 }
             }.bind(this)
