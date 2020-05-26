@@ -54,11 +54,7 @@ namespace HouseManage
                     });
             //添加认证Cookie信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-             .AddCookie(options =>
-             {
-                 options.LoginPath = new PathString("/WeChat/home/error");
-                 options.AccessDeniedPath = new PathString("/WeChat/home/error");
-             });
+             .AddCookie();
             return AutofacConfig.Register(services);
         }
 

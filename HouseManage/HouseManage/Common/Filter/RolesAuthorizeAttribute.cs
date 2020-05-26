@@ -24,9 +24,9 @@ namespace HouseManage.Common.Filter
         //private readonly IUser
 
         public async void OnAuthorization(AuthorizationFilterContext context)
-        {           
+        {
             if (!Roles.Any(context.HttpContext.User.IsInRole)) {
-                context.HttpContext.Response.Redirect("/WeChat/Home/Error");
+                context.Result = new RedirectResult("/WeChat/Home/Error");
                 return;
             }
         }

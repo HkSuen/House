@@ -52,7 +52,8 @@ namespace HouseManage.Common.Filter
                         UserDto userDto = this._users.FindUserByOpenId(openId);
                         if (userDto == null || string.IsNullOrEmpty(userDto.PHONE)) //未注册
                         {
-                            context.HttpContext.Response.Redirect(CommonFiled.RegisterUrl+"?uid="+openId+"&redirect=" + path + querString); //增加回调地址
+                            string registerUrl = CommonFiled.RegisterUrl + "?uid=" + openId + "&redirect=" + path + querString;
+                            context.Result = new RedirectResult(registerUrl); //增加回调地址
                             return;
                         }
                         //4.openid 注册过以后，增加登录授权。
@@ -70,7 +71,7 @@ namespace HouseManage.Common.Filter
                         //context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Forbidden); //OPENID为空直接拒绝访问
                         if (!string.IsNullOrEmpty(RedirectUrls))
                         {
-                            context.HttpContext.Response.Redirect(RedirectUrls); //增加回调地址
+                            context.Result = new RedirectResult(RedirectUrls);
                         }
                         return;
                     }
