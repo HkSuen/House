@@ -23,22 +23,22 @@ namespace House.Service.Users
         public int WXRegister(string phone, string type, string openId)
         {
             int state = -1;
-            if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(openId))
+            if (string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(openId)) /*string.IsNullOrEmpty(type) ||*/
             {
                 return state; //参数不正确
             }
-            if (type == URole.Admin.GetEnumDescription()) // admin 
-            {
+            //if (type == URole.Admin.GetEnumDescription()) // admin 
+            //{
                 UpdateOpenId<ts_uidp_userinfo>(phone, openId, GetUserSingleByPhone, UpdateUserInfo, out state);
-            }
-            if (type == URole.Inspector.GetEnumDescription()) // inspector 
-            {
+            //}
+            //if (type == URole.Inspector.GetEnumDescription()) // inspector 
+            //{
                 UpdateOpenId<wy_region_director>(phone, openId, GetDirSingleByPhone, UpdateRegionDirector, out state);
-            }
-            if (type == URole.Merchant.GetEnumDescription()) // merchant 
-            {
+            //}
+            //if (type == URole.Merchant.GetEnumDescription()) // merchant 
+            //{
                 UpdateOpenId<wy_shopinfo>(phone, openId, GetShopSingleByPhone, UpdateShopInfo, out state);
-            }
+            //}
             return state;
         }
 

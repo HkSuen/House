@@ -54,7 +54,12 @@ namespace HouseManage
                     });
             //添加认证Cookie信息
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-             .AddCookie();
+             .AddCookie(cookie =>
+             {
+                 cookie.Cookie.HttpOnly = true; // only server read cookie
+                 cookie.ExpireTimeSpan = TimeSpan.FromMinutes(60); // add 60  expire time
+                 cookie.SlidingExpiration = true; //
+             });
             return AutofacConfig.Register(services);
         }
 
