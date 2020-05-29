@@ -10,8 +10,8 @@
                 <li class="mui-table-view-cell mui-collapse">
                     <a class="mui-navigate-right" href="#">查询条件</a>
                     <div class="mui-collapse-content" style="text-align:center">
-                        <div class="mui-row">
-                            <div class="mui-col-sm-2 mui-col-xs-2">
+                        <div class="mui-row" style="display:none">
+                            <div class="mui-col-sm-2 mui-col-xs-2" >
                                 <label style="font-size:13px;">商户状态:</label>
                             </div>
                             <div class="mui-col-sm-5 mui-col-xs-5">
@@ -24,17 +24,18 @@
                             </div>
                         </div>
                         <div class="mui-row">
-                            <div class="mui-col-sm-2 mui-col-xs-2">
+                            <div class="mui-col-sm-4 mui-col-xs-4">
+                                <label style="font-size:18px;">起止时间:</label>
                             </div>
-                            <div class="mui-col-sm-5 mui-col-xs-5" style="padding-right: 20px;">
+                            <div class="mui-col-sm-4 mui-col-xs-4" style="padding-right: 20px;">
                                 <input type="text" value="" class="mui-input-clear" placeholder="开始时间" id="startTime" onclick="SetStartTime()">
                             </div>
-                            <div class="mui-col-sm-5 mui-col-xs-5">
+                            <div class="mui-col-sm-4 mui-col-xs-4">
                                 <input type="text" value="" class="mui-input-clear" placeholder="结束时间" id="endTime" onclick="SetEndTime()">
                             </div>
                         </div>
                         <div class="mui-row">
-                            <button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search" onclick="getList()">查询</button>
+                            <button type="button" class="mui-btn mui-btn-primary mui-icon mui-icon-search" onclick="getQueryList()">查询</button>
                         </div>
                     </div>
                 </li>
@@ -130,6 +131,33 @@
             document.getElementById("endTime").value = selectItems.y.text + "/" + selectItems.m.text + "/" + selectItems.d.text;
         });
     };
+    function getQueryList() {
+        var ele = document.getElementsByName("radio1");
+        let radiovalue = "";
+        for (var i = 0; i < ele.length; i++) {
+            if (ele[i].checked) {
+                radiovalue = ele[i].value;
+            };
+        };
+        temp.page = 1;
+        temp.limit = 10;
+        temp.status = radiovalue;
+        temp.starttime = document.getElementById("startTime").value;
+        temp.endtime = document.getElementById("endTime").value;
+        mui.ajax('PartDailyCheckList', {
+            data: this.temp,
+            type: 'get',
+            //timeout: 50000,
+            //headers: { 'Content-Type': 'application/json' },
+            success: function (data) {
+                var ele = document.getElementById("content").innerHTML;
+                document.getElementById("content").innerHTML = data;
+            },
+            error: function (xhr, type, errorThrown) {
+                console.log(type);
+            }
+        })
+    }
     function getList() {
         var ele = document.getElementsByName("radio1");
         let radiovalue = "";
@@ -141,13 +169,6 @@
         temp.status = radiovalue;
         temp.starttime = document.getElementById("startTime").value;
         temp.endtime = document.getElementById("endTime").value;
-        //temp = {
-        //    status: radiovalue,
-        //    starttime: document.getElementById("startTime").value,
-        //    endtime: document.getElementById("endTime").value,
-        //    limit: 10,
-        //    page: 1
-        //};
         mui.ajax('PartDailyCheckList', {
             data: this.temp,
             type: 'get',

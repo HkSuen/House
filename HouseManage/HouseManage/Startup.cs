@@ -78,7 +78,12 @@ namespace HouseManage
             }
             // 添加全局异常捕获，方便记录日志
             app.UseMiddleware<ExceptionMiddleware>();
-
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyHeader();
+                builder.AllowAnyMethod();
+                builder.AllowAnyOrigin();
+            });
             app.UseAuthentication();
             //app.UseHttpsRedirection();
             app.UseSession();

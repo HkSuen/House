@@ -286,7 +286,7 @@
         };
         var qualified = true;//检查内容详情是否有不合格项
         for (var a in temp) {
-            qualified = qualified && (temp[a] == 1);
+            qualified = qualified && (temp[a].VALUE == 1);
         };
         if (radiovalue == null || radiovalue == "") {
             window.alert("检查结果不能为空！");

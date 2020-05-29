@@ -25,7 +25,7 @@ namespace House.Service
         }
 
         public List<wy_check_task> GetTaskInfo(string status, string statrtime, string endtime,string OPEN_ID,int page,int limit)
-        {
+         {
             var list = DB.Db().Queryable<wy_check_task,wy_map_checkplandetail,wy_checkplan_detail, wy_map_region, wy_region_director>
                 ((a,b,c,d,e) => new object[]
                 {
