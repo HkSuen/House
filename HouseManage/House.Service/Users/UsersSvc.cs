@@ -22,24 +22,25 @@ namespace House.Service.Users
 
         public int WXRegister(string phone, string type, string openId)
         {
-            int state = -1;
+            //int state = -1;
             if (string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(openId)) /*string.IsNullOrEmpty(type) ||*/
             {
-                return state; //参数不正确
+                //return state; //参数不正确
+                return -1; //参数不正确
             }
             //if (type == URole.Admin.GetEnumDescription()) // admin 
             //{
-                UpdateOpenId<ts_uidp_userinfo>(phone, openId, GetUserSingleByPhone, UpdateUserInfo, out state);
+            UpdateOpenId<ts_uidp_userinfo>(phone, openId, GetUserSingleByPhone, UpdateUserInfo, out int userState);
             //}
             //if (type == URole.Inspector.GetEnumDescription()) // inspector 
             //{
-                UpdateOpenId<wy_region_director>(phone, openId, GetDirSingleByPhone, UpdateRegionDirector, out state);
+            UpdateOpenId<wy_region_director>(phone, openId, GetDirSingleByPhone, UpdateRegionDirector, out int direState);
             //}
             //if (type == URole.Merchant.GetEnumDescription()) // merchant 
             //{
-                UpdateOpenId<wy_shopinfo>(phone, openId, GetShopSingleByPhone, UpdateShopInfo, out state);
+            UpdateOpenId<wy_shopinfo>(phone, openId, GetShopSingleByPhone, UpdateShopInfo, out int shopState);
             //}
-            return state;
+            return userState == 1 || direState == 1 || shopState == 1 ?　1 : (userState == 2 || direState == 2 || shopState == 2 ?　2 : 3);
         }
 
         private bool UpdateOpenId<T>(string phone, string openId, Func<string, T> Get, Func<T, bool> Update, out int state)
@@ -47,7 +48,7 @@ namespace House.Service.Users
             dynamic UserInfo = Get(phone);
             if (null != UserInfo)
             {
-                if(typeof(T).FullName.Contains("wy_shopinfo"))
+                if (typeof(T).FullName.Contains("wy_shopinfo"))
                 {
                     UserInfo.OPEN_ID = openId;
                 }
@@ -135,7 +136,7 @@ SELECT USER_ID AS ID, PHONE_MOBILE AS PHONE,WX_OPEN_ID AS OPENID, 'Admin' AS 'AU
   UNION
  SELECT CZ_SHID AS ID,MOBILE_PHONE AS PHONE,OPEN_ID AS OPENID,'Merchant' AS 'AUTHORITY', '3' AS 'Top' FROM wy_shopinfo) AS uModel
     WHERE OPENID =  @OpenId ORDER BY TOP ASC";
-            return this._db.Sql().SqlQuery<UserDto>(Sql,new { OpenId }).FirstOrDefault();
+            return this._db.Sql().SqlQuery<UserDto>(Sql, new { OpenId }).FirstOrDefault();
         }
 
     }

@@ -69,7 +69,12 @@
                     //redirect
                     mui.toast('绑定成功！');
                     mui.showLoading("准备跳转...", "div"); 
-                    window.location.href = jq("#url").val();
+                    //实时刷新时间单位为毫秒  
+                    setInterval('refreshQuery()', 1500);
+                    /* 刷新查询 */
+                    function refreshQuery() {
+                        window.location.href = jq("#url").val();
+                    }  
                     return;
                 }
                 if (result.code == 50001) {

@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HouseManage.Controllers
 {
-    [RolesAuthorize(Roles = new string[] { "Merchant" })]
-   // [AllowAnonymous]
+    //[RolesAuthorize(Roles = new string[] { "Merchant", "Inspector" })]
+    //[AllowAnonymous]
     public class ReCheckReviewController : ControllerBase
     {
         private IReCheckReviewSvc _recheck = null;

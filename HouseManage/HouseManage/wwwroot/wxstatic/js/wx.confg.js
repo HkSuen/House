@@ -43,7 +43,7 @@ wxCon.prototype = {
                 this._config = data;
                 this.registerConfig(data);
             }
-        }.bind(this));
+        }.bind(this), false);
         return this;
     },
     registerConfig: function (config) {
