@@ -33,11 +33,11 @@
                 {
                     <div class="mui-input-row">
                         <label>有效期起</label>
-                        <input type="text" value="@d.YXQS" readonly>
+                        <input type="text" value="@d.YXQS.ToString("yyyy-MM-dd")" readonly>
                     </div>
                     <div class="mui-input-row">
                         <label>有效期止</label>
-                        <input type="text" value="@d.YXQZ" readonly>
+                        <input type="text" value="@d.YXQZ.ToString("yyyy-MM-dd")" readonly>
                     </div>
                 }
                 if (d.JFLX == "1")

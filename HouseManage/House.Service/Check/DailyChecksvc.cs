@@ -38,7 +38,7 @@ namespace House.Service
                 .WhereIF(!string.IsNullOrEmpty(endtime), a => a.RWJSSJ <= DateTime.Parse(endtime))
                 .Where(a=>a.IS_DELETE==0)
                 .GroupBy(a => new { a.TASK_ID })
-                .OrderBy(a => new { a.CJSJ },OrderByType.Desc)
+                .OrderBy(a => new { a.CJSJ,a.RWBH },OrderByType.Desc)
                 .Skip((page-1)*limit).Take(limit).ToList();
             return list;
         }

@@ -68,20 +68,19 @@
                 if (result.code == 1000) {
                     //redirect
                     mui.toast('绑定成功！');
-                    mui.showLoading("准备跳转...", "div"); 
-                    //实时刷新时间单位为毫秒  
-                    setInterval('refreshQuery()', 1500);
-                    /* 刷新查询 */
-                    function refreshQuery() {
+                    mui.showLoading("准备跳转...", "div");
+                    //实时刷新时间单位为毫秒   /* 刷新查询 */
+                    setInterval(function refreshQuery() {
                         window.location.href = jq("#url").val();
-                    }  
+                    }, 1500);
                     return;
-                }
-                if (result.code == 50001) {
-                    mui.alert('您当前的手机号未绑定任何用户，请联系管理员。', '提示', function () {
-                    });
                 } else {
-                    mui.toast(result.msg);
+                    if (result.code == 50001) {
+                        mui.alert('您当前的手机号未绑定任何用户，请联系管理员。', '提示', function () {
+                        });
+                    } else {
+                        mui.toast(result.msg);
+                    }
                 }
             });
         });

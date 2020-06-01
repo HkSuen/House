@@ -44,8 +44,9 @@ namespace HouseManage.Common.Filter
                     var path = context.HttpContext.Request.Path;
                     var querString = context.HttpContext.Request.QueryString;
                     //2.如果未授权尝试获取openid。
-                    var openId = _wx.GetOpenId(out string RedirectUrls);
-                    //var openId = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
+                    string RedirectUrls = string.Empty;
+                    var openId = _wx.GetOpenId(out RedirectUrls);
+                    //var openId = "oAY4Pv4h8eyBSAs4O8psFw6omlsg";
                     if (!string.IsNullOrEmpty(openId)) //opneId参数为空，
                     {
                         //3.检查openid是否被注册过，如果没有被注册过跳转Register注册界面。
