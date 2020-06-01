@@ -12,10 +12,11 @@ using Newtonsoft.Json.Linq;
 namespace HouseManage.Controllers.Check
 {
     [RolesAuthorize(Roles = new string[] { "Admin", "Inspector" })]
-    //[AllowAnonymous]
+    [AllowAnonymous]
     public class DailyCheckController : ControllerBase
     {
         private IDailyCheckSvc dailyCheckSvc;
+        //private string OpenID = "oAY4Pv4h8eyBSAs4O8psFw6omlsg";
         public DailyCheckController(IDailyCheckSvc dailyCheckSvc)
         {
             this.dailyCheckSvc = dailyCheckSvc;
@@ -56,8 +57,7 @@ namespace HouseManage.Controllers.Check
         [HttpGet]
         public IActionResult GetShopInfo(string RWBH,string TASK_ID)
         {
-            string openid = "oAY4Pv4s4K2bSB4B4Hjf8cGSWyCQ";
-            return Ok(dailyCheckSvc.GetShopInfo(RWBH, TASK_ID, openid));
+            return Ok(dailyCheckSvc.GetShopInfo(RWBH, TASK_ID, OpenID));
         }
         [HttpPost]
         public IActionResult PostCheckResult([FromBody]JObject value)

@@ -35,14 +35,19 @@ namespace House.Service.Check
 
         public List<TaskListModel> GetTaskDetailInfo(string RWBH, string TASK_ID, string OPEN_ID, int page, int limit)
         {
-            var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_shopinfo>((a, b, c) => new object[] {
+            var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_shopinfo, wy_map_checkplandetail, wy_map_region, wy_region_director>
+                ((a, b, c, d, e, f) => new object[] {
                 JoinType.Left,a.FWID==b.FWID,
-                JoinType.Left,b.CZ_SHID==c.CZ_SHID
+                JoinType.Left,b.CZ_SHID==c.CZ_SHID,
+                JoinType.Inner,a.TASK_ID==d.TASK_ID,
+                JoinType.Inner,d.PLAN_DETAIL_ID==e.PLAN_DETAIL_ID,
+                JoinType.Inner,f.SSQY==e.REGION_CODE
             })
-                .Where((a, b, c) => b.IS_DELETE == 0 && c.IS_DELETE == 0 && a.TASK_ID == TASK_ID&&a.JCJG!=1
+                .Where((a, b, c, d, e, f) => a.JCJG==0&&b.IS_DELETE == 0 && c.IS_DELETE == 0 && a.TASK_ID == TASK_ID && f.IS_DELETE == 0 && f.WX_OPEN_ID == OPEN_ID
             //    a.TASK_ID ==SqlFunc.Subqueryable<wy_check_task>().Where(s=>s.RWBH==RWBH).Select(s=>s.TASK_ID)
             //&&a.IS_DELETE==0&&a.JCR==OPEN_ID
             )
+                .OrderBy((a, b, c) => new { a.CJSJ }, OrderByType.Desc)
                 .Select<TaskListModel>()
                 .Skip((page - 1) * limit).Take(limit).ToList();
             return list;
