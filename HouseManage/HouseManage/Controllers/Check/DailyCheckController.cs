@@ -15,7 +15,7 @@ namespace HouseManage.Controllers.Check
     public class DailyCheckController : ControllerBase
     {
         private IDailyCheckSvc dailyCheckSvc;
-        //private string OpenID = "oAY4Pv4h8eyBSAs4O8psFw6omlsg";
+        //private new string OpenID = "oAY4Pv4h8eyBSAs4O8psFw6omlsg";
         public DailyCheckController(IDailyCheckSvc dailyCheckSvc)
         {
             this.dailyCheckSvc = dailyCheckSvc;

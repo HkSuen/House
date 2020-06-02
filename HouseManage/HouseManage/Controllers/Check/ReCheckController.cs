@@ -11,8 +11,10 @@ using Newtonsoft.Json.Linq;
 namespace HouseManage.Controllers.Check
 {
     [RolesAuthorize(Roles = new string[] { "Admin", "Inspector" })]
+    
     public class ReCheckController : ControllerBase
     {
+        //private new string OpenID = "oAY4PvyhwmlHhue1GwBdwsW-mmfI";
         private IRecheckSvc recheckSvc;
         public ReCheckController(IRecheckSvc recheckSvc)
         {

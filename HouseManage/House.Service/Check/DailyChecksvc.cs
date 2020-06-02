@@ -45,17 +45,41 @@ namespace House.Service
 
         public List<TaskListModel> GetTaskDetailInfo(string RWBH,string TASK_ID,string OPEN_ID,int page, int limit)
         {
-            var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_shopinfo>((a, b, c) => new object[] {
-                JoinType.Left,a.FWID==b.FWID,
-                JoinType.Left,b.CZ_SHID==c.CZ_SHID
-            })
-                .Where((a,b,c) => b.IS_DELETE==0&&c.IS_DELETE==0&&a.TASK_ID==TASK_ID
-            //    a.TASK_ID ==SqlFunc.Subqueryable<wy_check_task>().Where(s=>s.RWBH==RWBH).Select(s=>s.TASK_ID)
-            //&&a.IS_DELETE==0&&a.JCR==OPEN_ID
-            )
-                .OrderBy((a,b,c) => new { a.CJSJ},OrderByType.Desc)
-                .Select<TaskListModel>()
-                .Skip((page - 1) * limit).Take(limit).ToList();
+            // var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_shopinfo, wy_map_checkplandetail, wy_map_region, wy_region_director>
+            //    ((a, b, c, d, e, f) => new object[] {
+            //     JoinType.Left,a.FWID==b.FWID&&b.IS_DELETE==0,
+            //     JoinType.Left,b.CZ_SHID==c.CZ_SHID&&c.IS_DELETE==0,
+            //     JoinType.Inner,a.TASK_ID==d.TASK_ID,
+            //     JoinType.Inner,d.PLAN_DETAIL_ID==e.PLAN_DETAIL_ID,
+            //     JoinType.Inner,f.SSQY==e.REGION_CODE
+            //})
+            //    .Where((a, b, c, d, e, f) => b.IS_DELETE == 0 && c.IS_DELETE == 0 && a.TASK_ID == TASK_ID && f.IS_DELETE == 0 && f.WX_OPEN_ID == OPEN_ID
+            //)
+            //    .GroupBy((a, b, c, d, e, f) =>new { a.TASK_ID,a.RESULT_ID,a.JCJG,b.FWMC,b.FWBH,c.ZHXM,c.SHOP_NAME,c.SHOPBH})
+            //    .OrderBy((a, b, c) => new { a.CJSJ }, OrderByType.Desc)
+            //    .Select<TaskListModel>()
+            //    .Skip((page - 1) * limit).Take(limit).ToList();
+            var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_region_director, wy_shopinfo, wy_shopinfo>((a, b, c, d, e) => new object[] {
+               JoinType.Inner,a.FWID==b.FWID&&b.IS_DELETE==0,
+               JoinType.Inner,c.SSQY==b.SSQY&&c.IS_DELETE==0,
+               JoinType.Inner,b.CZ_SHID==d.CZ_SHID&&d.IS_DELETE==0,
+               JoinType.Left,e.CZ_SHID==d.SUBLET_ID&&d.IS_SUBLET==1
+                })
+                .Where((a, b, c, d, e) => a.TASK_ID == TASK_ID && c.WX_OPEN_ID == OPEN_ID)
+                .OrderBy(a => a.CJSJ, OrderByType.Desc)
+                .GroupBy((a,b,c,d,e) => new { a.TASK_ID, a.RESULT_ID, a.JCJG, b.FWMC, b.FWBH, ZHXM=d.ZHXM, SHOP_NAME=d.SHOP_NAME, SHOPBH=d.SHOPBH, ZHXM1=e.ZHXM, SHOP_NAME1=e.SHOP_NAME, SHOPBH1=e.SHOPBH})
+                .Select((a, b, c, d, e) => new TaskListModel()
+                {
+                    TASK_ID = a.TASK_ID,
+                    RESULT_ID = a.RESULT_ID,
+                    JCJG = (int)a.JCJG,
+                    FWBH = b.FWBH,
+                    FWMC = b.FWMC,
+                    ZHXM = e.ZHXM == null ? d.ZHXM : e.ZHXM,
+                    SHOP_NAME = e.SHOP_NAME == null ? d.SHOP_NAME : e.SHOP_NAME,
+                    SHOPBH = e.SHOPBH == null ? d.SHOPBH : e.SHOPBH,
+                })
+                .Skip((page-1)*limit).Take(limit).ToList();
             return list;
         }
 
@@ -121,8 +145,8 @@ namespace House.Service
                 JoinType.Inner,a.TASK_ID==b.TASK_ID,
                 JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID,
                 JoinType.Inner,c.PLAN_DETAIL_ID==d.PLAN_DETAIL_ID,
-                JoinType.Inner,d.REGION_CODE==e.SSQY&&e.IS_DELETE==0,
-                JoinType.Inner,e.SSQY==f.SSQY&&f.IS_DELETE==0&&e.WX_OPEN_ID==OPEN_ID,
+                JoinType.Inner,d.REGION_CODE==e.SSQY&&e.IS_DELETE==0&&e.WX_OPEN_ID==OPEN_ID,
+                JoinType.Inner,e.SSQY==f.SSQY&&f.IS_DELETE==0,
                 JoinType.Inner,f.CZ_SHID==g.CZ_SHID&&g.IS_DELETE==0
             }).Where((a, b, c, d, e, f, g) => a.TASK_ID == TASK_ID
             && SqlFunc.Subqueryable<wy_check_result>().Where(t => t.TASK_ID == TASK_ID&&f.FWID==t.FWID).NotAny())
@@ -137,25 +161,6 @@ namespace House.Service
                 FWBH = f.FWBH,
                 FWMC = f.FWMC
             }).ToList();
-
-            //var sql = DB.Db().Queryable<wy_check_task, wy_map_checkplandetail, wy_checkplan_detail, wy_map_region, wy_region_director, wy_houseinfo, wy_shopinfo>
-            //    ((a, b, c, d, e, f, g) => new object[]
-            //{
-            //    JoinType.Inner,a.TASK_ID==b.TASK_ID,
-            //    JoinType.Inner,b.PLAN_DETAIL_ID==c.PLAN_DETAIL_ID,
-            //    JoinType.Inner,c.PLAN_DETAIL_ID==d.PLAN_DETAIL_ID,
-            //    JoinType.Inner,d.REGION_CODE==e.SSQY&&e.IS_DELETE==0,
-            //    JoinType.Inner,e.SSQY==f.SSQY&&f.IS_DELETE==0&&e.WX_OPEN_ID==OPEN_ID,
-            //    JoinType.Inner,f.CZ_SHID==g.CZ_SHID&&g.IS_DELETE==0
-            //}).Where((a, b, c, d, e, f, g) => a.TASK_ID == TASK_ID
-            //&& SqlFunc.Subqueryable<wy_check_result>().Where(t => t.TASK_ID == TASK_ID && f.FWID == t.FWID).NotAny())
-            //.Select((a, b, c, d, e, f, g) => new SimpleShopInfo()
-            //{
-            //    FWID = f.FWID,
-            //    ZHXM = g.ZHXM,
-            //    SHOP_NAME = g.SHOP_NAME,
-            //    SHOPBH = g.SHOPBH
-            //}).ToSql();
             return list;
 
         }
