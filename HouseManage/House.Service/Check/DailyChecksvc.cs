@@ -42,7 +42,12 @@ namespace House.Service
                 .Skip((page-1)*limit).Take(limit).ToList();
             return list;
         }
-
+        /***
+         * 查询逻辑如下：
+         * 通过检查结果内保存的房屋ID直接去关联房屋表找到房屋的区域，再用区域关联检查人，这样就可以找到检查人所能查看到的房屋的检查结果
+         * 然后通过房屋关联使用者，如果是转租用户则会使用转租者的信息作为商户信息。
+         * 和检查不同的是，检查会查询所有的检查结果，复查只差不合格的。
+         ***/
         public List<TaskListModel> GetTaskDetailInfo(string RWBH,string TASK_ID,string OPEN_ID,int page, int limit)
         {
             // var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_shopinfo, wy_map_checkplandetail, wy_map_region, wy_region_director>

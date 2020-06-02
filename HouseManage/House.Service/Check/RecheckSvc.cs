@@ -17,6 +17,11 @@ namespace House.Service.Check
             this.DB = DB;
         }
 
+        /***
+         * 查询逻辑是检查结果通过两张映射表直接拿到检查区域，再去关联检查员信息，如果他的所属区域包含在任务范围内，此条任务可查看。
+         * 复查和检查有一点不同的是检查是无论检查结果有没有不合格的都要查询出来，但是复查不一样，如果这个任务内他所负责的区域内所有的房子
+         * 都是合格的，那么他应该卡不见这个任务，所以用exist内的子查询实现这个条件。
+         ***/
         public List<wy_check_task> GetTaskInfo(string OPEN_ID, int page=1, int limit=10)
         {
             //var list = DB.Db().Queryable<wy_check_task, wy_map_checkplandetail, wy_checkplan_detail, wy_map_region, wy_region_director>
@@ -30,6 +35,7 @@ namespace House.Service.Check
             //    .Where(a => a.IS_DELETE == 0)
             //    .GroupBy(a => new { a.TASK_ID })
             //    .Skip((page - 1) * limit).Take(limit).ToList();
+           
             string sql = "SELECT DISTINCT a.* FROM wy_check_task a " +
                 " JOIN wy_map_checkplandetail b ON a.TASK_ID=b.TASK_ID" +
                 " JOIN wy_map_region c ON b.PLAN_DETAIL_ID=c.PLAN_DETAIL_ID" +
@@ -44,7 +50,12 @@ namespace House.Service.Check
             var list = DB.Db().SqlQueryable<wy_check_task>(sql).Skip((page - 1) * limit).Take(limit).ToList();
             return list;
         }
-
+        /***
+         * 查询逻辑如下：
+         * 通过检查结果内保存的房屋ID直接去关联房屋表找到房屋的区域，再用区域关联检查人，这样就可以找到检查人所能查看到的房屋的检查结果
+         * 然后通过房屋关联使用者，如果是转租用户则会使用转租者的信息作为商户信息。
+         * 和检查不同的是，检查会查询所有的检查结果，复查只差不合格的。
+         ***/
         public List<TaskListModel> GetTaskDetailInfo(string RWBH, string TASK_ID, string OPEN_ID, int page, int limit)
         {
             var list = DB.Db().Queryable<wy_check_result, wy_houseinfo, wy_region_director, wy_shopinfo, wy_shopinfo>((a, b, c, d, e) => new object[] {
