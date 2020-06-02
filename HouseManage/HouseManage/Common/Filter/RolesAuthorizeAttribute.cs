@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace HouseManage.Common.Filter
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             if (!Roles.Any(context.HttpContext.User.IsInRole)) {
-                context.Result = new RedirectResult("/WeChat/Home/Error");
+                context.Result = new RedirectResult("/WeChat/Home/Error?1");
                 return;
             }
         }

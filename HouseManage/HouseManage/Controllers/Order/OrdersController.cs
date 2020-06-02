@@ -91,11 +91,11 @@ namespace HouseManage.Controllers.Order
                 OrderDto PayRecord = null;
                 if (string.IsNullOrEmpty(recordId))
                 {
-                    PayRecord = this._order.GetWxPay(houseId);
+                    PayRecord = this._order.GetWxPay(UId,houseId);
                 }
                 else
                 {
-                    PayRecord = this._order.GetWxPay(recordId, houseId);
+                    PayRecord = this._order.GetWxPay(UId,recordId, houseId);
                 }
                 //校验是否为自助缴费订单
                 if (PayRecord.Record == null || PayRecord.Record.RECORD_ID == null)

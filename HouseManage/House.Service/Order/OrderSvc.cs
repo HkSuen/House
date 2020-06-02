@@ -68,7 +68,7 @@ namespace House.Service.Order
             {
                 conditions = conditions.And(c => c.RECORD_ID == recordId);
             }
-            if (string.IsNullOrEmpty(HouseId))
+            if (!string.IsNullOrEmpty(HouseId))
             {
                 conditions = conditions.And(c => c.FWID == HouseId);
             }
@@ -76,11 +76,15 @@ namespace House.Service.Order
         }
 
 
-        public OrderDto GetWxPay(string HouseId) {
+        public OrderDto GetWxPay(string UserId,string HouseId) {
             var conditions = Expressionable.Create<wy_houseinfo, wy_shopinfo,wy_ropertycosts>();
             if (!string.IsNullOrEmpty(HouseId))
             {
                 conditions = conditions.And((ho, sh,co) => ho.FWID == HouseId);
+            }
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                conditions = conditions.And((ho, sh, co) => sh.CZ_SHID == UserId);
             }
             OrderDto Data = this._db.Db().Queryable<wy_houseinfo, wy_shopinfo,wy_ropertycosts>((ho, sh,co) => new object[] {
                 JoinType.Left,ho.FWID == sh.FWID,
@@ -94,16 +98,20 @@ namespace House.Service.Order
             }).First();
             return Data;
         }
-        public OrderDto GetWxPay(string recordId, string HouseId)
+        public OrderDto GetWxPay(string UserId,string recordId, string HouseId)
         {
             var conditions = Expressionable.Create<v_pay_record, wy_houseinfo, wy_shopinfo, wy_ropertycosts>();
             if (!string.IsNullOrEmpty(recordId))
             {
                 conditions = conditions.And((re, ho, sh,co) => re.RECORD_ID == recordId);
             }
-            if (string.IsNullOrEmpty(HouseId))
+            if (!string.IsNullOrEmpty(HouseId))
             {
                 conditions = conditions.And((re, ho, sh,co) => re.FWID == HouseId);
+            }
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                conditions = conditions.And((re, ho, sh, co) => sh.CZ_SHID == UserId);
             }
             OrderDto Data = this._db.Db().Queryable<v_pay_record, wy_houseinfo, wy_shopinfo, wy_ropertycosts>((re, ho, sh, co) => new object[] {
                 JoinType.Left,re.FWID == ho.FWID,

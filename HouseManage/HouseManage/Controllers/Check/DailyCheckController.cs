@@ -12,7 +12,6 @@ using Newtonsoft.Json.Linq;
 namespace HouseManage.Controllers.Check
 {
     [RolesAuthorize(Roles = new string[] { "Admin", "Inspector" })]
-    [AllowAnonymous]
     public class DailyCheckController : ControllerBase
     {
         private IDailyCheckSvc dailyCheckSvc;

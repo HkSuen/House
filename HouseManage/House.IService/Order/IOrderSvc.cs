@@ -79,8 +79,8 @@ namespace House.IService.Order
         /// <param name="recoredId"></param>
         /// <param name="HouseId"></param>
         /// <returns></returns>
-        OrderDto GetWxPay(string recordId, string HouseId);
-        OrderDto GetWxPay(string HouseId);
+        OrderDto GetWxPay(string UserId, string recordId, string HouseId);
+        OrderDto GetWxPay(string UserId, string HouseId);
 
         /// <summary>
         /// 根据参数获取支付展示详情
