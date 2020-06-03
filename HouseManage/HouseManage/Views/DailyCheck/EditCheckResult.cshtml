@@ -47,27 +47,27 @@
                         <li class="mui-table-view-cell">
                             <div class="mui-row" id="list">
                                 <div class="mui-col-sm-3 mui-col-xs-3">
-                                    <button type="button" class="mui-btn mui-btn-primary" onclick="pass('@item.CHECK_RESULT_ID','@item.Code')" value="1">合格</button>
+                                    <button type="button" class="mui-btn mui-btn-primary passBtn" onclick="pass('@item.CHECK_RESULT_ID','@item.Code')" value="1">合格</button>
                                 </div>
                                 <div class="mui-col-sm-3 mui-col-xs-3">
-                                    <button type="button" class="mui-btn mui-btn-danger" onclick="unpass('@item.CHECK_RESULT_ID','@item.Code')" value="0">不合格</button>
+                                    <button type="button" class="mui-btn mui-btn-danger unpassBtn" onclick="unpass('@item.CHECK_RESULT_ID','@item.Code')" value="0">不合格</button>
                                 </div>
                                 @{
                                     if (item.CHECK_DETAIL_RESULT == 0)
                                     {
-                                        <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
+                                        <div class="mui-col-sm-6 mui-col-xs-6 quesBtn" id="statusbutton">
                                             <button type="button" class="mui-btn mui-btn-danger" id="@item.CHECK_RESULT_ID" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                     else if (item.CHECK_DETAIL_RESULT == 1)
                                     {
-                                        <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
+                                        <div class="mui-col-sm-6 mui-col-xs-6 quesBtn" id="statusbutton">
                                             <button type="button" class="mui-btn mui-btn-primary" id="@item.CHECK_RESULT_ID" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
                                     else
                                     {
-                                        <div class="mui-col-sm-6 mui-col-xs-6" id="statusbutton">
+                                        <div class="mui-col-sm-6 mui-col-xs-6 quesBtn" id="statusbutton">
                                             <button type="button" class="mui-btn" id="@item.Code" name="@item.Code" value="@item.CHECK_DETAIL_RESULT" style="width:100%">@item.Name <span class="mui-icon mui-icon-info"></span></button>
                                         </div>
                                     }
@@ -93,13 +93,13 @@
                             <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
                                 <div class="mui-input-row mui-radio">
                                     <label>合格</label>
-                                    <input name="radio1" value="1" id="pass" type="radio" checked="checked" onclick="passall()">
+                                    <input name="radio1" value="1" id="pass" type="radio" checked="checked" onclick="allPass()">
                                 </div>
                             </div>
                             <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
                                 <div class="mui-input-row mui-radio">
                                     <label>不合格</label>
-                                    <input name="radio1" value="0" id="unpass" type="radio" onclick="unpassall()">
+                                    <input name="radio1" value="0" id="unpass" type="radio" onclick="allUnpass()">
                                 </div>
                             </div>
                         }
@@ -108,13 +108,13 @@
                             <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
                                 <div class="mui-input-row mui-radio">
                                     <label>合格</label>
-                                    <input name="radio1" value="1" id="pass" type="radio" onclick="passall()">
+                                    <input name="radio1" value="1" id="pass" type="radio" onclick="allPass()">
                                 </div>
                             </div>
                             <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
                                 <div class="mui-input-row mui-radio">
                                     <label>不合格</label>
-                                    <input name="radio1" value="0" id="unpass" type="radio" checked="checked" onclick="unpassall()">
+                                    <input name="radio1" value="0" id="unpass" type="radio" checked="checked" onclick="allUnpass()">
                                 </div>
                             </div>
                         }
@@ -264,6 +264,40 @@
         //})
 
     }
+
+    //Radio Listening Start
+    function allPass() {
+        //checkResult(); // deafult set value and bind data info.
+        $("button.passBtn").click();
+        ckResult(1);
+    }
+    function allUnpass() {
+        $("button.unpassBtn").click();
+        ckResult();
+    }
+    function ckResult(bool) {
+        reRadioCheck();
+        if (bool) {
+            $("#pass").attr("checked", "checked");
+        } else {
+            $("#unpass").attr("checked", "checked");
+        }
+    }
+    function reRadioCheck() {
+        $("input[name='radio1']").removeAttr("checked");
+    }
+    function radResult() {
+        var List = $("div.quesBtn > button");
+        if (List.length > 0) {
+            var filterOfList = $(List).filter(function (idx,val) {
+                return $(val).attr("value") == 1;
+            });
+            ckResult(List.length == filterOfList.length);
+        }
+    }
+    //Radio Listening End
+
+
     function CreateListForm() {
         var ele = document.getElementById("statusbutton").firstChild;
     };
@@ -278,6 +312,7 @@
             ele.value = 1;
         }
         CreateListForm();
+        radResult();
     }
     function passall() {
         var ele = document.getElementById("pass");
@@ -298,6 +333,7 @@
             ele.className = "mui-btn mui-btn-danger";
             ele.value = 0;
         };
+        radResult();
     }
     function submit() {
         var ele = document.getElementsByName("radio1");

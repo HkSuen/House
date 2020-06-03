@@ -33,7 +33,7 @@ namespace HouseManage.Common.Filter
 
         public async void OnAuthorization(AuthorizationFilterContext context)
         {
-            _log.LogInformation($"请求授权：{context.HttpContext.Request.Path}+{context.HttpContext.Request.QueryString}");
+            //_log.LogInformation($"请求授权：{context.HttpContext.Request.Path}+{context.HttpContext.Request.QueryString}");
             if (HasAllowAnonymous(context))
             {
                 return;
@@ -49,7 +49,7 @@ namespace HouseManage.Common.Filter
                     //2.如果未授权尝试获取openid。
                     string RedirectUrls = string.Empty;
                     var openId = _wx.GetOpenId(out RedirectUrls);
-                    //var openId = "oAY4Pv6e_i2QeAlHfcJNo920zG2w";
+                    //var openId = "oAY4Pv4h8eyBSAs4O8psFw6omlsg";
                     if (!string.IsNullOrEmpty(openId)) //opneId参数为空，
                     {
                         //3.检查openid是否被注册过，如果没有被注册过跳转Register注册界面。

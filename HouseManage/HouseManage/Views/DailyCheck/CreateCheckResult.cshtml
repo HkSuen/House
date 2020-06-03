@@ -76,13 +76,13 @@
                     <div class="mui-col-sm-4 mui-col-xs-4" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
                         <div class="mui-input-row mui-radio">
                             <label>合格</label>
-                            <input name="radio1" value="1" type="radio">
+                            <input name="radio1" value="1" type="radio" id="radPass">
                         </div>
                     </div>
                     <div class="mui-col-sm-5 mui-col-xs-5" style="padding-left:10px;padding-bottom:5px;padding-top:5px;">
                         <div class="mui-input-row mui-radio">
                             <label>不合格</label>
-                            <input name="radio1" value="0" type="radio">
+                            <input name="radio1" value="0" type="radio" id="radUnpass">
                         </div>
                     </div>
                 </div>
@@ -247,8 +247,7 @@
                     success(data) {
                         if (data.trim() != "") {
                             document.getElementById("checkdetail").innerHTML = data;
-
-
+                            allPass();
                         }
                     },
                     error: function (xhr, type, errorThrown) {
@@ -261,20 +260,77 @@
         }
     }
 
+    //Radio Listening Start
+    function allPass() {
+        checkResult(); // deafult set value and bind data info.
+        $("button.passBtn").click();
+        ckResult(1);
+    }
+    function allUnpass() {
+        $("button.unpassBtn").click();
+        ckResult();
+    }
+    function ckResult(bool) {
+        reRadioCheck();
+        if (bool) {
+            $("#radPass").attr("checked", "checked");
+        } else {
+            $("#radUnpass").attr("checked", "checked");
+        }
+    }
+    function reRadioCheck() {
+        $("input[name='radio1']").removeAttr("checked");
+    }
+    function checkResult() {
+        $("button.passBtn").on("tap", function () {
+            //ckResult(radResult());
+        });
+        $("button.unpassBtn").on("tap", function () {
+            //ckResult(radResult());
+        });
+    }
+    function checkTemp() {
+        var lists = [];
+        var proNames = Object.getOwnPropertyNames(temp);
+        for (var i = 0; i < proNames.length; i++) {
+            lists.push(temp[proNames[i]]);
+        }
+        return lists;
+    }
+    function radResult() {
+        var list = checkTemp();
+        if (list.length <= 0) {
+            return false;
+        }
+        var list_f_result = list.filter(function (val) {
+            return val.VALUE == 1;
+        });
+        return list_f_result.length == list.length;
+    }
+    document.getElementById("radPass").addEventListener("tap", function () {
+        allPass();
+    });
+    document.getElementById("radUnpass").addEventListener("tap", function () {
+        allUnpass();
+    });
+    //Radio Listening End
+
+
     function CreateListForm() {
         var ele = document.getElementById("statusbutton").firstChild;
     };
-    function pass(id,name) {
+    function pass(id, name) {
         var ele = document.getElementById(id);
         ele.className = "mui-btn mui-btn-primary";
-        temp[id] = {NAME:name,VALUE:1};
+        temp[id] = { NAME: name, VALUE: 1 };
+        ckResult(radResult());
     }
-    function unpass(id,name) {
+    function unpass(id, name) {
         var ele = document.getElementById(id);
         ele.className = "mui-btn mui-btn-danger";
         temp[id] = { NAME: name, VALUE: 0 };
         qualified = true;
-
+        ckResult(radResult());
     }
     function submit() {
         var ele = document.getElementsByName("radio1");
