@@ -278,13 +278,13 @@
     function ckResult(bool) {
         reRadioCheck();
         if (bool) {
-            $("#pass").attr("checked", "checked");
+            $("#pass").prop("checked", true);
         } else {
-            $("#unpass").attr("checked", "checked");
+            $("#unpass").prop("checked", true);
         }
     }
     function reRadioCheck() {
-        $("input[name='radio1']").removeAttr("checked");
+        $("input[name='radio1']").prop("checked", false);
     }
     function radResult() {
         var List = $("div.quesBtn > button");

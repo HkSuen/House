@@ -231,6 +231,7 @@
             a.innerHTML = data[i].SHOPBH + ":" + data[i].SHOP_NAME;
             a.id = data[i].FWID;
             a.addEventListener("click", function (e) {
+                hidePopover();
                 document.getElementById("SHOPBH").innerHTML = copydata.SHOPBH;
                 document.getElementById("SHOPBH").value = copydata.SHOPBH;
                 document.getElementById("ZHXM").innerHTML = copydata.ZHXM;
@@ -260,9 +261,13 @@
         }
     }
 
+    function hidePopover() {
+        mui('#popover').popover('hide');
+    }
+
     //Radio Listening Start
     function allPass() {
-        checkResult(); // deafult set value and bind data info.
+        //checkResult(); // deafult set value and bind data info.
         $("button.passBtn").click();
         ckResult(1);
     }
@@ -273,13 +278,13 @@
     function ckResult(bool) {
         reRadioCheck();
         if (bool) {
-            $("#radPass").attr("checked", "checked");
+            $("#radPass").prop("checked", true);
         } else {
-            $("#radUnpass").attr("checked", "checked");
+            $("#radUnpass").prop("checked", true);
         }
     }
     function reRadioCheck() {
-        $("input[name='radio1']").removeAttr("checked");
+        $("input[name='radio1']").prop("checked", false);
     }
     function checkResult() {
         $("button.passBtn").on("tap", function () {
