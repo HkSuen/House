@@ -1,17 +1,17 @@
 {
-  "ConnectionString": "server=114.115.142.34;user id=root;pwd=123456;database=pfhouse;SslMode = none;Charset=utf8",
+  "ConnectionString": "server=;user id=root;pwd=123456;database=pfhouse;SslMode = none;Charset=utf8",
   "WxInfo": {
-    "Domain_Url": "http://www.gxxcwsh.com", //域名
-    "AppId": "wx38f503a0a18bb99b",
-    "AppSecret": "302af50b11d70522225726eadd871590",
+    "Domain_Url": "http://www..com", //域名
+    "AppId": "wx38f503a0a18bb99",
+    "AppSecret": "302af50b11d70522225726eadd87159",
     "Token": "gxxcwx1",
     "RegPage": "/WeChat/User/Register",
     "Pay": {
       "MchName": "{'1584864331':'普丰物业分公司','1585873541':'普丰房地产分公司'}", //{"商户ID":"商户名称"}
-      "Secret": "{'1584864331':'b406b8485c286091a46aca4999f294d3','1585873541':'b406b8485c286091a46aca4999f294d3'}", //{"商户ID":"商户Secret"}
-      "MchID": "{'0':'1584864331','1':'1584864331','2':'1585873541'}", //{"缴费类型":"商户ID"}
+      "Secret": "{'1584864331':'b406b8485c286091a46aca4999f29d3','1585873541':'b406b8485c286091a46aca4999f294d'}", //{"商户ID":"商户Secret"}
+      "MchID": "{'0':'158486331','1':'158464331','2':'158573541'}", //{"缴费类型":"商户ID"}
       "Pay_url": "https://api.mch.weixin.qq.com/pay/unifiedorder",
-      "CallBackUrl": "http://www.gxxcwsh.com/WeChat/Orders/PayResult",
+      "CallBackUrl": "http://www..com/WeChat/Orders/PayResult",
       "FindOrderUrl": "https://api.mch.weixin.qq.com/pay/orderquery"
     }
   }
